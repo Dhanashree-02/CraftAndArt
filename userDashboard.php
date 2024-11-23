@@ -88,8 +88,6 @@
                                 class="dropdown-menu bg-light dropdown-menu-end">
                                 <a href="userLogin.php"
                                     class="dropdown-item">User Login</a>
-                                <a href="adminLogin.php"
-                                    class="dropdown-item">Admin Login</a>
                             </div>
                         </div>
                         <button
