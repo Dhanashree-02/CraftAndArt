@@ -1,3 +1,14 @@
+<?php
+// Start session
+session_start();
+
+// Check if admin is logged in
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: adminLogin.php"); // Redirect to login page if not logged in
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -86,10 +97,10 @@
                             </a>
                             <div
                                 class="dropdown-menu bg-light dropdown-menu-end">
-                                <a href="userLogin.php"
-                                    class="dropdown-item">User Login</a>
-                                <a href="adminLogin.php"
+                                 <a href="adminLogin.php"
                                     class="dropdown-item">Admin Login</a>
+                                 <a href="logout.php"
+                                    class="dropdown-item btn btn-danger">Logout</a>
                             </div>
                         </div>
                         <button
@@ -176,11 +187,18 @@
                             Us</small>
                         <h1 class="display-5 mb-4">Trusted By 200 + satisfied
                             clients</h1>
-                        <p class="mb-4">Discover a world of creativity and craftsmanship! From handmade treasures to unique artisanal creations, we bring you the finest collection of crafts made with passion and care. Explore our carefully curated selection to find the perfect addition to your home, a thoughtful gift, or an inspiring piece to cherish. Celebrate the artistry of craft makers and shop with confidence for something truly special.</p>
+                        <p class="mb-4">Consectetur adipisicing elit, sed do
+                            eiusmod tempor incididunt ut labore eit esdioilore
+                            magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullaemco laboeeiris nisi
+                            ut aliquip ex ea commodo consequat. Duis aute irure
+                            dolor iesdein reprehendeerit in voluptate velit esse
+                            cillum dolore.</p>
                         <div class="row g-4 text-dark mb-5">
                             <div class="col-sm-6">
                                 <i
-                                    class="fas fa-share text-primary me-2"></i>Home Delivery
+                                    class="fas fa-share text-primary me-2"></i>Fresh
+                                and Fast food Delivery
                             </div>
                             <div class="col-sm-6">
                                 <i
@@ -194,7 +212,8 @@
                             </div>
                             <div class="col-sm-6">
                                 <i
-                                    class="fas fa-share text-primary me-2"></i>Shop Unique Crafts 
+                                    class="fas fa-share text-primary me-2"></i>Delicious
+                                Deals for Delicious Meals
                             </div>
                         </div>
                         <a href
@@ -219,7 +238,7 @@
                                     <i
                                         class="fas fa-users fa-4x mb-4 text-white"></i>
                                     <h1 class="display-4 fw-bold"
-                                        data-toggle="counter-up">443</h1>
+                                        data-toggle="counter-up">689</h1>
                                     <p
                                         class="text-dark text-uppercase fw-bold mb-0">Happy
                                         Customers</p>
@@ -234,7 +253,8 @@
                                     <h1 class="display-4 fw-bold"
                                         data-toggle="counter-up">107</h1>
                                     <p
-                                        class="text-dark text-uppercase fw-bold mb-0">Unique Craft Ideas</p>
+                                        class="text-dark text-uppercase fw-bold mb-0">Expert
+                                        Chefs</p>
                                 </div>
                             </div>
                             <div class="col-sm-4 wow bounceInUp"
@@ -244,9 +264,10 @@
                                     <i
                                         class="fas fa-check fa-4x mb-4 text-white"></i>
                                     <h1 class="display-4 fw-bold"
-                                        data-toggle="counter-up">450</h1>
+                                        data-toggle="counter-up">253</h1>
                                     <p
-                                        class="text-dark text-uppercase fw-bold mb-0">Orders Completed</p>
+                                        class="text-dark text-uppercase fw-bold mb-0">Events
+                                        Complete</p>
                                 </div>
                             </div>
                         </div>
@@ -295,7 +316,7 @@
                     <small
                         class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Our
                         Services</small>
-                    <h1 class="display-5 mb-5">We Offers</h1>
+                    <h1 class="display-5 mb-5">What We Offer</h1>
                 </div>
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
