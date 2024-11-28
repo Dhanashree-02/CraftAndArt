@@ -1,3 +1,14 @@
+<?php
+// Start session
+session_start();
+
+// Check if admin is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: userLogin.php"); // Redirect to login page if not logged in
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,7 +72,7 @@
                                 class="nav-item nav-link">Home</a>
                             <a href="service.html"
                                 class="nav-item nav-link">Services</a>
-                            <a href="menu.html"
+                            <a href="product.php"
                                 class="nav-item nav-link">Products</a>
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle"
@@ -88,6 +99,8 @@
                                 class="dropdown-menu bg-light dropdown-menu-end">
                                 <a href="userLogin.php"
                                     class="dropdown-item">User Login</a>
+                                <a href="logout.php"
+                                    class="dropdown-item btn btn-danger">Logout</a>
                             </div>
                         </div>
                         <button
@@ -95,7 +108,7 @@
                             data-bs-toggle="modal"
                             data-bs-target="#searchModal"><i
                                 class="fas fa-search"></i></button>
-                        <a href="cart.html"
+                        <a href="addCart.php"
                             class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                                 class="fas fa-shopping-cart"></i></a>
                         <a href

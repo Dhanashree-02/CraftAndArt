@@ -14,3 +14,40 @@
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL -- For hashed passwords
 );
+
+- Inserting into Admin table (Insert below code in insertAdmin.php file run it once and then delete it...):-
+      <?php
+    // Database connection
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "craft";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Admin details
+    $username = "admin"; // Replace with your desired username
+    $password = "admin123"; // Replace with your desired password
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert admin data
+    $sql = "INSERT INTO admin (username, password) VALUES (?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $username, $hashed_password);
+
+    if ($stmt->execute()) {
+        echo "Admin registered successfully!";
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+    ?>

@@ -469,5 +469,56 @@ h4, h5, h6, .h4, .h5, .h6 {
 /*** Footer End ***/
 
 
+/* Styling the card */
+.hover-card:hover {
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+}
+
+.product-image {
+    height: 250px;
+    object-fit: cover;
+}
+
+.wishlist-btn {
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    color: #ff4d6d;
+}
+
+.wishlist-btn:hover {
+    background-color: #ff4d6d;
+    color: #fff;
+}
+
+/* Ensure description is limited to 2 lines and add vendor prefixes */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Safari */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    display: box;
+    line-clamp: 2; /* Standard syntax */
+    box-orient: vertical;
+}
+
+.add-cart-btn {
+    background-color: #ff914d;
+    border: none;
+}
+
+.add-cart-btn:hover {
+    background-color: #ff721d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .product-image {
+        height: 200px;
+    }
+}
+
 
 

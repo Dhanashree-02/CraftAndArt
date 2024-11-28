@@ -7,6 +7,6 @@ session_unset();
 session_destroy();
 
 // Redirect to the admin login page
-header("Location: adminLogin.php");
+header("Location: index.php");
 exit();
 ?>

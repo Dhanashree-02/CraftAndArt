@@ -21,8 +21,8 @@ $error_message = "";
 
 // Handle login form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $admin_username = trim($_POST['username']);
-    $admin_password = trim($_POST['password']);
+    $admin_username = ($_POST['username']);
+    $admin_password =($_POST['password']);
 
     // Validate input
     if (empty($admin_username) || empty($admin_password)) {

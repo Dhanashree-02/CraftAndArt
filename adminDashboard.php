@@ -86,6 +86,8 @@ if (!isset($_SESSION['admin_id'])) {
                                         class="dropdown-item">About us</a>
                                     <a href="contact.html"
                                         class="dropdown-item">Contact</a>
+                                    <a href="adminInsertProduct.php"
+                                        class="dropdown-item">Add Products</a>
                                 </div>
                             </div>
                         </div>
