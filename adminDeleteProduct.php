@@ -3,66 +3,53 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "craft";  // Replace with your database name
+$dbname = "craft"; // Replace with your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if form is submitted
+// Check if a product ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $description = $_POST['description'];
-    $price = $_POST['price'];
-    $category = $_POST['category']; // New Category field
+    $productID = $_POST['productID'];
 
-    // Handle file upload
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $imageTmp = $_FILES['image']['tmp_name'];
-        $imageName = $_FILES['image']['name'];
-        $imagePath = 'img/' . basename($imageName);  // Define where to store the image
+    // Get the image path of the product to delete it from the server
+    $imageQuery = "SELECT image FROM products WHERE id = '$productID'";
+    $result = $conn->query($imageQuery);
 
-        // Move uploaded file to the "uploads" folder
-        if (move_uploaded_file($imageTmp, $imagePath)) {
-            // Insert product data into the database
-            $sql = "INSERT INTO products (name, description, price, category, image) 
-                    VALUES ('$name', '$description', '$price', '$category', '$imagePath')";
-            
-            if ($conn->query($sql) === TRUE) {
-                echo "<div class='alert alert-success'>New product added successfully!</div>";
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $imagePath = $row['image'];
 
-                // JavaScript to reset the form fields
-                echo "<script>document.getElementById('name').value = '';</script>";
-                echo "<script>document.getElementById('description').value = '';</script>";
-                echo "<script>document.getElementById('price').value = '';</script>";
-                echo "<script>document.getElementById('category').value = '';</script>";
-                echo "<script>document.getElementById('image').value = '';</script>";
-            } else {
-                echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
+        // Delete the product record from the database
+        $deleteQuery = "DELETE FROM products WHERE id = '$productID'";
+        if ($conn->query($deleteQuery) === TRUE) {
+            // Delete the image file from the server
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
             }
+            echo "<div class='alert alert-success'>Product deleted successfully!</div>";
         } else {
-            echo "<div class='alert alert-danger'>Error uploading image.</div>";
+            echo "<div class='alert alert-danger'>Error deleting product: " . $conn->error . "</div>";
         }
     } else {
-        echo "<div class='alert alert-warning'>No image file uploaded or there was an upload error.</div>";
+        echo "<div class='alert alert-warning'>Product not found.</div>";
     }
 }
 
 $conn->close();
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Add Products</title>
+   <title>Craft Loving | Remove Product</title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-   <meta content name="keywords">
-   <meta content name="description">
    <link rel="icon" href="img/logo.jpg" type="image/x-icon">
+
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,11 +70,12 @@ $conn->close();
 
    <!-- Template Stylesheet -->
    <link href="css/style.css" rel="stylesheet">
+
 </head>
 
 <body>
 
-   <div class="container-fluid d-flex">
+<div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
       <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
          <a href="index.html" class="navbar-brand mb-4">
@@ -119,62 +107,38 @@ $conn->close();
          </div>
       </nav>
 
-      <!-- Admin insertion start -->
+
+      <!-- Remove product start-->
       <div class="container py-5">
          <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
             <small
                class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-               Admin - Add Product
+               Admin - Remove Product
             </small>
-            <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
+            <h1 class="display-5 mb-5 text-dark">Enter Product Details to Remove</h1>
          </div>
-         <div class="card shadow-lg rounded-3 mx-auto" style="max-width: 700px;">
+         <div class="card shadow-lg rounded-3 mx-auto" style="max-width: 500px;">
             <div class="card-body p-5">
-               <form action="adminInsertProduct.php" method="POST" enctype="multipart/form-data">
-                  <!-- Product Name -->
+               <form action="adminDeleteProduct.php" method="POST">
                   <div class="mb-4">
-                     <label for="name" class="form-label text-dark fs-5">Product Name:</label>
-                     <input type="text" class="form-control form-control-lg" id="name" name="name" required>
+                     <label for="productID" class="form-label text-dark fs-5">Product ID:</label>
+                     <input type="number" class="form-control form-control-lg" id="productID" name="productID" required>
                   </div>
-
-                  <!-- Product Description -->
-                  <div class="mb-4">
-                     <label for="description" class="form-label text-dark fs-5">Product Description:</label>
-                     <textarea id="description" name="description" class="form-control form-control-lg" rows="4"
-                        required></textarea>
-                  </div>
-
-                  <!-- Price -->
-                  <div class="mb-4">
-                     <label for="price" class="form-label text-dark fs-5">Price ($):</label>
-                     <input type="number" class="form-control form-control-lg" id="price" name="price" required>
-                  </div>
-
-                  <!-- Category -->
-                  <div class="mb-4">
-                     <label for="category" class="form-label text-dark fs-5">Category:</label>
-                     <input type="text" class="form-control form-control-lg" id="category" name="category" required>
-                  </div>
-
-                  <!-- Product Image -->
-                  <div class="mb-4">
-                     <label for="image" class="form-label text-dark fs-5">Product Image:</label>
-                     <input type="file" class="form-control form-control-lg" id="image" name="image" accept="image/*"
-                        required>
-                  </div>
-
-                  <!-- Submit Button -->
                   <div class="text-center mt-4">
-                     <button type="submit" class="btn btn-primary btn-lg  py-2 px-4 rounded-pill shadow-sm">Add
+                     <button type="submit" class="btn btn-primary btn-lg py-2 px-5 rounded-pill shadow-sm">Delete
                         Product</button>
                   </div>
                </form>
             </div>
          </div>
       </div>
-      <!-- Admin insertion end -->
+      <!-- Remove product end-->
+
+
    </div>
    <!-- Vertical Navbar End -->
+
+
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
@@ -271,6 +235,8 @@ $conn->close();
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
    <!-- Template Javascript -->
    <script src="js/main.js"></script>
+
+
 </body>
 
 </html>

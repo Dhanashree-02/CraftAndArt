@@ -51,6 +51,7 @@ h4, h5, h6, .h4, .h5, .h6 {
 /*** Button Start ***/
 .btn.btn-primary {
     border: 0;
+    background-color: #d4a762;
 }
 
 .btn.btn-primary:hover {
@@ -476,9 +477,12 @@ h4, h5, h6, .h4, .h5, .h6 {
 }
 
 .product-image {
-    height: 250px;
-    object-fit: cover;
+    width: 100%; /* Ensures the image spans the full width of its container */
+    height: 250px; /* Set a fixed height */
+    object-fit: cover; /* Ensures the image fills the container while maintaining aspect ratio */
+    border-radius: 10px; /* Optional: Adds rounded corners */
 }
+
 
 .wishlist-btn {
     background-color: rgba(255, 255, 255, 0.9);
@@ -505,12 +509,12 @@ h4, h5, h6, .h4, .h5, .h6 {
 }
 
 .add-cart-btn {
-    background-color: #ff914d;
+    background-color: #d4a762;
     border: none;
 }
 
 .add-cart-btn:hover {
-    background-color: #ff721d;
+    background-color: #d4a762;
 }
 
 /* Responsive adjustments */

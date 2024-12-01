@@ -1,59 +1,42 @@
 <?php
+// Start session
 session_start();
 
-// Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "craft";
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php"); // Redirect to login page if not logged in
+    exit();
+}
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Database connection
+$conn = new mysqli("localhost", "root", "", "craft"); // Adjust database credentials
+
+// Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Handle adding items to the wishlist
-if (isset($_GET['id'])) {
-    $product_id = $_GET['id'];
+// Get user ID from session
+$user_id = $_SESSION['user_id'];
 
-    // Initialize wishlist session if not already set
-    if (!isset($_SESSION['wishlist'])) {
-        $_SESSION['wishlist'] = [];
-    }
+// Fetch user details from the database
+$sql = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    // Add product to wishlist if not already in it
-    if (!in_array($product_id, $_SESSION['wishlist'])) {
-        $_SESSION['wishlist'][] = $product_id;
-    }
-
-    header("Location: wishlist.php"); // Redirect back to wishlist display
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+} else {
+    echo "No user details found.";
     exit();
 }
 
-// Fetch wishlist items from the database
-$wishlist = $_SESSION['wishlist'] ?? [];
-$products = [];
-if (!empty($wishlist)) {
-    $product_ids = implode(",", $wishlist);
-    $sql = "SELECT id, name, image, price FROM products WHERE id IN ($product_ids)";
-    $result = $conn->query($sql);
-    if ($result && $result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $products[] = $row;
-        }
-    }
-}
-
-// Handle removing items from the wishlist
-if (isset($_GET['remove_id'])) {
-    $remove_id = $_GET['remove_id'];
-    $_SESSION['wishlist'] = array_diff($_SESSION['wishlist'], [$remove_id]);
-    header("Location: wishlist.php");
-    exit();
-}
-
+$stmt->close();
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -163,34 +146,42 @@ $conn->close();
    </div>
    <!-- Modal Search End -->
 
-   <!-- Whishlist start -->
-   <div class="container py-5">
-      <h1 class="text-center mb-4">Your Wishlist</h1>
-
-      <?php if (!empty($products)): ?>
-      <div class="row">
-         <?php foreach ($products as $product): ?>
-         <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card">
-               <img src="<?php echo $product['image']; ?>" class="card-img-top" alt="<?php echo $product['name']; ?>">
-               <div class="card-body">
-                  <h5 class="card-title"><?php echo $product['name']; ?></h5>
-                  <p class="fw-bold text-primary">Price: $<?php echo $product['price']; ?></p>
-                  <a href="wishlist.php?remove_id=<?php echo $product['id']; ?>" class="btn btn-primary">Remove</a>
+   <!-- User details start -->
+   <div class="container mt-5">
+      <h1 class="mb-5 text-center">Your Account</h1>
+      <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 550px;">
+         <div class="card-header bg-primary text-white text-center rounded-top">
+            <h3>Welcome, <?php echo htmlspecialchars($user['name']); ?>!</h3>
+         </div>
+         <div class="card-body text-center p-5 d-flex flex-column justify-content-center align-items-center">
+            <div class="mb-4">
+               <!-- User Initials Circle -->
+               <div class="d-flex justify-content-center align-items-center"
+                  style="width: 100px; height: 100px; border-radius: 50%; background-color: #d4a762; color: white; font-size: 36px; font-weight: bold;">
+                  <?php 
+                  $name = $user['name'];
+                  $initial = strtoupper(substr($name, 0, 1)); // Get the first letter of the name
+                  echo $initial;
+               ?>
                </div>
             </div>
+            <!-- User Name and Email -->
+            <h4 class="text-dark mb-1"><?php echo htmlspecialchars($user['name']); ?></h4>
+            <p class="text-muted mb-0">Email: <?php echo htmlspecialchars($user['email']); ?></p>
+            <!-- Edit Button -->
+            <div class="mt-4">
+               <a href="logout.php" class="btn btn-outline-primary px-4 py-2 rounded-pill shadow">Edit Details</a>
+            </div>
          </div>
-         <?php endforeach; ?>
-      </div>
-      <?php else: ?>
-      <h3 class="text-center text-muted">Your wishlist is empty!</h3>
-      <?php endif; ?>
-
-      <div class="text-center mt-4">
-         <a href="product.php" class="btn btn-primary">Continue Browsing</a>
+         <div class="card-footer text-muted text-center rounded-bottom">
+            Last Updated: <?php echo date("F j, Y"); ?>
+         </div>
       </div>
    </div>
-   <!-- Whishlist end-->
+   <!-- User details end -->
+
+
+
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">

@@ -3,11 +3,11 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Craft Loving | Services</title>
+        <title>Craft Loving | Team</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content name="keywords">
         <meta content name="description">
-
+        <link rel="icon" href="img/logo.jpg" type="image/x-icon">
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,11 +57,11 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto">
-                            <a href="index.html"
+                            <a href="logout.php"
                                 class="nav-item nav-link">Home</a>
                             <a href="service.html"
                                 class="nav-item nav-link">Services</a>
-                            <a href="menu.html"
+                            <a href="product.php"
                                 class="nav-item nav-link">Products</a>
                             <div class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle"
@@ -86,10 +86,10 @@
                             </a>
                             <div
                                 class="dropdown-menu bg-light dropdown-menu-end">
-                                <a href="userLogin.php"
-                                    class="dropdown-item">User Login</a>
-                                <a href="adminLogin.php"
-                                    class="dropdown-item">Admin Login</a>
+                                <a href="userDetails.php"
+                                    class="dropdown-item">Your Account</a>
+                                <a href="logout.php"
+                                    class="dropdown-item btn btn-danger">Logout</a>
                             </div>
                         </div>
                         <button
@@ -97,9 +97,13 @@
                             data-bs-toggle="modal"
                             data-bs-target="#searchModal"><i
                                 class="fas fa-search"></i></button>
-                        <a href="cart.html"
+                        <a href="addCart.php"
                             class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                                 class="fas fa-shopping-cart"></i></a>
+                        <a href="wishlist.php"
+                            class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
+                            <i class="fas fa-heart"></i>
+                        </a>
                         <a href
                             class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
                             Now</a>

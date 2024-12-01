@@ -10,9 +10,20 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch products from database
-$sql = "SELECT id, name, image, description, price FROM products";
-$result = $conn->query($sql);
+// Get the selected category from the query string
+$category = isset($_GET['category']) ? $_GET['category'] : '';
+
+// Prepare the SQL query
+if (!empty($category)) {
+    $stmt = $conn->prepare("SELECT * FROM products WHERE category = ?");
+    $stmt->bind_param("s", $category);
+} else {
+    $stmt = $conn->prepare("SELECT * FROM products");
+}
+
+// Execute the query
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 
@@ -21,11 +32,11 @@ $result = $conn->query($sql);
 
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Menu </title>
+   <title>Craft Loving | Products </title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
    <meta content name="keywords">
    <meta content name="description">
-
+   <link rel="icon" href="img/logo.jpg" type="image/x-icon">
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,9 +81,9 @@ $result = $conn->query($sql);
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                <div class="navbar-nav mx-auto">
-                  <a href="index.html" class="nav-item nav-link">Home</a>
+                  <a href="logout.php" class="nav-item nav-link">Home</a>
                   <a href="service.html" class="nav-item nav-link">Services</a>
-                  <a href="menu.html" class="nav-item nav-link">Products</a>
+                  <a href="product.php" class="nav-item nav-link">Products</a>
                   <div class="nav-item dropdown">
                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                      <div class="dropdown-menu bg-light">
@@ -89,14 +100,18 @@ $result = $conn->query($sql);
                      <i class="fas fa-user"></i>
                   </a>
                   <div class="dropdown-menu bg-light dropdown-menu-end">
-                     <a href="userLogin.php" class="dropdown-item">User Login</a>
-                     <a href="adminLogin.php" class="dropdown-item">Admin Login</a>
+                     <a href="userDetails.php" class="dropdown-item">Your Account</a>
+                     <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                   </div>
                </div>
                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
                   data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-               <a href="cart.html" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
+               <a href="addCart.php"
+                  class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                      class="fas fa-shopping-cart"></i></a>
+               <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
+                  <i class="fas fa-heart"></i>
+               </a>
                <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
                   Now</a>
             </div>
@@ -139,45 +154,93 @@ $result = $conn->query($sql);
    </div>
    <!-- Hero End -->
 
-   
-<!-- Product Start -->
-<div class="container py-5">
-   <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
-      <small
-         class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-         Our Products
-      </small>
-      <h1 class="display-5 mb-5">Discover the World’s Most Loved Crafts</h1>
-   </div>
-   <div class="row">
-      <?php if ($result->num_rows > 0): ?>
-         <?php while ($row = $result->fetch_assoc()): ?>
+
+   <!-- Product Start -->
+   <div class="container py-5">
+      <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+         <small
+            class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
+            Our Products
+         </small>
+         <h1 class="display-5 mb-5">Discover the World’s Most Loved Crafts</h1>
+         <div class="tab-class text-center">
+            <ul class="nav nav-pills d-inline-flex justify-content-center mb-5 wow bounceInUp" data-wow-delay="0.1s">
+               <li class="nav-item p-2">
+                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
+                     href="product.php?category=PaperCraft">
+                     <span class="text-dark" style="width: 150px;"
+                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'PaperCraft' ? 'active-category' : ''; ?>">Paper
+                        Craft</span>
+                  </a>
+               </li>
+               <li class="nav-item p-2">
+                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
+                     href="product.php?category=WoodCraft">
+                     <span class="text-dark" style="width: 150px;"
+                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'WoodCraft' ? 'active-category' : ''; ?>">Wood
+                        Craft</span>
+                  </a>
+               </li>
+               <li class="nav-item p-2">
+                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
+                     href="product.php?category=Mandala">
+                     <span class="text-dark" style="width: 150px;"
+                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'Mandala' ? 'active-category' : ''; ?>">Mandalas</span>
+                  </a>
+               </li>
+               <li class="nav-item p-2">
+                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
+                     href="product.php?category=ResinArt">
+                     <span class="text-dark" style="width: 150px;"
+                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'ResinArt' ? 'active-category' : ''; ?>">Resin
+                        Art</span>
+                  </a>
+               </li>
+               <li class="nav-item p-2">
+                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
+                     href="product.php?category=Miniature">
+                     <span class="text-dark" style="width: 150px;"
+                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'Miniature' ? 'active-category' : ''; ?>">Miniature</span>
+                  </a>
+               </li>
+               <li class="nav-item p-2">
+                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
+                     href="product.php">
+                     <span class="text-dark" style="width: 150px;"
+                        class="nav-link rounded-pill px-4 py-2 <?php echo empty($category) ? 'active-category' : ''; ?>">
+                        All Products</span>
+                  </a>
+               </li>
+            </ul>
+         </div>
+
+         <div class="row" id="product-list">
+            <?php if ($result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
             <div class="col-lg-4 col-md-6 mb-4">
                <div class="card border-0 shadow-lg h-100 rounded-3 hover-card">
                   <div class="position-relative overflow-hidden">
-                     <img src="<?php echo $row['image']; ?>" class="card-img-top rounded-top product-image"
-                        alt="<?php echo $row['name']; ?>" style="transition: transform 0.3s;">
+                     <img src="<?php echo $row['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
+                        alt="<?php echo $row['name']; ?>">
                      <a href="wishlist.php?id=<?php echo $row['id']; ?>"
-                        class="btn <?php echo $is_in_wishlist ? 'btn-danger' : 'btn-outline-danger'; ?> position-absolute top-0 end-0 m-3 rounded-circle wishlist-btn">
-                        <i class="fas fa-heart" style="transition: transform 0.3s;"></i>
+                        class="btn btn-outline-danger position-absolute top-0 end-0 m-3 rounded-circle">
+                        <i class="fas fa-heart"></i>
                      </a>
                   </div>
                   <div class="card-body text-center p-4">
-                     <h5 class="card-title text-dark fw-bold mb-3" style="font-size: 1.2rem;"><?php echo $row['name']; ?></h5>
-                     <p class="card-text text-muted mb-3" style="font-size: 0.9rem; line-height: 1.4;"><?php echo $row['description']; ?></p>
-                     <p class="fw-bold text-primary mb-4" style="font-size: 1.1rem;">Price: $<?php echo $row['price']; ?></p>
+                     <h5 class="card-title text-dark fw-bold mb-3"><?php echo $row['name']; ?></h5>
+                     <p class="card-text text-muted mb-3"><?php echo $row['description']; ?></p>
+                     <p class="fw-bold text-primary mb-4">Price: $<?php echo $row['price']; ?></p>
                      <a href="addCart.php?id=<?php echo $row['id']; ?>"
-                        class="btn btn-primary px-4 py-2 rounded-pill shadow-sm add-cart-btn"
-                        style="transition: transform 0.3s;">
+                        class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
                         Add to Cart
                      </a>
-                     
                      <!-- Share Button -->
                      <div class="share-container mt-3">
                         <button class="btn btn-outline-primary share-btn" style="transition: background-color 0.3s;">
                            <i class="fas fa-share-alt"></i> Share
                         </button>
-                        
+
                         <!-- Hidden Share Options -->
                         <div class="share-options mt-2" style="display: none;">
                            <a href="https://wa.me/?text=<?php echo urlencode('Check out this amazing product: ' . $row['name'] . ' ' . $row['description'] . ' ' . 'https://yourwebsite.com/product.php?id=' . $row['id']); ?>"
@@ -201,20 +264,21 @@ $result = $conn->query($sql);
                   </div>
                </div>
             </div>
-         <?php endwhile; ?>
-      <?php else: ?>
-         <p class="text-center text-muted">No products available.</p>
-      <?php endif; ?>
+            <?php endwhile; ?>
+            <?php else: ?>
+            <p class="text-center text-muted">No products available for this category.</p>
+            <?php endif; ?>
+         </div>
+      </div>
    </div>
-</div>
-<!-- Product End -->
 
-<script>
+   <script>
    // Toggle share options visibility
    document.querySelectorAll('.share-btn').forEach(button => {
       button.addEventListener('click', function() {
          const options = this.nextElementSibling;
-         options.style.display = options.style.display === 'none' || options.style.display === '' ? 'block' : 'none';
+         options.style.display = options.style.display === 'none' || options.style.display === '' ?
+            'block' : 'none';
       });
    });
 
@@ -247,8 +311,29 @@ $result = $conn->query($sql);
          icon.style.transform = 'scale(1)';
       });
    });
-</script>
 
+   // Optional: Use AJAX for dynamic loading without page refresh
+   document.querySelectorAll('.nav-item a').forEach(link => {
+      link.addEventListener('click', function(e) {
+         e.preventDefault();
+         const categoryUrl = this.getAttribute('href');
+         fetch(categoryUrl)
+            .then(response => response.text())
+            .then(html => {
+               document.getElementById('product-list').innerHTML = new DOMParser()
+                  .parseFromString(html, 'text/html')
+                  .querySelector('#product-list').innerHTML;
+               // Update active category
+               document.querySelectorAll('.nav-item a').forEach(item => item.classList.remove(
+                  'active-category'));
+               this.classList.add('active-category');
+            })
+            .catch(err => console.error('Error:', err));
+      });
+   });
+   </script>
+
+   <!-- Product End -->
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
