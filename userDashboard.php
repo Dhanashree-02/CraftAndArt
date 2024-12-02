@@ -93,7 +93,7 @@ if (!isset($_SESSION['user_id'])) {
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+               <a href="userPlaceOrder.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
                   Now</a>
             </div>
          </nav>

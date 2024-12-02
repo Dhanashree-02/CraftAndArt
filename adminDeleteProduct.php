@@ -12,23 +12,22 @@ if ($conn->connect_error) {
 
 // Check if a product ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $productID = $_POST['productID'];
+    $productID = intval($_POST['productID']); // Secure input with intval to prevent SQL injection risks
 
-    // Get the image path of the product to delete it from the server
-    $imageQuery = "SELECT image FROM products WHERE id = '$productID'";
-    $result = $conn->query($imageQuery);
+    // Check if the product exists in the database
+    $checkQuery = "SELECT * FROM products WHERE id = ?";
+    $stmt = $conn->prepare($checkQuery);
+    $stmt->bind_param("i", $productID);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if ($result && $result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $imagePath = $row['image'];
-
+    if ($result->num_rows > 0) {
         // Delete the product record from the database
-        $deleteQuery = "DELETE FROM products WHERE id = '$productID'";
-        if ($conn->query($deleteQuery) === TRUE) {
-            // Delete the image file from the server
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
+        $deleteQuery = "DELETE FROM products WHERE id = ?";
+        $stmt = $conn->prepare($deleteQuery);
+        $stmt->bind_param("i", $productID);
+
+        if ($stmt->execute()) {
             echo "<div class='alert alert-success'>Product deleted successfully!</div>";
         } else {
             echo "<div class='alert alert-danger'>Error deleting product: " . $conn->error . "</div>";
@@ -36,11 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "<div class='alert alert-warning'>Product not found.</div>";
     }
+
+    $stmt->close();
 }
 
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -74,41 +74,25 @@ $conn->close();
 </head>
 
 <body>
-
-<div class="container-fluid d-flex">
+   <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
       <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
          <a href="index.html" class="navbar-brand mb-4">
-            <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
+            <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark">Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">
             <a href="index.html" class="nav-item nav-link">Home</a>
-            <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
+            <a href="adminDeleteProduct.php" class="nav-item nav-link active">Remove Products</a>
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
             <a href="#" class="nav-item nav-link">Product Sale</a>
             <a href="#" class="nav-item nav-link">Count of Customer</a>
-            <!-- <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tasks</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="adminDeleteProduct.php" class="dropdown-item">Remove Product</a>
-                  <a href="adminInsertProduct.php" class="dropdown-item">Add Products</a>
-               </div>
-            </div>
-            <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Reports</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="team.html" class="dropdown-item">Product Sale</a>
-                  <a href="testimonial.html" class="dropdown-item">Count of Customer</a>
-               </div>
-            </div> -->
          </div>
          <div class="mt-auto w-100">
             <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
          </div>
       </nav>
 
-
-      <!-- Remove product start-->
+      <!-- Remove product start -->
       <div class="container py-5">
          <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
             <small
@@ -132,13 +116,9 @@ $conn->close();
             </div>
          </div>
       </div>
-      <!-- Remove product end-->
-
-
+      <!-- Remove product end -->
    </div>
    <!-- Vertical Navbar End -->
-
-
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
@@ -220,9 +200,6 @@ $conn->close();
    <!-- Footer End -->
 
 
-   <!-- Back to Top -->
-   <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
-
    <!-- JavaScript Libraries -->
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -232,11 +209,8 @@ $conn->close();
    <script src="lib/counterup/counterup.min.js"></script>
    <script src="lib/lightbox/js/lightbox.min.js"></script>
    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
    <!-- Template Javascript -->
    <script src="js/main.js"></script>
-
-
 </body>
 
 </html>

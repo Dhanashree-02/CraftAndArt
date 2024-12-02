@@ -112,7 +112,7 @@ $result = $stmt->get_result();
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+               <a href="userPlaceOrder.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
                   Now</a>
             </div>
          </nav>
@@ -228,6 +228,7 @@ $result = $stmt->get_result();
                      </a>
                   </div>
                   <div class="card-body text-center p-4">
+                     <p class="card-text text-muted mb-3">Product ID: <strong>#<?php echo $row['id']; ?></strong></p>
                      <h5 class="card-title text-dark fw-bold mb-3"><?php echo $row['name']; ?></h5>
                      <p class="card-text text-muted mb-3"><?php echo $row['description']; ?></p>
                      <p class="fw-bold text-primary mb-4">Price: $<?php echo $row['price']; ?></p>
