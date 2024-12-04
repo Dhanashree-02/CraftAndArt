@@ -232,10 +232,13 @@ $result = $stmt->get_result();
                      <h5 class="card-title text-dark fw-bold mb-3"><?php echo $row['name']; ?></h5>
                      <p class="card-text text-muted mb-3"><?php echo $row['description']; ?></p>
                      <p class="fw-bold text-primary mb-4">Price: $<?php echo $row['price']; ?></p>
-                     <a href="addCart.php?id=<?php echo $row['id']; ?>"
-                        class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">
-                        Add to Cart
-                     </a>
+                     <a href="addCart.php?id=<?php echo $row['id']; ?>" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Add to Cart</a>
+                     <form action="orderProduct.php" method="POST" class="d-inline">
+    <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
+    <input type="hidden" name="quantity" value="1"> <!-- Default quantity -->
+    <button type="submit" name="order_product" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order</button>
+</form>
+
                      <!-- Share Button -->
                      <div class="share-container mt-3">
                         <button class="btn btn-outline-primary share-btn" style="transition: background-color 0.3s;">
