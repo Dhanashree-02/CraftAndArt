@@ -1,39 +1,35 @@
 <?php
-// Start session
-session_start();
-
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
-    exit();
-}
-
 // Database connection
-$conn = new mysqli("localhost", "root", "", "craft"); // Adjust database credentials
+$servername = "localhost";
+$username = "root"; // Update if needed
+$password = ""; // Update if needed
+$dbname = "craft"; // Update to your database name
+
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get user ID from session
-$user_id = $_SESSION['user_id'];
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $conn->real_escape_string($_POST['name']);
+    $email = $conn->real_escape_string($_POST['email']);
+    $subject = $conn->real_escape_string($_POST['subject']);
+    $message = $conn->real_escape_string($_POST['message']);
 
-// Fetch user details from the database
-$sql = "SELECT * FROM users WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
+    // Insert data into the database
+    $sql = "INSERT INTO contact (name, email, subject, message) VALUES ('$name', '$email', '$subject', '$message')";
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-} else {
-    echo "No user details found.";
-    exit();
+    if ($conn->query($sql) === TRUE) {
+        echo "<script>alert('Your message has been successfully sent!'); window.location.href='index.html';</script>";
+    } else {
+        echo "<script>alert('An error occurred. Please try again.'); window.location.href='index.html';</script>";
+    }
 }
 
-$stmt->close();
+// Close connection
 $conn->close();
 ?>
 
@@ -42,12 +38,12 @@ $conn->close();
 <html lang="en">
 
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Craft Loving | Wishlist</title>
-   <link href="css/bootstrap.min.css" rel="stylesheet">
+   <meta charset="utf-8">
+   <title>Craft Loving | Contact Us</title>
+   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+   <meta content name="keywords">
+   <meta content name="description">
    <link rel="icon" href="img/logo.jpg" type="image/x-icon">
-
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,6 +68,12 @@ $conn->close();
 
 <body>
 
+   <!-- Spinner Start -->
+   <div id="spinner"
+      class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+      <div class="spinner-grow text-primary" role="status"></div>
+   </div>
+   <!-- Spinner End -->
 
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
@@ -117,7 +119,8 @@ $conn->close();
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userPlaceOrder.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+               <a href="userPlaceOrder.php"
+                  class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
                   Now</a>
             </div>
          </nav>
@@ -146,41 +149,90 @@ $conn->close();
    </div>
    <!-- Modal Search End -->
 
-   <!-- User details start -->
-   <div class="container mt-5">
-      <h1 class="mb-5 text-center">Your Account</h1>
-      <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 550px;">
-         <div class="card-header bg-primary text-white text-center rounded-top">
-            <h3>Welcome, <?php echo htmlspecialchars($user['name']); ?>!</h3>
-         </div>
-         <div class="card-body text-center p-5 d-flex flex-column justify-content-center align-items-center">
-            <div class="mb-4">
-               <!-- User Initials Circle -->
-               <div class="d-flex justify-content-center align-items-center"
-                  style="width: 100px; height: 100px; border-radius: 50%; background-color: #d4a762; color: white; font-size: 36px; font-weight: bold;">
-                  <?php 
-                  $name = $user['name'];
-                  $initial = strtoupper(substr($name, 0, 1)); // Get the first letter of the name
-                  echo $initial;
-               ?>
+   <!-- Hero Start -->
+   <div class="container-fluid bg-light py-6 my-6 mt-0">
+      <div class="container text-center animated bounceInDown">
+         <h1 class="display-1 mb-4">Contact</h1>
+         <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item text-dark" aria-current="page">Contact</li>
+         </ol>
+      </div>
+   </div>
+   <!-- Hero End -->
+   <!-- Contact Start -->
+   <div class="container-fluid contact py-6 wow bounceInUp" data-wow-delay="0.1s">
+      <div class="container">
+         <div class="p-5 bg-light rounded contact-form">
+            <div class="row g-4">
+               <div class="col-12">
+                  <small
+                     class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Get
+                     in touch</small>
+                  <h1 class="display-5 mb-0">Contact Us For Any Queries!</h1>
+               </div>
+               <div class="col-md-6 col-lg-7">
+                  <p class="mb-4">Have questions or need assistance? Fill out the form below, and we'll get back to you
+                     shortly!</p>
+                  <!-- Contact Form -->
+                  <form action="contact.php" method="POST">
+                     <!-- Name -->
+                     <input type="text" name="name" class="w-100 form-control p-3 mb-4 border-primary bg-light"
+                        placeholder="Your Name" required>
+
+                     <!-- Email -->
+                     <input type="email" name="email" class="w-100 form-control p-3 mb-4 border-primary bg-light"
+                        placeholder="Enter Your Email" required>
+
+                     <!-- Subject -->
+                     <input type="text" name="subject" class="w-100 form-control p-3 mb-4 border-primary bg-light"
+                        placeholder="Subject" required>
+
+                     <!-- Message -->
+                     <textarea name="message" class="w-100 form-control mb-4 p-3 border-primary bg-light" rows="4"
+                        cols="10" placeholder="Your Message" required></textarea>
+
+                     <!-- Submit Button -->
+                     <button class="w-100 btn btn-primary form-control p-3 border-primary bg-primary rounded-pill"
+                        type="submit">Submit Now</button>
+                  </form>
+               </div>
+               <div class="col-md-6 col-lg-5">
+                  <div>
+                     <!-- Address -->
+                     <div class="d-inline-flex w-100 border border-primary p-4 rounded mb-4">
+                        <i class="fas fa-map-marker-alt fa-2x text-primary me-4"></i>
+                        <div>
+                           <h4>Address</h4>
+                           <p>123 Street, New York, USA</p>
+                        </div>
+                     </div>
+                     <!-- Mail Us -->
+                     <div class="d-inline-flex w-100 border border-primary p-4 rounded mb-4">
+                        <i class="fas fa-envelope fa-2x text-primary me-4"></i>
+                        <div>
+                           <h4>Mail Us</h4>
+                           <p class="mb-2">info@example.com</p>
+                           <p class="mb-0">support@example.com</p>
+                        </div>
+                     </div>
+                     <!-- Telephone -->
+                     <div class="d-inline-flex w-100 border border-primary p-4 rounded">
+                        <i class="fa fa-phone-alt fa-2x text-primary me-4"></i>
+                        <div>
+                           <h4>Telephone</h4>
+                           <p class="mb-2">(+012) 3456 7890 123</p>
+                           <p class="mb-0">(+704) 5555 0127 296</p>
+                        </div>
+                     </div>
+                  </div>
                </div>
             </div>
-            <!-- User Name and Email -->
-            <h4 class="text-dark mb-1"><?php echo htmlspecialchars($user['name']); ?></h4>
-            <p class="text-muted mb-0">Email: <?php echo htmlspecialchars($user['email']); ?></p>
-            <!-- Edit Button -->
-            <div class="mt-4">
-               <a href="logout.php" class="btn btn-outline-primary px-4 py-2 rounded-pill shadow">Edit Details</a>
-            </div>
-         </div>
-         <div class="card-footer text-muted text-center rounded-bottom">
-            Last Updated: <?php echo date("F j, Y"); ?>
          </div>
       </div>
    </div>
-   <!-- User details end -->
-
-
+   <!-- Contact End -->
 
 
    <!-- Footer Start -->
@@ -262,8 +314,21 @@ $conn->close();
    </div>
    <!-- Footer End -->
 
+   <!-- Back to Top -->
+   <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
+   <!-- JavaScript Libraries -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="lib/wow/wow.min.js"></script>
+   <script src="lib/easing/easing.min.js"></script>
+   <script src="lib/waypoints/waypoints.min.js"></script>
+   <script src="lib/counterup/counterup.min.js"></script>
+   <script src="lib/lightbox/js/lightbox.min.js"></script>
+   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+   <!-- Template Javascript -->
+   <script src="js/main.js"></script>
 </body>
 
 </html>

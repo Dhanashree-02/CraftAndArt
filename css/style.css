@@ -525,4 +525,15 @@ h4, h5, h6, .h4, .h5, .h6 {
 }
 
 
-
+   .hover-card:hover {
+       transform: translateY(-5px);
+       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+ 
+    .product-image {
+       transition: transform 0.3s;
+    }
+ 
+    .product-image:hover {
+       transform: scale(1.1);
+    }

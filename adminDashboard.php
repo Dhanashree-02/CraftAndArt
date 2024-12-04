@@ -55,6 +55,7 @@ if (!isset($_SESSION['admin_id'])) {
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
             <a href="#" class="nav-item nav-link">Product Sale</a>
             <a href="#" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
             <!-- <div class="nav-item dropdown">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tasks</a>
                <div class="dropdown-menu bg-light">

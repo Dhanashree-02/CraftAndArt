@@ -1,50 +1,59 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root"; // Replace with your DB username
-$password = ""; // Replace with your DB password
-$dbname = "craft"; // Replace with your DB name
+session_start();
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    die("Please log in to place an order.");
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
+    $product_id = intval($_POST['product_id']);
+    $quantity = intval($_POST['quantity']);
+    $user_id = $_SESSION['user_id'];
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
-    // Retrieve form inputs
-    $house_no = $_POST['house_no'];
-    $street_name = $_POST['street_name'];
-    $village = $_POST['village'];
-    $district = $_POST['district'];
-    $state = $_POST['state'];
-    $pin_code = $_POST['pin_code'];
+    // Combine address fields into a single string
+    $address = $_POST['house_no'] . ', ' .
+               $_POST['street_name'] . ', ' .
+               $_POST['village'] . ', ' .
+               $_POST['district'] . ', ' .
+               $_POST['state'] . ' - ' .
+               $_POST['pin_code'];
+    
     $payment_method = $_POST['payment_method'];
-    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
-    $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
 
-    // Combine the address
-    $address = "$house_no, $street_name, $village, $district, $state - $pin_code";
+    // Database connection
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "craft";
 
-    // Assume a logged-in user (Replace with actual user session ID)
-    $user_id = 1; // Replace with $_SESSION['user_id'] if using sessions
-    $product_id = 1; // Replace with a valid product ID
-    // Insert order into the database
-    $stmt = $conn->prepare("INSERT INTO orders (product_id, user_id, quantity, address, payment_method) 
-                            VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("iiiss", $product_id, $user_id, $quantity, $address, $payment_method);
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $insert_order_sql = "INSERT INTO orders (user_id, product_id, quantity, address, payment_method) 
+                         VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($insert_order_sql);
+
+    if (!$stmt) {
+        die("SQL error: " . $conn->error);
+    }
+
+    $stmt->bind_param("iiiss", $user_id, $product_id, $quantity, $address, $payment_method);
 
     if ($stmt->execute()) {
-        // Redirect to a confirmation page
-        header("Location: orderConfirmation.php?order_id=" . $stmt->insert_id);
+        echo "Order placed successfully!";
+        header("Location: orderConfirmation.php");
         exit();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Error placing order: " . $stmt->error;
     }
+
     $stmt->close();
+    $conn->close();
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -106,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
                         <a href="team.html" class="dropdown-item">Our Team</a>
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                         <a href="about.html" class="dropdown-item">About us</a>
-                        <a href="contact.html" class="dropdown-item">Contact</a>
+                        <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
                </div>
@@ -163,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
 <div class="container my-5">
    <div class="row justify-content-center">
       <div class="col-md-8">
-         <div class="card shadow-sm border-0" style="width: 600px;">
+         <div class="card shadow-sm border-0" style=" width: 600px;">
             <div class="card-header bg-primary text-white text-center rounded-top">
                <h3 class="mb-0">Place Your Order</h3>
             </div>
@@ -312,5 +321,3 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_order'])) {
 </body>
 
 </html>
-
-<?php $conn->close(); ?>

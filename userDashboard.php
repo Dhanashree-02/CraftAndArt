@@ -71,7 +71,7 @@ if (!isset($_SESSION['user_id'])) {
                         <a href="team.html" class="dropdown-item">Our Team</a>
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                         <a href="about.html" class="dropdown-item">About us</a>
-                        <a href="contact.html" class="dropdown-item">Contact</a>
+                        <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
                </div>

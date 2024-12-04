@@ -14,19 +14,25 @@ if ($conn->connect_error) {
 $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
 
 // Fetch order details
-$stmt = $conn->prepare("SELECT orders.id AS order_id, products.name, products.price, orders.quantity, orders.order_date 
-                        FROM orders 
-                        JOIN products ON orders.product_id = products.id 
-                        WHERE orders.id = ?");
+$query = "SELECT orders.id AS order_id, products.name, products.price, orders.quantity, orders.created_at 
+          FROM orders 
+          JOIN products ON orders.product_id = products.id 
+          WHERE orders.id = ?";
+          
+$stmt = $conn->prepare($query);
+
+if ($stmt === false) {
+    // Print the error message if prepare() fails
+    die('Error preparing statement: ' . $conn->error);
+}
+
 $stmt->bind_param("i", $order_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $order = $result->fetch_assoc();
-    ?>
 
-<?php
 } else {
     echo "<p>Order not found.</p>";
 }
@@ -35,9 +41,10 @@ $stmt->close();
 $conn->close();
 ?>
 
+<html>
 
 <head>
-   <title>Craft Loving | Add to Cart</title>
+   <title>Craft Loving | Order Confirmation</title>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Your Cart</title>
@@ -90,7 +97,7 @@ $conn->close();
                         <a href="team.html" class="dropdown-item">Our Team</a>
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                         <a href="about.html" class="dropdown-item">About us</a>
-                        <a href="contact.html" class="dropdown-item">Contact</a>
+                        <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
                </div>
@@ -144,43 +151,47 @@ $conn->close();
    <!-- Modal Search End -->
 
    <!-- Order Confirmation Start -->
-<div class="container my-5">
-   <div class="row justify-content-center">
-      <div class="col-md-6">
-         <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white text-center rounded-top">
-               <h3 class="mb-0">Order Confirmation</h3>
-            </div>
-            <div class="card-body p-4">
-               <p class="text-center text-success fs-5"><i class="bi bi-check-circle-fill"></i> Thank you for your order!</p>
-               <ul class="list-group list-group-flush">
-                  <li class="list-group-item">
-                     <strong>Order ID:</strong> <?php echo $order['order_id']; ?>
-                  </li>
-                  <li class="list-group-item">
-                     <strong>Product Name:</strong> <?php echo $order['name']; ?>
-                  </li>
-                  <li class="list-group-item">
-                     <strong>Quantity:</strong> <?php echo $order['quantity']; ?>
-                  </li>
-                  <li class="list-group-item">
-                     <strong>Total Price:</strong> $<?php echo number_format($order['price'] * $order['quantity'], 2); ?>
-                  </li>
-                  <li class="list-group-item">
-                     <strong>Order Date:</strong> <?php echo date('F j, Y, g:i A', strtotime($order['order_date'])); ?>
-                  </li>
-               </ul>
-            </div>
-            <div class="card-footer bg-light text-center">
-               <a href="product.php" class="btn btn-primary rounded-pill px-4 py-2">
-                  <i class="bi bi-bag-fill"></i> Continue Shopping
-               </a>
+   <div class="container my-5">
+      <div class="row justify-content-center">
+         <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+               <div class="card-header bg-primary text-white text-center rounded-top">
+                  <h3 class="mb-0">Order Confirmation</h3>
+               </div>
+               <div class="card-body p-4">
+                  <p class="text-center text-success fs-5"><i class="bi bi-check-circle-fill"></i> Thank you for your
+                     order!</p>
+                  <ul class="list-group list-group-flush">
+                     <li class="list-group-item">
+                        <strong>Order ID:</strong> <?php echo $order['order_id']; ?>
+                     </li>
+                     <li class="list-group-item">
+                        <strong>Product Name:</strong> <?php echo $order['name']; ?>
+                     </li>
+                     <li class="list-group-item">
+                        <strong>Quantity:</strong> <?php echo $order['quantity']; ?>
+                     </li>
+                     <li class="list-group-item">
+                        <strong>Total Price:</strong>
+                        $<?php echo number_format($order['price'] * $order['quantity'], 2); ?>
+                     </li>
+                     <li class="list-group-item">
+   <strong>Order Date:</strong>
+   <?php echo date('F j, Y, g:i A', strtotime($order['created_at'])); ?>
+</li>
+
+                  </ul>
+               </div>
+               <div class="card-footer bg-light text-center">
+                  <a href="product.php" class="btn btn-primary rounded-pill px-4 py-2">
+                     <i class="bi bi-bag-fill"></i> Continue Shopping
+                  </a>
+               </div>
             </div>
          </div>
       </div>
    </div>
-</div>
-<!-- Order Confirmation End -->
+   <!-- Order Confirmation End -->
 
 
 

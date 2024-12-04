@@ -161,7 +161,7 @@ $conn->close();
                         <a href="team.html" class="dropdown-item">Our Team</a>
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                         <a href="about.html" class="dropdown-item">About us</a>
-                        <a href="contact.html" class="dropdown-item">Contact</a>
+                        <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
                </div>
@@ -216,63 +216,66 @@ $conn->close();
 
 
    <!-- Add cart start -->
-<div class="container py-5">
-   <h1 class="text-center mb-4">Your Cart</h1>
+   <div class="container py-5">
+      <h1 class="text-center mb-4">Your Cart</h1>
 
-   <?php if (!empty($products)): ?>
-   <form method="post">
-      <div class="row">
-         <?php foreach ($products as $product): ?>
-         <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card">
-               <img src="<?php echo $product['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
-                  alt="<?php echo $product['name']; ?>">
-               <div class="card-body">
-                  <h5 class="card-title"><?php echo $product['name']; ?></h5>
-                  <p class="fw-bold text-primary">Price: $<?php echo $product['price']; ?></p>
-                  <div class="mb-3">
-                     <label for="quantity-<?php echo $product['id']; ?>">Quantity:</label>
-                     <input type="number" name="quantities[<?php echo $product['id']; ?>]"
-                        id="quantity-<?php echo $product['id']; ?>" value="<?php echo $product['quantity']; ?>"
-                        min="1" class="form-control w-50">
-                  </div>
-                  
-                  <!-- Remove and Order Button Section -->
-                  <div class="text-center mt-4">
-                     <!-- Remove Product from Cart -->
-                     <a href="addCart.php?remove_id=<?php echo $product['id']; ?>" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Remove</a>
-                     
-                     <!-- Order Product Form -->
-                     <form method="POST" action="userPlaceOrder.php" class="d-inline">
-                        <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                        <input type="hidden" name="product_name" value="<?php echo $product['name']; ?>">
-                        <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
-                        <input type="hidden" name="quantity" value="<?php echo $product['quantity']; ?>">
-                        <button type="submit" name="order_product" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order</button>
-                     </form>
+      <?php if (!empty($products)): ?>
+      <form method="post">
+         <div class="row">
+            <?php foreach ($products as $product): ?>
+            <div class="col-lg-4 col-md-6 mb-4">
+               <div class="card">
+                  <img src="<?php echo $product['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
+                     alt="<?php echo $product['name']; ?>">
+                  <div class="card-body">
+                     <h5 class="card-title"><?php echo $product['name']; ?></h5>
+                     <p class="fw-bold text-primary">Price: $<?php echo $product['price']; ?></p>
+                     <div class="mb-3">
+                        <label for="quantity-<?php echo $product['id']; ?>">Quantity:</label>
+                        <input type="number" name="quantities[<?php echo $product['id']; ?>]"
+                           id="quantity-<?php echo $product['id']; ?>" value="<?php echo $product['quantity']; ?>"
+                           min="1" class="form-control w-50">
+                     </div>
+
+                     <!-- Remove and Order Button Section -->
+                     <div class="text-center mt-4">
+                        <!-- Remove Product from Cart -->
+                        <a href="addCart.php?remove_id=<?php echo $product['id']; ?>"
+                           class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Remove</a>
+
+                        <!-- Order Product Form -->
+                        <form method="POST" action="orderProduct.php" class="d-inline">
+                           <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                           <input type="hidden" name="product_name" value="<?php echo $product['name']; ?>">
+                           <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
+                           <input type="hidden" name="quantity" value="<?php echo $product['quantity']; ?>">
+                           <button type="submit" name="order_product"
+                              class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order</button>
+                        </form>
+
+                     </div>
                   </div>
                </div>
             </div>
+            <?php endforeach; ?>
          </div>
-         <?php endforeach; ?>
-      </div>
 
-      <!-- Total Price Display -->
-      <div class="text-center mt-4">
-         <h4>Total Price: $<?php echo number_format($total_price, 2); ?></h4>
-      </div>
+         <!-- Total Price Display -->
+         <div class="text-center mt-4">
+            <h4>Total Price: $<?php echo number_format($total_price, 2); ?></h4>
+         </div>
 
-      <!-- Action Buttons -->
-      <div class="text-center mt-4">
-         <button type="submit" name="update_cart" class="btn btn-primary">Update Cart</button>
-         <a href="product.php" class="btn btn-secondary">Continue Shopping</a>
-      </div>
-   </form>
-   <?php else: ?>
-   <h3 class="text-center text-muted">Your cart is empty!</h3>
-   <?php endif; ?>
-</div>
-<!-- Add cart end -->
+         <!-- Action Buttons -->
+         <div class="text-center mt-4">
+            <button type="submit" name="update_cart" class="btn btn-primary">Update Cart</button>
+            <a href="product.php" class="btn btn-secondary">Continue Shopping</a>
+         </div>
+      </form>
+      <?php else: ?>
+      <h3 class="text-center text-muted">Your cart is empty!</h3>
+      <?php endif; ?>
+   </div>
+   <!-- Add cart end -->
 
 
 
