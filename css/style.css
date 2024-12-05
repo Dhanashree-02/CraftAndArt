@@ -96,11 +96,13 @@ h4, h5, h6, .h4, .h5, .h6 {
 }
 /*** Button End ***/
 
-
 /*** Navbar Start ***/
 .nav-bar {
     background: var(--bs-light);
     border-bottom: 1px solid rgba(0, 0, 0, .05);
+    position: sticky; /* Make the navbar sticky */
+    top: 0;           /* Stick to the top of the viewport */
+    z-index: 1020;    /* Ensure it stays above other content */
 }
 
 .navbar .navbar-nav .nav-link {
@@ -134,7 +136,7 @@ h4, h5, h6, .h4, .h5, .h6 {
         transition: .5s;
         opacity: 0;
     }
-    
+
     .navbar .nav-item:hover .dropdown-menu {
         transform: rotateX(0deg);
         visibility: visible;
@@ -151,6 +153,7 @@ h4, h5, h6, .h4, .h5, .h6 {
     background-color: rgba(255, 255, 255, .95);
 }
 /*** Navbar End ***/
+
 
 
 /*** Events Start ***/
