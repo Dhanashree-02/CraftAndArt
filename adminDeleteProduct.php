@@ -48,7 +48,7 @@ $conn->close();
    <meta charset="utf-8">
    <title>Craft Loving | Remove Product</title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-   <link rel="icon" href="img/logo.jpg" type="image/x-icon">
+   <link rel="icon" href="img/logo1.png" type="image/x-icon">
 
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">

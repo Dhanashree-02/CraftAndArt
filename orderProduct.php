@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Your Cart</title>
    <link href="css/bootstrap.min.css" rel="stylesheet">
-   <link rel="icon" href="img/logo.jpg" type="image/x-icon">
+   <link rel="icon" href="img/logo1.png" type="image/x-icon">
 
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,7 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
-         <nav class="navbar navbar-light navbar-expand-lg py-4">
+         <nav class="navbar navbar-light navbar-expand-lg py-5">
+            <img src="img/logo1.png" style="height: 10vh; ">
             <a href="index.html" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
@@ -177,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
                <h3 class="mb-0">Place Your Order</h3>
             </div>
             <div class="card-body p-4">
-               <form method="post" action="">
+               <form method="post" action="orderProduct.php">
                   <!-- Delivery Address Section -->
                   <h5 class="text-primary mb-3">Delivery Address</h5>
                   <div class="mb-3">
