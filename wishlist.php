@@ -63,7 +63,7 @@ $conn->close();
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Craft Loving | Wishlist</title>
    <link href="css/bootstrap.min.css" rel="stylesheet">
-   <link rel="icon" href="img/logo.jpg" type="image/x-icon">
+   <link rel="icon" href="img/logo1.png" type="image/x-icon">
 
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -93,7 +93,8 @@ $conn->close();
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
-         <nav class="navbar navbar-light navbar-expand-lg py-4">
+         <nav class="navbar navbar-light navbar-expand-lg py-5">
+         <img src="img/logo1.png" style="height: 10vh; ">
             <a href="index.html" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
@@ -172,7 +173,8 @@ $conn->close();
          <?php foreach ($products as $product): ?>
          <div class="col-lg-4 col-md-6 mb-4">
             <div class="card">
-               <img src="<?php echo $product['image']; ?>" class="card-img-top" alt="<?php echo $product['name']; ?>">
+            <img src="<?php echo $product['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
+            alt="<?php echo $product['name']; ?>">
                <div class="card-body">
                   <h5 class="card-title"><?php echo $product['name']; ?></h5>
                   <p class="fw-bold text-primary">Price: $<?php echo $product['price']; ?></p>

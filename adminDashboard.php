@@ -18,7 +18,7 @@ if (!isset($_SESSION['admin_id'])) {
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
    <meta content name="keywords">
    <meta content name="description">
-   <link rel="icon" href="img/logo.jpg" type="image/x-icon">
+   <link rel="icon" href="img/logo1.png" type="image/x-icon">
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,9 @@ if (!isset($_SESSION['admin_id'])) {
 <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
       <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
+      
          <a href="index.html" class="navbar-brand mb-4">
+         <img src="img/logo1.png" style="height: 10vh; ">
             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">
