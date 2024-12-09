@@ -121,57 +121,62 @@ $conn->close();
 
       <!-- Admin insertion start -->
       <div class="container py-5">
-         <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
-            <small
-               class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-               Admin - Add Product
-            </small>
-            <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
-         </div>
-         <div class="card shadow-lg rounded-3 mx-auto" style="max-width: 700px;">
-            <div class="card-body p-5">
-               <form action="adminInsertProduct.php" method="POST" enctype="multipart/form-data">
-                  <!-- Product Name -->
-                  <div class="mb-4">
-                     <label for="name" class="form-label text-dark fs-5">Product Name:</label>
-                     <input type="text" class="form-control form-control-lg" id="name" name="name" required>
-                  </div>
-
-                  <!-- Product Description -->
-                  <div class="mb-4">
-                     <label for="description" class="form-label text-dark fs-5">Product Description:</label>
-                     <textarea id="description" name="description" class="form-control form-control-lg" rows="4"
-                        required></textarea>
-                  </div>
-
-                  <!-- Price -->
-                  <div class="mb-4">
-                     <label for="price" class="form-label text-dark fs-5">Price ($):</label>
-                     <input type="number" class="form-control form-control-lg" id="price" name="price" required>
-                  </div>
-
-                  <!-- Category -->
-                  <div class="mb-4">
-                     <label for="category" class="form-label text-dark fs-5">Category:</label>
-                     <input type="text" class="form-control form-control-lg" id="category" name="category" required>
-                  </div>
-
-                  <!-- Product Image -->
-                  <div class="mb-4">
-                     <label for="image" class="form-label text-dark fs-5">Product Image:</label>
-                     <input type="file" class="form-control form-control-lg" id="image" name="image" accept="image/*"
-                        required>
-                  </div>
-
-                  <!-- Submit Button -->
-                  <div class="text-center mt-4">
-                     <button type="submit" class="btn btn-primary btn-lg  py-2 px-4 rounded-pill shadow-sm">Add
-                        Product</button>
-                  </div>
-               </form>
+   <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+      <small
+         class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
+         Admin - Add Product
+      </small>
+      <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
+   </div>
+   <div class="card shadow-lg rounded-3 mx-auto" style="max-width: 700px;">
+      <div class="card-body p-5">
+         <form action="adminInsertProduct.php" method="POST" enctype="multipart/form-data">
+            <!-- Product Name -->
+            <div class="mb-4">
+               <label for="name" class="form-label text-dark fs-5">Product Name:</label>
+               <input type="text" class="form-control form-control-lg" id="name" name="name" required>
             </div>
-         </div>
+
+            <!-- Product Description -->
+            <div class="mb-4">
+               <label for="description" class="form-label text-dark fs-5">Product Description:</label>
+               <textarea id="description" name="description" class="form-control form-control-lg" rows="4" required></textarea>
+            </div>
+
+            <!-- Price -->
+            <div class="mb-4">
+               <label for="price" class="form-label text-dark fs-5">Price ($):</label>
+               <input type="number" class="form-control form-control-lg" id="price" name="price" required>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="mb-4">
+               <label for="category" class="form-label text-dark fs-5">Category:</label>
+               <select class="form-select form-select-lg" id="category" name="category" required>
+                  <option value="" disabled selected>Select a Category</option>
+                  <option value="WoodCraft">WoodCraft</option>
+                  <option value="Mandala">Mandala</option>
+                  <option value="ResinArt">ResinArt</option>
+                  <option value="PaperCraft">PaperCraft</option>
+                  <option value="Miniature">Miniature</option>
+               </select>
+            </div>
+
+            <!-- Product Image -->
+            <div class="mb-4">
+               <label for="image" class="form-label text-dark fs-5">Product Image:</label>
+               <input type="file" class="form-control form-control-lg" id="image" name="image" accept="image/*" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center mt-4">
+               <button type="submit" class="btn btn-primary btn-lg py-2 px-4 rounded-pill shadow-sm">Add Product</button>
+            </div>
+         </form>
       </div>
+   </div>
+</div>
+
       <!-- Admin insertion end -->
    </div>
    <!-- Vertical Navbar End -->
