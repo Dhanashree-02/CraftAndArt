@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Craft Loving | Team</title>
+        <title>Craft Loving | Services</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content name="keywords">
         <meta content name="description">
@@ -42,6 +42,7 @@
             <div class="spinner-grow text-primary" role="status"></div>
         </div>
         <!-- Spinner End -->
+
         <!-- Navbar start -->
         <div class="container-fluid nav-bar">
             <div class="container">
@@ -60,7 +61,7 @@
                         <div class="navbar-nav mx-auto">
                             <a href="logout.php"
                                 class="nav-item nav-link">Home</a>
-                            <a href="service.html"
+                            <a href="service.php"
                                 class="nav-item nav-link">Services</a>
                             <a href="product.php"
                                 class="nav-item nav-link">Products</a>
@@ -68,9 +69,9 @@
                                 <a href="#" class="nav-link dropdown-toggle"
                                     data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu bg-light">
-                                    <a href="team.html"
+                                    <a href="team.php"
                                         class="dropdown-item">Our Team</a>
-                                    <a href="testimonial.html"
+                                    <a href="testimonial.php"
                                         class="dropdown-item">Testimonial</a>
                                     <a href="about.php"
                                         class="dropdown-item">About us</a>
@@ -140,144 +141,166 @@
             </div>
         </div>
         <!-- Modal Search End -->
+
         <!-- Hero Start -->
         <div class="container-fluid bg-light py-6 my-6 mt-0">
             <div class="container text-center animated bounceInDown">
-                <h1 class="display-1 mb-4">Our Team</h1>
+                <h1 class="display-1 mb-4">Services</h1>
                 <ol
                     class="breadcrumb justify-content-center mb-0 animated bounceInDown">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item"><a href="#">Pages</a></li>
                     <li class="breadcrumb-item text-dark"
-                        aria-current="page">Our Team</li>
+                        aria-current="page">Services</li>
                 </ol>
             </div>
         </div>
         <!-- Hero End -->
 
-        <!-- Team Start -->
-        <div class="container-fluid team py-6">
-            <div class="container">
-                <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
-                    <small
-                        class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Our
-                        Team</small>
-                    <h1 class="display-5 mb-5">We have experienced chef
-                        Team</h1>
+       <!-- Service Start -->
+       <div class="container-fluid service py-6">
+        <div class="container">
+            <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+                <small
+                    class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Our
+                    Services</small>
+                <h1 class="display-5 mb-5">We Offers</h1>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.1s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-cut fa-7x text-primary mb-4"></i>
+                                <h4 class="mb-3">Paper Craft</h4>
+                                <p class="mb-4">"Unleash your creativity with the timeless art of paper crafting—where every fold, cut, and design tells a unique story."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row g-4">
-                    <div class="col-lg-3 col-md-6 wow bounceInUp"
-                        data-wow-delay="0.1s">
-                        <div class="team-item rounded">
-                            <img class="img-fluid rounded-top "
-                                src="img/team-1.jpg" alt>
-                            <div
-                                class="team-content text-center py-3 bg-dark rounded-bottom">
-                                <h4 class="text-primary">Mahesh</h4>
-                                <p class="text-white mb-0">CEO</p>
-                            </div>
-                            <div
-                                class="team-icon d-flex flex-column justify-content-center m-4">
-                                <a
-                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fas fa-share-alt"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-facebook-f"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-twitter"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-instagram"></i></a>
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.3s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-tree fa-7x text-primary mb-4"></i>
+                                <h4 class="mb-3">Wood craft</h4>
+                                <p class="mb-4">"Wood crafting: Where precision, skill, and imagination shape raw wood into timeless masterpieces."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow bounceInUp"
-                        data-wow-delay="0.3s">
-                        <div class="team-item rounded">
-                            <img class="img-fluid rounded-top "
-                                src="img/team-2.jpg" alt>
-                            <div
-                                class="team-content text-center py-3 bg-dark rounded-bottom">
-                                <h4 class="text-primary">Anika</h4>
-                                <p class="text-white mb-0">Order manager</p>
-                            </div>
-                            <div
-                                class="team-icon d-flex flex-column justify-content-center m-4">
-                                <a
-                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fas fa-share-alt"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-facebook-f"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-twitter"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-instagram"></i></a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.5s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-sun fa-7x text-primary mb-4"></i>
+
+                                <h4 class="mb-3">Mandalas</h4>
+                                <p class="mb-4">"Intricate designs that represent the universe, crafted to bring peace, balance, and creativity into your life."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow bounceInUp"
-                        data-wow-delay="0.5s">
-                        <div class="team-item rounded">
-                            <img class="img-fluid rounded-top "
-                                src="img/team-3.jpg" alt>
-                            <div
-                                class="team-content text-center py-3 bg-dark rounded-bottom">
-                                <h4 class="text-primary">Vinay</h4>
-                                <p class="text-white mb-0">Report handler</p>
-                            </div>
-                            <div
-                                class="team-icon d-flex flex-column justify-content-center m-4">
-                                <a
-                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fas fa-share-alt"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-facebook-f"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-twitter"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-instagram"></i></a>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.7s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-cube fa-7x text-primary mb-4"></i>
+                                <h4 class="mb-3">Miniature</h4>
+                                <p class="mb-4">"Tiny creations with big artistic flair."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-6 wow bounceInUp"
-                        data-wow-delay="0.7s">
-                        <div class="team-item rounded">
-                            <img class="img-fluid rounded-top "
-                                src="img/team-4.jpg" alt>
-                            <div
-                                class="team-content text-center py-3 bg-dark rounded-bottom">
-                                <h4 class="text-primary">Shalini</h4>
-                                <p class="text-white mb-0">Delivery partner</p>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.1s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-paint-brush fa-7x text-primary mb-4"></i>
+                                <h4 class="mb-3">Resin Art</h4>
+                                <p class="mb-4">"Resin art: Capturing beauty in glossy, vibrant, and durable creations."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
                             </div>
-                            <div
-                                class="team-icon d-flex flex-column justify-content-center m-4">
-                                <a
-                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fas fa-share-alt"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-facebook-f"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-twitter"></i></a>
-                                <a
-                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
-                                    href><i class="fab fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.3s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-truck fa-7x text-primary mb-4"></i>
+                                <h4 class="mb-3">Home Delivery</h4>
+                                <p class="mb-4">"Bringing your craft treasures right to your doorstep."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.5s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-pencil-alt fa-7x text-primary mb-4"></i>
+                                <h4 class="mb-3">Customization</h4>
+                                <p class="mb-4">"Tailor your craft creations to match your unique style."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 col-sm-12 wow bounceInUp"
+                    data-wow-delay="0.7s">
+                    <div class="bg-light rounded service-item">
+                        <div
+                            class="service-content d-flex align-items-center justify-content-center p-4">
+                            <div class="service-content-icon text-center">
+                                <i class="fas fa-gift fa-7x text-primary mb-4"></i>
+                                <h4 class="mb-3">Gift to your loved ones</h4>
+                                <p class="mb-4">"Thoughtfully handcrafted treasures that speak from the heart."</p>
+                                <a href="product.php"
+                                    class="btn btn-primary px-4 py-2 rounded-pill">Read
+                                    More</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Team End -->
+    </div>
+    <!-- Service End -->
+
 
         <!-- Footer Start -->
         <div

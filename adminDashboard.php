@@ -68,8 +68,8 @@ if (!isset($_SESSION['admin_id'])) {
             <div class="nav-item dropdown">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Reports</a>
                <div class="dropdown-menu bg-light">
-                  <a href="team.html" class="dropdown-item">Product Sale</a>
-                  <a href="testimonial.html" class="dropdown-item">Count of Customer</a>
+                  <a href="team.php" class="dropdown-item">Product Sale</a>
+                  <a href="testimonial.php" class="dropdown-item">Count of Customer</a>
                </div>
             </div> -->
          </div>
