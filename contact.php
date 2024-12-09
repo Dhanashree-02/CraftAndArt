@@ -205,7 +205,7 @@ $conn->close();
                         <i class="fas fa-map-marker-alt fa-2x text-primary me-4"></i>
                         <div>
                            <h4>Address</h4>
-                           <p>123 Street, New York, USA</p>
+                           <p>Pimple Saudagra Pune </p>
                         </div>
                      </div>
                      <!-- Mail Us -->
