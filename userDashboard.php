@@ -53,7 +53,7 @@ if (!isset($_SESSION['user_id'])) {
    <div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-4">
-            <a href="index.html" class="navbar-brand">
+            <a href="index.php" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -70,7 +70,7 @@ if (!isset($_SESSION['user_id'])) {
                      <div class="dropdown-menu bg-light">
                         <a href="team.html" class="dropdown-item">Our Team</a>
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="about.html" class="dropdown-item">About us</a>
+                        <a href="about.php" class="dropdown-item">About us</a>
                         <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
@@ -136,7 +136,7 @@ if (!isset($_SESSION['user_id'])) {
                </h1>
                <a href="products.php" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 me-4 animated bounceInLeft">Order
                   Now</a>
-               <a href="about.html" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know
+               <a href="about.php" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know
                   More</a>
             </div>
             <div class="col-lg-5 col-md-12">
@@ -192,7 +192,7 @@ if (!isset($_SESSION['user_id'])) {
                                 Unique Crafts
                             </div>
                         </div>
-                        <a href="about.html"
+                        <a href="about.php"
                             class="btn btn-primary py-3 px-5 rounded-pill">About
                             Us<i class="fas fa-arrow-right ps-2"></i></a>
                     </div>

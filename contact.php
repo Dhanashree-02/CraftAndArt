@@ -23,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "INSERT INTO contact (name, email, subject, message) VALUES ('$name', '$email', '$subject', '$message')";
 
     if ($conn->query($sql) === TRUE) {
-        echo "<script>alert('Your message has been successfully sent!'); window.location.href='index.html';</script>";
+        echo "<script>alert('Your message has been successfully sent!'); window.location.href='index.php';</script>";
     } else {
-        echo "<script>alert('An error occurred. Please try again.'); window.location.href='index.html';</script>";
+        echo "<script>alert('An error occurred. Please try again.'); window.location.href='index.php';</script>";
     }
 }
 
@@ -80,7 +80,7 @@ $conn->close();
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
          <img src="img/logo1.png" style="height: 10vh; ">
-            <a href="index.html" class="navbar-brand">
+            <a href="index.php" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -97,7 +97,7 @@ $conn->close();
                      <div class="dropdown-menu bg-light">
                         <a href="team.html" class="dropdown-item">Our Team</a>
                         <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="about.html" class="dropdown-item">About us</a>
+                        <a href="about.php" class="dropdown-item">About us</a>
                         <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>

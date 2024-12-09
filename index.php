@@ -47,7 +47,7 @@
             <div class="container">
                 <nav class="navbar navbar-light navbar-expand-lg py-5">
                     <img src="img/logo1.png" style="height: 10vh; ">
-                    <a href="index.html" class="navbar-brand">
+                    <a href="index.php" class="navbar-brand">
                         <h1 class="text-primary fw-bold mb-0">Craft<span
                                 class="text-dark"> Loving </span></h1>
                     </a>
@@ -58,7 +58,7 @@
                     </button>
                     <div class="collapse navbar-collapse" id="navbarCollapse">
                         <div class="navbar-nav mx-auto">
-                            <a href="index.html"
+                            <a href="index.php"
                                 class="nav-item nav-link">Home</a>
                             <a href="service.html"
                                 class="nav-item nav-link">Services</a>
@@ -72,7 +72,7 @@
                                         class="dropdown-item">Our Team</a>
                                     <a href="testimonial.html"
                                         class="dropdown-item">Testimonial</a>
-                                    <a href="about.html"
+                                    <a href="about.php"
                                         class="dropdown-item">About us</a>
                                     <a href="contact.html"
                                         class="dropdown-item">Contact</a>
@@ -148,7 +148,7 @@
                         <a href="userLogin.php"
                             class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 me-4 animated bounceInLeft">Order
                             Now</a>
-                        <a href="about.html"
+                        <a href="about.php"
                             class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know
                             More</a>
                     </div>
@@ -206,7 +206,7 @@
                                 Unique Crafts
                             </div>
                         </div>
-                        <a href="about.html"
+                        <a href="about.php"
                             class="btn btn-primary py-3 px-5 rounded-pill">About
                             Us<i class="fas fa-arrow-right ps-2"></i></a>
                     </div>

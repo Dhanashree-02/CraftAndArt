@@ -108,11 +108,11 @@ $result = $conn->query($query);
    <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
       <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
-         <a href="index.html" class="navbar-brand mb-4">
+         <a href="index.php" class="navbar-brand mb-4">
             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark">Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">
-            <a href="index.html" class="nav-item nav-link">Home</a>
+            <a href="index.php" class="nav-item nav-link">Home</a>
             <a href="adminDeleteProduct.php" class="nav-item nav-link active">Remove Products</a>
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
             <a href="#" class="nav-item nav-link">Product Sale</a>
