@@ -47,12 +47,8 @@ if (!isset($_SESSION['admin_id'])) {
       <!-- Vertical Navbar Start -->
       <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
       
-<<<<<<< HEAD
-         <a href="index.html" class="navbar-brand mb-4">
-=======
          <a href="index.php" class="navbar-brand mb-4">
          <img src="img/logo1.png" style="height: 10vh; ">
->>>>>>> 64d96fc307483df7acddf57a829a976da83d5a18
             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">

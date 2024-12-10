@@ -9,44 +9,40 @@ if (!isset($_SESSION['admin_id'])) {
 // Database connection
 include('db_connection.php');
 
-// Update order status if the form is submitted
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id']) && isset($_POST['status'])) {
-   $order_id = intval($_POST['order_id']); // Ensure valid integer
-   $status = $_POST['status']; // Directly from the form
-
-   // Validate the status value
-   $valid_statuses = ['pending', 'confirmed', 'rejected'];
-   if (in_array($status, $valid_statuses)) {
-      $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
-      if (!$stmt) {
-         die("Prepare failed: " . $conn->error);
-      }
-      $stmt->bind_param("si", $status, $order_id);
-
-      if (!$stmt->execute()) {
-         die("Execute failed: " . $stmt->error);
-      } else {
-         $message = "Order status updated successfully!";
-      }
-   } else {
-      $message = "Invalid status value.";
-   }
-
-   // Redirect to avoid resubmission
-   header("Location: adminOrderVerification.php");
+if (!isset($_GET['order_id'])) {
+   echo "Order ID not provided.";
    exit();
 }
 
+$order_id = $_GET['order_id'];
 
-// Fetch all orders
+// Fetch order details
 $stmt = $conn->prepare("
     SELECT o.id, u.name AS user_name, o.total_price, o.status, o.created_at
     FROM orders o
     JOIN users u ON o.user_id = u.id
-    ORDER BY o.created_at DESC
+    WHERE o.id = ?
 ");
+$stmt->bind_param("i", $order_id);
 $stmt->execute();
-$orders_result = $stmt->get_result();
+$order_result = $stmt->get_result();
+$order = $order_result->fetch_assoc();
+
+if (!$order) {
+   echo "Order not found.";
+   exit();
+}
+
+// Fetch order items
+$stmt = $conn->prepare("
+    SELECT p.name AS product_name, oi.quantity, oi.price
+    FROM order_items oi
+    JOIN products p ON oi.product_id = p.id
+    WHERE oi.order_id = ?
+");
+$stmt->bind_param("i", $order_id);
+$stmt->execute();
+$items_result = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -79,6 +75,25 @@ $orders_result = $stmt->get_result();
 
    <!-- Template Stylesheet -->
    <link href="css/style.css" rel="stylesheet">
+
+   <style>
+      /* Ensure the body takes full height and pushes footer down */
+      body {
+         display: flex;
+         flex-direction: column;
+         min-height: 100vh;
+      }
+
+      .container-fluid {
+         flex: 1;
+         display: flex;
+      }
+
+      .footer {
+         background-color: #f8f9fa;
+         padding: 30px;
+      }
+   </style>
 </head>
 
 <body>
@@ -95,97 +110,48 @@ $orders_result = $stmt->get_result();
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
             <a href="#" class="nav-item nav-link">Product Sale</a>
             <a href="#" class="nav-item nav-link">Count of Customer</a>
-            <!-- <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tasks</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="adminDeleteProduct.php" class="dropdown-item">Remove Product</a>
-                  <a href="adminInsertProduct.php" class="dropdown-item">Add Products</a>
-               </div>
-            </div>
-            <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Reports</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="team.php" class="dropdown-item">Product Sale</a>
-                  <a href="testimonial.php" class="dropdown-item">Count of Customer</a>
-               </div>
-            </div> -->
          </div>
          <div class="mt-auto w-100">
             <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
          </div>
       </nav>
+      <!-- Vertical Navbar End -->
 
-      <!-- Admin verificatin start -->
-      <div class="container my-4">
-         <h1 class="text-center mb-4 text-primary">Order Management</h1>
-
-         <?php if (isset($message)): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-               <?php echo htmlspecialchars($message); ?>
-               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <!-- Admin order details start -->
+      <div class="container my-5 d-flex justify-content-center">
+         <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+            <small
+               class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
+               Admin view order details
+            </small>
+            <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
+            <div class="row justify-content-center">
+               <div class="col-md-10">
+                  <div class="card shadow-sm p-4 mb-4">
+                     <h4 class="card-title text-center">Order Information</h4>
+                     <p><strong>Order ID:</strong> <?php echo $order['id']; ?></p>
+                     <p><strong>User:</strong> <?php echo $order['user_name']; ?></p>
+                     <p><strong>Total Price:</strong> ₹<?php echo number_format($order['total_price'], 2); ?></p>
+                     <p><strong>Status:</strong>
+                        <span
+                           class="badge 
+                        <?php echo ($order['status'] == 'pending') ? 'bg-warning' : (($order['status'] == 'confirmed') ? 'bg-success' : 'bg-danger'); ?>">
+                           <?php echo ucfirst($order['status']); ?>
+                        </span>
+                     </p>
+                     <p><strong>Order Placed on:</strong>
+                        <?php echo date('d M Y, H:i', strtotime($order['created_at'])); ?></p>
+                  </div>
+               </div>
             </div>
-         <?php endif; ?>
 
-         <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-               <thead class="table-primary text-center">
-                  <tr>
-                     <th>Order ID</th>
-                     <th>User Name</th>
-                     <th>Total Price</th>
-                     <th>Status</th>
-                     <th>Order Date</th>
-                     <th>Actions</th>
-                  </tr>
-               </thead>
-               <tbody>
-                  <?php while ($order = $orders_result->fetch_assoc()): ?>
-                     <tr>
-                        <td class="text-center"><?php echo htmlspecialchars($order['id']); ?></td>
-                        <td><?php echo htmlspecialchars($order['user_name']); ?></td>
-                        <td>₹<?php echo htmlspecialchars(number_format($order['total_price'], 2)); ?></td>
-                        <td class="text-center">
-                           <span
-                              class="badge 
-                              <?php echo ($order['status'] === 'confirmed') ? 'bg-primary' : (($order['status'] === 'rejected') ? 'bg-danger' : 'bg-success'); ?>">
-                              <?php echo ucfirst($order['status']); ?>
-                           </span>
-                        </td>
-                        <td><?php echo htmlspecialchars(date("d M Y, h:i A", strtotime($order['created_at']))); ?></td>
-                        <td class="text-center">
-                           <div class="d-flex align-items-center justify-content-between gap-3">
-                              <!-- View Order Details -->
-                              <a href="adminOrderDetails.php?order_id=<?php echo $order['id']; ?>"
-                                 class="btn btn-primary px-2 py-1 rounded-pill shadow-sm" title="View Details">
-                                 <i class="fas fa-eye"></i>
-                              </a>
-                              <!-- Change Status Form -->
-                              <form method="POST" action="adminOrderVerification.php"
-                                 class="d-flex align-items-center gap-2">
-                                 <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                                 <select name="status" class="form-select form-select-sm w-auto">
-                                    <option value="pending" <?php echo ($order['status'] === 'pending') ? 'selected' : ''; ?>>Pending</option>
-                                    <option value="confirmed" <?php echo ($order['status'] === 'confirmed') ? 'selected' : ''; ?>>Confirmed</option>
-                                    <option value="rejected" <?php echo ($order['status'] === 'rejected') ? 'selected' : ''; ?>>Rejected</option>
-                                 </select>
-                                 <button type="submit" class="btn btn-primary px-2 py-1 rounded-pill shadow-sm">
-                                    <i class="fas fa-check"></i> Update
-                                 </button>
-                              </form>
-                           </div>
-
-                        </td>
-                     </tr>
-
-                  <?php endwhile; ?>
-               </tbody>
-            </table>
+            <div class="text-center mt-4">
+               <a href="adminOrderVerification.php" class="btn btn-primary px-4 py-2 rounded-pill">Back to Orders</a>
+            </div>
          </div>
       </div>
-
-      <!-- Admin verification end -->
+      <!-- Admin order details end -->
    </div>
-   <!-- Vertical Navbar End -->
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
@@ -271,17 +237,18 @@ $orders_result = $stmt->get_result();
    <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
    <!-- JavaScript Libraries -->
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
    <script src="lib/wow/wow.min.js"></script>
    <script src="lib/easing/easing.min.js"></script>
    <script src="lib/waypoints/waypoints.min.js"></script>
-   <script src="lib/counterup/counterup.min.js"></script>
-   <script src="lib/lightbox/js/lightbox.min.js"></script>
    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-   <!-- Template Javascript -->
+   <script src="lib/counterup/counterup.min.js"></script>
+
+   <!-- Contact Javascript File -->
    <script src="js/main.js"></script>
+
+   <!-- Bootstrap Bundle with Popper -->
+   <script src="js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

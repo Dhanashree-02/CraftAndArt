@@ -1,104 +1,59 @@
 <?php
+// Start the session to store cart data
 session_start();
 
 // Database connection
 $servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "craft";
+$username = "root"; // Replace with your DB username
+$password = ""; // Replace with your DB password
+$dbname = "craft"; // Replace with your DB name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
    die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-   die("Please log in to add items to your cart.");
-}
-
-$user_id = $_SESSION['user_id'];
-
-// Add product to cart
+// Add product to the cart
 if (isset($_GET['id'])) {
-   $product_id = intval($_GET['id']);
+   $productId = $_GET['id'];
 
-   // Check if the product is already in the user's cart
-   $check_sql = "SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?";
-   $stmt = $conn->prepare($check_sql);
-   $stmt->bind_param("ii", $user_id, $product_id);
-   $stmt->execute();
-   $result = $stmt->get_result();
-
-   if ($result->num_rows > 0) {
-      // Update quantity if the product already exists in the cart
-      $row = $result->fetch_assoc();
-      $new_quantity = $row['quantity'] + 1;
-      $update_sql = "UPDATE cart SET quantity = ? WHERE id = ?";
-      $update_stmt = $conn->prepare($update_sql);
-      $update_stmt->bind_param("ii", $new_quantity, $row['id']);
-      $update_stmt->execute();
-   } else {
-      // Add new product to the cart
-      $insert_sql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
-      $insert_stmt = $conn->prepare($insert_sql);
-      $quantity = 1; // Define $quantity before binding
-      $insert_stmt->bind_param("iii", $user_id, $product_id, $quantity);
-      $insert_stmt->execute();
+   // Check if the cart is already initialized in session
+   if (!isset($_SESSION['cart'])) {
+      $_SESSION['cart'] = [];
    }
 
+   // Get product details from the database
+   $sql = "SELECT * FROM products WHERE id = $productId";
+   $result = mysqli_query($conn, $sql);
+   $product = mysqli_fetch_assoc($result);
 
-   header("Location: addCart.php"); // Redirect to cart page
-   exit();
+   // Add product to the cart
+   $_SESSION['cart'][$productId] = [
+      'id' => $product['id'],
+      'name' => $product['name'],
+      'price' => $product['price'],
+      'quantity' => 1,
+      'image' => $product['image'],  // Save image filename
+   ];
+
+   // Redirect to the same page to refresh the cart
+   header('Location: addCart.php');
+   exit(); // Ensure that no further code is executed after the redirect
 }
 
 // Remove product from cart
-if (isset($_GET['remove_id'])) {
-   $product_id = intval($_GET['remove_id']);
-   $delete_sql = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
-   $stmt = $conn->prepare($delete_sql);
-   $stmt->bind_param("ii", $user_id, $product_id);
-   $stmt->execute();
-   header("Location: addCart.php");
-   exit();
+if (isset($_GET['remove'])) {
+   $productId = $_GET['remove'];
+   unset($_SESSION['cart'][$productId]);
 }
 
-// Update cart quantities
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
-   foreach ($_POST['quantities'] as $product_id => $quantity) {
-      $product_id = intval($product_id);
-      $quantity = max(1, intval($quantity)); // Ensure at least 1
-      $update_sql = "UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?";
-      $stmt = $conn->prepare($update_sql);
-      $stmt->bind_param("iii", $quantity, $user_id, $product_id);
-      $stmt->execute();
-   }
-   header("Location: addCart.php");
-   exit();
+// Calculate total price
+$totalPrice = 0;
+foreach ($_SESSION['cart'] as $product) {
+   $totalPrice += $product['price'] * $product['quantity'];
 }
 
-// Fetch cart items from the database
-$products = [];
-$total_items = 0;
-$total_price = 0;
-
-$cart_sql = "SELECT p.id, p.name, p.image, p.price, c.quantity 
-             FROM cart c 
-             JOIN products p ON c.product_id = p.id 
-             WHERE c.user_id = ?";
-$stmt = $conn->prepare($cart_sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result && $result->num_rows > 0) {
-   while ($row = $result->fetch_assoc()) {
-      $products[] = $row;
-      $total_items += $row['quantity'];
-      $total_price += $row['price'] * $row['quantity'];
-   }
-}
-
+// Close database connection
 $conn->close();
 ?>
 
@@ -107,14 +62,14 @@ $conn->close();
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-   <title>Craft Loving | Add to Cart</title>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Your Cart</title>
-   <link href="css/bootstrap.min.css" rel="stylesheet">
-   <link rel="icon" href="img/logo1.png" type="image/x-icon">
 
+<head>
+   <meta charset="utf-8">
+   <title>Craft Loving | Menu </title>
+   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+   <meta content name="keywords">
+   <meta content name="description">
+   <link rel="icon" href="img/logo1.png" type="image/x-icon">
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -139,17 +94,18 @@ $conn->close();
 
 <body>
 
+   <!-- Spinner Start -->
+   <div id="spinner"
+      class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+      <div class="spinner-grow text-primary" role="status"></div>
+   </div>
+   <!-- Spinner End -->
+
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
-         <nav class="navbar navbar-light navbar-expand-lg py-5">
-<<<<<<< HEAD
-            <img src="img/logo1.png" style="height: 10vh; ">
+         <nav class="navbar navbar-light navbar-expand-lg py-4">
             <a href="index.html" class="navbar-brand">
-=======
-         <img src="img/logo1.png" style="height: 10vh; ">
-            <a href="index.php" class="navbar-brand">
->>>>>>> 64d96fc307483df7acddf57a829a976da83d5a18
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -158,15 +114,15 @@ $conn->close();
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                <div class="navbar-nav mx-auto">
-                  <a href="logout.php" class="nav-item nav-link">Home</a>
+                  <a href="index.php" class="nav-item nav-link">Home</a>
                   <a href="service.php" class="nav-item nav-link">Services</a>
-                  <a href="product.php" class="nav-item nav-link">Products</a>
+                  <a href="product.phpl" class="nav-item nav-link">Products</a>
                   <div class="nav-item dropdown">
                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                      <div class="dropdown-menu bg-light">
-                        <a href="team.php" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.php" class="dropdown-item">Testimonial</a>
-                        <a href="about.php" class="dropdown-item">About us</a>
+                        <a href="team..php" class="dropdown-item">Our Team</a>
+                        <a href="testimonial..php" class="dropdown-item">Testimonial</a>
+                        <a href="about..php" class="dropdown-item">About us</a>
                         <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
@@ -177,27 +133,24 @@ $conn->close();
                      <i class="fas fa-user"></i>
                   </a>
                   <div class="dropdown-menu bg-light dropdown-menu-end">
-                     <a href="userDetails.php" class="dropdown-item">Your Account</a>
-                     <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
+                     <a href="userLogin.php" class="dropdown-item">User Login</a>
+                     <a href="adminLogin.php" class="dropdown-item">Admin Login</a>
                   </div>
                </div>
                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
                   data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
-                  <i class="fas fa-shopping-cart"></i>
-                  <span class="badge bg-danger"><?php echo $total_items; ?></span>
-               </a>
-               <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
+               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
+                     class="fas fa-shopping-cart"></i></a>
+                     <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userOrderHistory.php"
-                  class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
+               <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+                  Now</a>
             </div>
          </nav>
       </div>
    </div>
    <!-- Navbar end -->
-
 
    <!-- Modal Search Start -->
    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -220,63 +173,80 @@ $conn->close();
    </div>
    <!-- Modal Search End -->
 
+   <!-- Hero Start -->
+   <div class="container-fluid bg-light py-6 my-6 mt-0">
+      <div class="container text-center animated bounceInDown">
+         <h1 class="display-1 mb-4">Add to cart</h1>
+         <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item text-dark" aria-current="page">Menu</li>
+         </ol>
+      </div>
+   </div>
+   <!-- Hero End -->
 
-   <!-- Add cart start -->
+   <!-- Cart Start -->
    <div class="container py-5">
-      <h1 class="text-center mb-4">Your Cart</h1>
+      <h1 class="display-5 text-center mb-5">Your Shopping Cart</h1>
 
-      <?php if (!empty($products)): ?>
-         <form method="post">
-            <div class="row">
-               <?php foreach ($products as $product): ?>
-                  <div class="col-lg-4 col-md-6 mb-4">
-                     <div class="card">
-                        <img src="<?php echo $product['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
-                           alt="<?php echo $product['name']; ?>">
-                        <div class="card-body">
-                           <h5 class="card-title"><?php echo $product['name']; ?></h5>
-                           <p class="fw-bold text-primary">Price: $<?php echo $product['price']; ?></p>
-                           <div class="mb-3">
-                              <label for="quantity-<?php echo $product['id']; ?>">Quantity:</label>
-                              <input type="number" name="quantities[<?php echo $product['id']; ?>]"
-                                 id="quantity-<?php echo $product['id']; ?>" value="<?php echo $product['quantity']; ?>"
-                                 min="1" class="form-control w-50">
-                           </div>
-                           <div class="text-center mt-4">
-                              <a href="addCart.php?remove_id=<?php echo $product['id']; ?>"
-                                 class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Remove</a>
-                              <form method="POST" action="orderProduct.php" class="d-inline">
-                                 <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                 <input type="hidden" name="product_name" value="<?php echo $product['name']; ?>">
-                                 <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
-                                 <input type="hidden" name="quantity" value="<?php echo $product['quantity']; ?>">
-                                 <button type="submit" name="order_product" 
-                                    class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order</button>
-                              </form>
-                           </div>
-                        </div>
+      <?php if (!empty($_SESSION['cart'])): ?>
+         <div class="row">
+            <?php foreach ($_SESSION['cart'] as $productId => $product): ?>
+               <div class="col-lg-4 col-md-6 mb-4">
+                  <div class="card border-0 shadow-lg h-100 rounded-3">
+                     <div class="position-relative overflow-hidden">
+                        <!-- Check if image exists or use a placeholder -->
+                        <?php
+                      $imagePath = !empty($product['image']) ? 'img/' . $product['image'] : 'img/image.jpg'; // Default placeholder if no image
+
+
+                        ?>
+                        <img src="<?php echo $imagePath; ?>" class="card-img-top rounded-top product-image"
+                        alt="<?php echo $product['name']; ?>" style="transition: transform 0.3s;">
+                     </div>
+                     <div class="card-body text-center p-4">
+                        <h5 class="card-title text-dark fw-bold mb-3"><?php echo $product['name']; ?></h5>
+                        <p class="fw-bold text-primary mb-4">Price: ₹<?php echo number_format($product['price'], 2); ?></p>
+                        <p class="mb-3">Quantity: <?php echo $product['quantity']; ?></p>
+                        <a href="addCart.php?remove=<?php echo $productId; ?>"
+                           class="btn btn-primary px-4 py-2 rounded-pill shadow-sm add-cart-btn"
+                           style="transition: transform 0.3s;">Remove</a>
+                        <a href="orderProduct.php"
+                           class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order Now</a>
                      </div>
                   </div>
-               <?php endforeach; ?>
-            </div>
+               </div>
+            <?php endforeach; ?>
 
-            <!-- Total Price Display -->
-            <div class="text-center mt-4">
-               <h4>Total Price: $<?php echo number_format($total_price, 2); ?></h4>
-            </div>
+         </div>
 
-            <!-- Action Buttons -->
-            <div class="text-center mt-4">
-               <button type="submit" name="update_cart" class="btn btn-primary">Update Cart</button>
-               <a href="product.php" class="btn btn-secondary">Continue Shopping</a>
+         <div class="row mt-4">
+            <div class="col-12 text-center">
+               <h4 class="fw-bold">Total Price: ₹<?php echo number_format($totalPrice, 2); ?></h4>
+               <a href="product.php" class="btn btn-primary mt-4">Continue Shopping</a>
             </div>
-         </form>
+         </div>
+
       <?php else: ?>
-         <h3 class="text-center text-muted">Your cart is empty!</h3>
+         <p class="text-center text-muted">Your cart is empty.</p>
+         <a href="product.php" class="btn btn-primary mt-4">Continue Shopping</a>
       <?php endif; ?>
    </div>
-   <!-- Add cart end -->
 
+   <script>
+      // Hover Effect for Product Image
+      const productImages = document.querySelectorAll('.product-image');
+      productImages.forEach(image => {
+         image.addEventListener('mouseenter', () => {
+            image.style.transform = 'scale(1.05)';
+         });
+         image.addEventListener('mouseleave', () => {
+            image.style.transform = 'scale(1)';
+         });
+      });
+   </script>
+   <!-- Cart End -->
 
 
    <!-- Footer Start -->
@@ -357,7 +327,22 @@ $conn->close();
       </div>
    </div>
    <!-- Footer End -->
+
+   <!-- Back to Top -->
+   <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+   <!-- JavaScript Libraries -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="lib/wow/wow.min.js"></script>
+   <script src="lib/easing/easing.min.js"></script>
+   <script src="lib/waypoints/waypoints.min.js"></script>
+   <script src="lib/counterup/counterup.min.js"></script>
+   <script src="lib/lightbox/js/lightbox.min.js"></script>
+   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- Template Javascript -->
+   <script src="js/main.js"></script>
 </body>
 
 </html>

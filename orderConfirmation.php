@@ -1,55 +1,54 @@
 <?php
+// orderConfirmation.php - Order confirmation page
+session_start();
+
 // Database connection
 $servername = "localhost";
-$username = "root"; 
-$password = ""; 
-$dbname = "craft"; 
+$username = "root";
+$password = "";
+$dbname = "craft";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+   die("Connection failed: " . $conn->connect_error);
 }
 
-// Get order ID from query string and validate it
-$order_id = $_GET['order_id'];
+// Check if 'order_id' is present in the URL
+if (isset($_GET['order_id'])) {
+   $orderId = $_GET['order_id'];
 
+   // Fetch order details from the database
+   $sql = "SELECT * FROM orders WHERE order_id = ?";
+   $stmt = $conn->prepare($sql);
+   $stmt->bind_param("i", $orderId);
+   $stmt->execute();
+   $result = $stmt->get_result();
 
-$query = "SELECT orders.id AS order_id, products.name, products.price, orders.quantity, orders.created_at 
-          FROM orders 
-          JOIN products ON orders.product_id = products.id 
-          WHERE orders.id = ?";
+   // Check if the order exists
+   if ($result->num_rows > 0) {
+      $order = $result->fetch_assoc();
+   } else {
+      $order = null;
+   }
 
-$stmt = $conn->prepare($query);
-
-if ($stmt === false) {
-    die('Error preparing statement: ' . $conn->error);
-}
-
-$stmt->bind_param("i", $order_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $order = $result->fetch_assoc();
+   $stmt->close();
 } else {
-    $order = null;
+   $order = null;
 }
 
-$stmt->close();
 $conn->close();
 ?>
 
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-   <title>Craft Loving | Order Confirmation</title>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Your Cart</title>
-   <link href="css/bootstrap.min.css" rel="stylesheet">
+   <meta charset="utf-8">
+   <title>Craft Loving | Order products </title>
+   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+   <meta content name="keywords">
+   <meta content name="description">
    <link rel="icon" href="img/logo1.png" type="image/x-icon">
-
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,12 +73,17 @@ $conn->close();
 
 <body>
 
+   <!-- Spinner Start -->
+   <div id="spinner"
+      class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+      <div class="spinner-grow text-primary" role="status"></div>
+   </div>
+   <!-- Spinner End -->
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
-         <img src="img/logo1.png" style="height: 10vh; ">
-            <a href="index.php" class="navbar-brand">
+            <a href="index.html" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -88,15 +92,15 @@ $conn->close();
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                <div class="navbar-nav mx-auto">
-                  <a href="logout.php" class="nav-item nav-link">Home</a>
+                  <a href="index.php" class="nav-item nav-link">Home</a>
                   <a href="service.php" class="nav-item nav-link">Services</a>
-                  <a href="product.php" class="nav-item nav-link">Products</a>
+                  <a href="product.phpl" class="nav-item nav-link">Products</a>
                   <div class="nav-item dropdown">
                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                      <div class="dropdown-menu bg-light">
-                        <a href="team.php" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.php" class="dropdown-item">Testimonial</a>
-                        <a href="about.php" class="dropdown-item">About us</a>
+                        <a href="team..php" class="dropdown-item">Our Team</a>
+                        <a href="testimonial..php" class="dropdown-item">Testimonial</a>
+                        <a href="about..php" class="dropdown-item">About us</a>
                         <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
@@ -107,27 +111,25 @@ $conn->close();
                      <i class="fas fa-user"></i>
                   </a>
                   <div class="dropdown-menu bg-light dropdown-menu-end">
-                     <a href="userDetails.php" class="dropdown-item">Your Account</a>
-                     <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
+                     <a href="userLogin.php" class="dropdown-item">User Login</a>
+                     <a href="adminLogin.php" class="dropdown-item">Admin Login</a>
                   </div>
                </div>
                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
                   data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
-                  <i class="fas fa-shopping-cart"></i>
-                  <!-- <span class="badge bg-danger"><?php echo $total_items; ?></span> -->
-               </a>
+               <a href="addCart.php"
+                  class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
+                     class="fas fa-shopping-cart"></i></a>
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userOrderHistory.php"
-                  class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
+               <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+                  Now</a>
             </div>
          </nav>
       </div>
    </div>
    <!-- Navbar end -->
-
 
    <!-- Modal Search Start -->
    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -150,6 +152,21 @@ $conn->close();
    </div>
    <!-- Modal Search End -->
 
+   <!-- Hero Start -->
+   <div class="container-fluid bg-light py-6 my-6 mt-0">
+      <div class="container text-center animated bounceInDown">
+         <h1 class="display-1 mb-4">Order confirmation</h1>
+         <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item text-dark" aria-current="page">Menu</li>
+         </ol>
+      </div>
+   </div>
+   <!-- Hero End -->
+
+
+
    <!-- Order Confirmation Start -->
    <div class="container my-5">
       <div class="row justify-content-center">
@@ -160,7 +177,8 @@ $conn->close();
                </div>
                <div class="card-body p-4">
                   <?php if ($order): ?>
-                     <p class="text-center text-success fs-5"><i class="bi bi-check-circle-fill"></i> Thank you for your order!</p>
+                     <p class="text-center text-success fs-5"><i class="bi bi-check-circle-fill"></i> Thank you for your
+                        order!</p>
                      <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                            <strong>Order ID:</strong> <?php echo $order['order_id']; ?>
@@ -181,7 +199,8 @@ $conn->close();
                         </li>
                      </ul>
                   <?php else: ?>
-                     <p class="text-center text-danger fs-5"><i class="bi bi-exclamation-circle-fill"></i> Order not found.</p>
+                     <p class="text-center text-danger fs-5"><i class="bi bi-exclamation-circle-fill"></i> Order not found.
+                     </p>
                   <?php endif; ?>
                </div>
                <div class="card-footer bg-light text-center">
@@ -194,8 +213,6 @@ $conn->close();
       </div>
    </div>
    <!-- Order Confirmation End -->
-
-
 
 
    <!-- Footer Start -->
@@ -279,8 +296,19 @@ $conn->close();
 
    <!-- Back to Top -->
    <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+   <!-- JavaScript Libraries -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="lib/wow/wow.min.js"></script>
+   <script src="lib/easing/easing.min.js"></script>
+   <script src="lib/waypoints/waypoints.min.js"></script>
+   <script src="lib/counterup/counterup.min.js"></script>
+   <script src="lib/lightbox/js/lightbox.min.js"></script>
+   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- Template Javascript -->
+   <script src="js/main.js"></script>
 </body>
 
 </html>
-
-Invalid order ID

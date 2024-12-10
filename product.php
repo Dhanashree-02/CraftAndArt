@@ -1,36 +1,20 @@
 <?php
 // Database connection
 $servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "craft";
+$username = "root"; // Replace with your DB username
+$password = ""; // Replace with your DB password
+$dbname = "craft"; // Replace with your DB name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+   die("Connection failed: " . $conn->connect_error);
 }
 
-// Get the selected category from the query string
-$category = isset($_GET['category']) ? htmlspecialchars($_GET['category']) : '';
-
-// Prepare the SQL query
-if (!empty($category)) {
-    $stmt = $conn->prepare("SELECT * FROM products WHERE category = ?");
-    $stmt->bind_param("s", $category);
-} else {
-    $stmt = $conn->prepare("SELECT * FROM products");
-}
-
-// Execute the query
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Fetch product details
-$products = [];
-while ($row = $result->fetch_assoc()) {
-    $products[] = $row;
-}
+// Fetch products from database
+$sql = "SELECT id, name, image, description, price FROM products";
+$result = $conn->query($sql);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -73,58 +57,57 @@ while ($row = $result->fetch_assoc()) {
    </div>
    <!-- Spinner End -->
 
-     <!-- Navbar start -->
-     <div class="container-fluid nav-bar">
-    <div class="container">
-       <nav class="navbar navbar-light navbar-expand-lg py-5">
-        <img src="img/logo1.png" style="height: 10vh; ">
-          <a href="index.php" class="navbar-brand">
-             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
-          </a>
-          <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
-             data-bs-target="#navbarCollapse">
-             <span class="fa fa-bars text-primary"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-             <div class="navbar-nav mx-auto">
-                <a href="logout.php" class="nav-item nav-link">Home</a>
-                <a href="service.php" class="nav-item nav-link">Services</a>
-                <a href="product.php" class="nav-item nav-link">Products</a>
-                <div class="nav-item dropdown">
-                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                   <div class="dropdown-menu bg-light">
-                      <a href="team.php" class="dropdown-item">Our Team</a>
-                      <a href="testimonial.php" class="dropdown-item">Testimonial</a>
-                      <a href="about.php" class="dropdown-item">About us</a>
-                      <a href="contact.php" class="dropdown-item">Contact</a>
-                   </div>
-                </div>
-             </div>
-             <div class="nav-item dropdown">
-                <a href="#" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                   data-bs-toggle="dropdown">
-                   <i class="fas fa-user"></i>
-                </a>
-                <div class="dropdown-menu bg-light dropdown-menu-end">
-                   <a href="userDetails.php" class="dropdown-item">Your Account</a>
-                   <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
-                </div>
-             </div>
-             <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-             <a href="addCart.php"
-                class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
-                   class="fas fa-shopping-cart"></i></a>
-             <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
-                <i class="fas fa-heart"></i>
-             </a>
-             <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
-                Now</a>
-          </div>
-       </nav>
-    </div>
- </div>
- <!-- Navbar end -->
+   <!-- Navbar start -->
+   <div class="container-fluid nav-bar">
+      <div class="container">
+         <nav class="navbar navbar-light navbar-expand-lg py-5">
+            <img src="img/logo1.png" style="height: 10vh; ">
+            <a href="index.html" class="navbar-brand">
+               <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
+            </a>
+            <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
+               data-bs-target="#navbarCollapse">
+               <span class="fa fa-bars text-primary"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+               <div class="navbar-nav mx-auto">
+                  <a href="index.php" class="nav-item nav-link">Home</a>
+                  <a href="service.php" class="nav-item nav-link">Services</a>
+                  <a href="product.php" class="nav-item nav-link">Products</a>
+                  <div class="nav-item dropdown">
+                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                     <div class="dropdown-menu bg-light">
+                        <a href="team.html" class="dropdown-item">Our Team</a>
+                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                        <a href="about.html" class="dropdown-item">About us</a>
+                        <a href="contact.html" class="dropdown-item">Contact</a>
+                     </div>
+                  </div>
+               </div>
+               <div class="nav-item dropdown">
+                  <a href="#" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                     data-bs-toggle="dropdown">
+                     <i class="fas fa-user"></i>
+                  </a>
+                  <div class="dropdown-menu bg-light dropdown-menu-end">
+                     <a href="userLogin.php" class="dropdown-item">User Login</a>
+                     <a href="adminLogin.php" class="dropdown-item">Admin Login</a>
+                  </div>
+               </div>
+               <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
+                     class="fas fa-shopping-cart"></i></a>
+               <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
+                  <i class="fas fa-heart"></i>
+               </a>
+               <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+                  Now</a>
+            </div>
+         </nav>
+      </div>
+   </div>
+   <!-- Navbar end -->
 
    <!-- Modal Search Start -->
    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -169,200 +152,108 @@ while ($row = $result->fetch_assoc()) {
             Our Products
          </small>
          <h1 class="display-5 mb-5">Discover the World’s Most Loved Crafts</h1>
-         <div class="tab-class text-center">
-            <ul class="nav nav-pills d-inline-flex justify-content-center mb-5 wow bounceInUp" data-wow-delay="0.1s">
-            
-               <li class="nav-item p-2">
-                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
-                     href="product.php?category=PaperCraft">
-                     <span class="text-dark" style="width: 150px;"
-                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'PaperCraft' ? 'active-category' : ''; ?>">Paper
-                        Craft</span>
-                  </a>
-               </li>
-               <li class="nav-item p-2">
-                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
-                     href="product.php?category=WoodCraft">
-                     <span class="text-dark" style="width: 150px;"
-                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'WoodCraft' ? 'active-category' : ''; ?>">Wood
-                        Craft</span>
-                  </a>
-               </li>
-               <li class="nav-item p-2">
-                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
-                     href="product.php?category=Mandala">
-                     <span class="text-dark" style="width: 150px;"
-                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'Mandala' ? 'active-category' : ''; ?>">Mandalas</span>
-                  </a>
-               </li>
-               <li class="nav-item p-2">
-                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
-                     href="product.php?category=ResinArt">
-                     <span class="text-dark" style="width: 150px;"
-                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'ResinArt' ? 'active-category' : ''; ?>">Resin
-                        Art</span>
-                  </a>
-               </li>
-               <li class="nav-item p-2">
-                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
-                     href="product.php?category=Miniature">
-                     <span class="text-dark" style="width: 150px;"
-                        class="nav-link rounded-pill px-4 py-2 <?php echo $category === 'Miniature' ? 'active-category' : ''; ?>">Miniature</span>
-                  </a>
-               </li>
-               <li class="nav-item p-2">
-                  <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
-                     href="product.php">
-                     <span class="text-dark" style="width: 150px;"
-                        class="nav-link rounded-pill px-4 py-2 <?php echo empty($category) ? 'active-category' : ''; ?>">
-                        All Products</span>
-                  </a>
-               </li> 
-            </ul>
-         </div>
+      </div>
+      <div class="row">
+         <?php if ($result->num_rows > 0): ?>
+            <?php while ($row = $result->fetch_assoc()): ?>
+               <div class="col-lg-4 col-md-6 mb-4">
+                  <div class="card border-0 shadow-lg h-100 rounded-3 hover-card">
+                     <div class="position-relative overflow-hidden">
+                        <img src="<?php echo $row['image']; ?>" class="card-img-top rounded-top product-image"
+                           alt="<?php echo $row['name']; ?>" style="transition: transform 0.3s;">
+                        <a href="wishlist.php?id=<?php echo $row['id']; ?>"
+                           class="btn <?php echo $is_in_wishlist ? 'btn-danger' : 'btn-outline-danger'; ?> position-absolute top-0 end-0 m-3 rounded-circle wishlist-btn">
+                           <i class="fas fa-heart" style="transition: transform 0.3s;"></i>
+                        </a>
+                     </div>
+                     <div class="card-body text-center p-4">
+                        <h5 class="card-title text-dark fw-bold mb-3" style="font-size: 1.2rem;"><?php echo $row['name']; ?>
+                        </h5>
+                        <p class="card-text text-muted mb-3" style="font-size: 0.9rem; line-height: 1.4;">
+                           <?php echo $row['description']; ?></p>
+                        <p class="fw-bold text-primary mb-4" style="font-size: 1.1rem;">Price: $<?php echo $row['price']; ?>
+                        </p>
+                        <a href="addCart.php?id=<?php echo $row['id']; ?>"
+                           class="btn btn-primary px-4 py-2 rounded-pill shadow-sm add-cart-btn"
+                           style="transition: transform 0.3s;">
+                           Add to Cart
+                        </a>
 
-              <!-- Product Listing -->
-        <div class="row" id="product-list">
-            <?php if (!empty($products)): ?>
-                <?php foreach ($products as $product): ?>
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="card border-0 shadow-lg h-100 rounded-3 hover-card">
-                            <div class="position-relative overflow-hidden">
-                                <img src="<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top rounded-top product-image img-fluid" alt="<?php echo htmlspecialchars($product['name']); ?>">
-                                <a href="wishlist.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-danger position-absolute top-0 end-0 m-3 rounded-circle">
-                                    <i class="fas fa-heart"></i>
-                                </a>
-                            </div>
-                            <div class="card-body text-center p-4">
-                                <h5 class="card-title text-dark fw-bold mb-3"><?php echo htmlspecialchars($product['name']); ?></h5>
-                                <p class="card-text text-muted mb-3"><?php echo htmlspecialchars($product['description']); ?></p>
-                                <p class="fw-bold text-primary mb-4">Price: $<?php echo htmlspecialchars($product['price']); ?></p>
-                                <form action="orderProduct.php" method="POST">
-                                    <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                                    <input type="hidden" name="product_name" value="<?php echo htmlspecialchars($product['name']); ?>">
-                                    <input type="hidden" name="product_price" value="<?php echo htmlspecialchars($product['price']); ?>">
-                                    <input type="hidden" name="product_image" value="<?php echo htmlspecialchars($product['image']); ?>">
-                                    <input type="hidden" name="product_category" value="<?php echo htmlspecialchars($product['category']); ?>">
-                                    <label for="quantity_<?php echo $product['id']; ?>">Quantity:</label>
-                                    <input type="number" id="quantity_<?php echo $product['id']; ?>" name="quantity" min="1" value="1" class="form-control mb-3">
-                                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order Now</button>
-                                </form>
+                        <!-- Share Button -->
+                        <div class="share-container mt-3">
+                           <button class="btn btn-outline-primary share-btn" style="transition: background-color 0.3s;">
+                              <i class="fas fa-share-alt"></i> Share
+                           </button>
 
-                                <!-- Share Button -->
-                                <div class="share-container mt-3">
-                                    <button class="btn btn-outline-primary share-btn">
-                                        <i class="fas fa-share-alt"></i> Share
-                                    </button>
-                                    <div class="share-options mt-2" style="display: none;">
-                                        <a href="https://wa.me/?text=<?php echo urlencode('Check out this product: ' . $product['name'] . ' ' . $product['description'] . ' ' . 'https://yourwebsite.com/product.php?id=' . $product['id']); ?>" target="_blank" class="btn btn-success btn-sm mb-2">
-                                            <i class="fab fa-whatsapp"></i> WhatsApp
-                                        </a>
-                                        <a href="https://www.instagram.com/share?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $product['id']); ?>" target="_blank" class="btn btn-info btn-sm mb-2">
-                                            <i class="fab fa-instagram"></i> Instagram
-                                        </a>
-                                        <a href="https://www.pinterest.com/pin/create/button/?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $product['id']); ?>&media=<?php echo urlencode($product['image']); ?>&description=<?php echo urlencode($product['description']); ?>" target="_blank" class="btn btn-danger btn-sm mb-2">
-                                            <i class="fab fa-pinterest"></i> Pinterest
-                                        </a>
-                                        <button class="btn btn-secondary btn-sm mb-2 copy-link-btn" data-url="https://yourwebsite.com/product.php?id=<?php echo $product['id']; ?>">
-                                            <i class="fas fa-link"></i> Copy Link
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                           <!-- Hidden Share Options -->
+                           <div class="share-options mt-2" style="display: none;">
+                              <a href="https://wa.me/?text=<?php echo urlencode('Check out this amazing product: ' . $row['name'] . ' ' . $row['description'] . ' ' . 'https://yourwebsite.com/product.php?id=' . $row['id']); ?>"
+                                 target="_blank" class="btn btn-success btn-sm mb-2">
+                                 <i class="fab fa-whatsapp"></i> WhatsApp
+                              </a>
+                              <a href="https://www.instagram.com/share?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $row['id']); ?>"
+                                 target="_blank" class="btn btn-info btn-sm mb-2">
+                                 <i class="fab fa-instagram"></i> Instagram
+                              </a>
+                              <a href="https://www.pinterest.com/pin/create/button/?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $row['id']); ?>&media=<?php echo urlencode($row['image']); ?>&description=<?php echo urlencode($row['description']); ?>"
+                                 target="_blank" class="btn btn-danger btn-sm mb-2">
+                                 <i class="fab fa-pinterest"></i> Pinterest
+                              </a>
+                              <button class="btn btn-secondary btn-sm mb-2" id="copyLinkBtn">
+                                 <i class="fas fa-link"></i> Copy Link
+                              </button>
+                           </div>
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-center text-muted">No products available for this category.</p>
-            <?php endif; ?>
-        </div>
-    </div>
-    <!-- Product End -->
+                        <!-- End Share Button -->
+                     </div>
+                  </div>
+               </div>
+            <?php endwhile; ?>
+         <?php else: ?>
+            <p class="text-center text-muted">No products available.</p>
+         <?php endif; ?>
+      </div>
+   </div>
+   <!-- Product End -->
 
+   <script>
+      // Toggle share options visibility
+      document.querySelectorAll('.share-btn').forEach(button => {
+         button.addEventListener('click', function () {
+            const options = this.nextElementSibling;
+            options.style.display = options.style.display === 'none' || options.style.display === '' ? 'block' : 'none';
+         });
+      });
 
-    <script>
-        document.querySelectorAll('.share-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const options = this.nextElementSibling;
-                options.style.display = options.style.display === 'none' || options.style.display === '' ? 'block' : 'none';
-            });
-        });
+      // Copy link functionality
+      document.getElementById('copyLinkBtn')?.addEventListener('click', function () {
+         const productUrl = window.location.href;
+         navigator.clipboard.writeText(productUrl).then(() => {
+            alert('Link copied to clipboard!');
+         });
+      });
 
-        document.querySelectorAll('.copy-link-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const url = this.getAttribute('data-url');
-                navigator.clipboard.writeText(url).then(() => {
-                    alert('Link copied to clipboard!');
-                });
-            });
-        });
-   
-    document.querySelectorAll('input[name="quantity"]').forEach(input => {
-        input.addEventListener('change', (event) => {
-            const productId = event.target.id.split('_')[1];
-            const hiddenInput = document.getElementById(`quantity_input_${productId}`);
-            hiddenInput.value = event.target.value;
-        });
-    });
-    
-   // Toggle share options visibility
-   document.querySelectorAll('.share-btn').forEach(button => {
-      button.addEventListener('click', function() {
-         const options = this.nextElementSibling;
-         options.style.display = options.style.display === 'none' || options.style.display === '' ?
-            'block' : 'none';
+      // Hover Effect for Product Image
+      const productImages = document.querySelectorAll('.product-image');
+      productImages.forEach(image => {
+         image.addEventListener('mouseenter', () => {
+            image.style.transform = 'scale(1.05)';
+         });
+         image.addEventListener('mouseleave', () => {
+            image.style.transform = 'scale(1)';
+         });
       });
-   });
 
-   // Copy link functionality
-   document.getElementById('copyLinkBtn')?.addEventListener('click', function() {
-      const productUrl = window.location.href;
-      navigator.clipboard.writeText(productUrl).then(() => {
-         alert('Link copied to clipboard!');
+      // Hover Effect for Wishlist Icon
+      const wishlistIcons = document.querySelectorAll('.wishlist-btn i');
+      wishlistIcons.forEach(icon => {
+         icon.addEventListener('mouseenter', () => {
+            icon.style.transform = 'scale(1.2)';
+         });
+         icon.addEventListener('mouseleave', () => {
+            icon.style.transform = 'scale(1)';
+         });
       });
-   });
-
-   // Hover Effect for Product Image
-   const productImages = document.querySelectorAll('.product-image');
-   productImages.forEach(image => {
-      image.addEventListener('mouseenter', () => {
-         image.style.transform = 'scale(1.05)';
-      });
-      image.addEventListener('mouseleave', () => {
-         image.style.transform = 'scale(1)';
-      });
-   });
-
-   // Hover Effect for Wishlist Icon
-   const wishlistIcons = document.querySelectorAll('.wishlist-btn i');
-   wishlistIcons.forEach(icon => {
-      icon.addEventListener('mouseenter', () => {
-         icon.style.transform = 'scale(1.2)';
-      });
-      icon.addEventListener('mouseleave', () => {
-         icon.style.transform = 'scale(1)';
-      });
-   });
-
-   // Optional: Use AJAX for dynamic loading without page refresh
-   document.querySelectorAll('.nav-item a').forEach(link => {
-      link.addEventListener('click', function(e) {
-         e.preventDefault();
-         const categoryUrl = this.getAttribute('href');
-         fetch(categoryUrl)
-            .then(response => response.text())
-            .then(html => {
-               document.getElementById('product-list').innerHTML = new DOMParser()
-                  .parseFromString(html, 'text/html')
-                  .querySelector('#product-list').innerHTML;
-               // Update active category
-               document.querySelectorAll('.nav-item a').forEach(item => item.classList.remove(
-                  'active-category'));
-               this.classList.add('active-category');
-            })
-            .catch(err => console.error('Error:', err));
-      });
-   });
    </script>
 
 

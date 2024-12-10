@@ -52,14 +52,9 @@ if (!isset($_SESSION['user_id'])) {
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
-<<<<<<< HEAD
          <nav class="navbar navbar-light navbar-expand-lg py-5">
          <img src="img/logo1.png" style="height: 10vh; ">
-            <a href="index.html" class="navbar-brand">
-=======
-         <nav class="navbar navbar-light navbar-expand-lg py-4">
             <a href="index.php" class="navbar-brand">
->>>>>>> 64d96fc307483df7acddf57a829a976da83d5a18
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"

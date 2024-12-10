@@ -1,97 +1,77 @@
 <?php
+// Start session to access cart data
 session_start();
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    die("Please log in to place an order.");
+// Check if cart is empty
+if (empty($_SESSION['cart'])) {
+    header("Location: product.php");
+    exit(); // Redirect to products page if cart is empty
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
-    // Validate product_id and quantity
-    echo"$_POST";
-    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : null;
-    $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : null;
-   //  $name = isset($_POST['name']) ? intval($_POST['name']) : null;
+// Calculate total price
+$totalPrice = 0;
+foreach ($_SESSION['cart'] as $product) {
+    $totalPrice += $product['price'] * $product['quantity'];
+}
 
-    if (!$product_id || !$quantity) {
-        die("Product ID or quantity is missing.");
-    }
-
-    $user_id = $_SESSION['user_id'];
-
-    // Combine address fields into a single string
-    $address = $_POST['house_no'] . ', ' .
-               $_POST['street_name'] . ', ' .
-               $_POST['village'] . ', ' .
-               $_POST['district'] . ', ' .
-               $_POST['state'] . ' - ' .
-               $_POST['pin_code'];
-
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Capture form data
+    $house_no = $_POST['house_no'];
+    $street_name = $_POST['street_name'];
+    $city = $_POST['city'];
+    $district = $_POST['district'];
+    $state = $_POST['state'];
+    $pincode = $_POST['pincode'];
     $payment_method = $_POST['payment_method'];
+    $user_id = $_SESSION['user_id']; // Assuming the user is logged in, get their user_id
+
+    // Combine all address fields into one
+    $address = $house_no . ', ' . $street_name . ', ' . $city . ', ' . $district . ', ' . $state . ' - ' . $pincode;
 
     // Database connection
-    $conn = new mysqli("localhost", "root", "", "craft");
+    include('db_connection.php'); // Make sure you have your DB connection here
 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+    // Insert the order into the 'orders' table
+    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_price, status, address, payment_method) VALUES (?, ?, 'pending', ?, ?)");
+    if ($stmt === false) {
+        die('Error preparing statement: ' . $conn->error); // Handle error
+    }
+    $stmt->bind_param("idss", $user_id, $totalPrice, $address, $payment_method); // Bind parameters
+    if (!$stmt->execute()) {
+        die('Error executing statement: ' . $stmt->error); // Handle error
+    }
+    $order_id = $stmt->insert_id; // Get the last inserted order id
+
+    // Insert each item in the 'order_items' table
+    foreach ($_SESSION['cart'] as $product) {
+        $stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
+        if ($stmt === false) {
+            die('Error preparing statement: ' . $conn->error); // Handle error
+        }
+        $stmt->bind_param("iiid", $order_id, $product['id'], $product['quantity'], $product['price']);
+        if (!$stmt->execute()) {
+            die('Error executing statement: ' . $stmt->error); // Handle error
+        }
     }
 
-    // Validate product ID
-    $product_check_sql = "SELECT id FROM products WHERE id = ?";
-    $product_stmt = $conn->prepare($product_check_sql);
-    $product_stmt->bind_param("i", $product_id);
-    $product_stmt->execute();
-    $product_result = $product_stmt->get_result();
+    // Clear the cart after order placement
+    unset($_SESSION['cart']);
 
-    if ($product_result->num_rows === 0) {
-        $product_stmt->close();
-        $conn->close();
-        die("Invalid product ID.");
-    }
-    $product_stmt->close();
-
-    // Insert order
-    $insert_order_sql = "INSERT INTO orders (user_id, product_id, quantity, address, payment_method) 
-                         VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($insert_order_sql);
-
-    if (!$stmt) {
-        $conn->close();
-        die("SQL error: " . $conn->error);
-    }
-
-    $stmt->bind_param("iiiss", $user_id, $product_id, $quantity, $address, $payment_method);
-
-    if ($stmt->execute()) {
-        // Retrieve the inserted order ID
-        $order_id = $conn->insert_id;
-
-        // Redirect to confirmation page after successful order placement
-        $stmt->close();
-        $conn->close();
-        header("Location: orderConfirmation.php?order_id=" . $order_id);
-        exit(); // Make sure to stop the script after redirection
-    } else {
-        echo "Error placing order: " . $stmt->error;
-    }
-
-    $stmt->close();
-    $conn->close();
+    // Redirect to order confirmation page
+    header("Location: orderConfirmation.php");
+    exit(); // Ensure no further code is executed
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-   <title>Craft Loving | Order Product</title>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Your Cart</title>
-   <link href="css/bootstrap.min.css" rel="stylesheet">
+   <meta charset="utf-8">
+   <title>Craft Loving | Order products </title>
+   <meta content="width=device-width, initial-scale=1.0" name="viewport">
+   <meta content name="keywords">
+   <meta content name="description">
    <link rel="icon" href="img/logo1.png" type="image/x-icon">
-
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,6 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
 
    <!-- Icon Font Stylesheet -->
    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
    <!-- Libraries Stylesheet -->
    <link href="lib/animate/animate.min.css" rel="stylesheet">
    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
@@ -110,19 +92,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
 
    <!-- Template Stylesheet -->
    <link href="css/style.css" rel="stylesheet">
-
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
 </head>
 
 <body>
 
-   <!-- Navbar start -->
-   <div class="container-fluid nav-bar">
+   <!-- Spinner Start -->
+   <div id="spinner"
+      class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+      <div class="spinner-grow text-primary" role="status"></div>
+   </div>
+   <!-- Spinner End -->
+<!-- Navbar start -->
+<div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
-            <img src="img/logo1.png" style="height: 10vh; ">
-            <a href="index.php" class="navbar-brand">
+            <a href="index.html" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -131,15 +115,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                <div class="navbar-nav mx-auto">
-                  <a href="logout.php" class="nav-item nav-link">Home</a>
+                  <a href="index.php" class="nav-item nav-link">Home</a>
                   <a href="service.php" class="nav-item nav-link">Services</a>
-                  <a href="product.php" class="nav-item nav-link">Products</a>
+                  <a href="product.phpl" class="nav-item nav-link">Products</a>
                   <div class="nav-item dropdown">
                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                      <div class="dropdown-menu bg-light">
-                        <a href="team.php" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.php" class="dropdown-item">Testimonial</a>
-                        <a href="about.php" class="dropdown-item">About us</a>
+                        <a href="team..php" class="dropdown-item">Our Team</a>
+                        <a href="testimonial..php" class="dropdown-item">Testimonial</a>
+                        <a href="about..php" class="dropdown-item">About us</a>
                         <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
@@ -150,27 +134,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
                      <i class="fas fa-user"></i>
                   </a>
                   <div class="dropdown-menu bg-light dropdown-menu-end">
-                     <a href="userDetails.php" class="dropdown-item">Your Account</a>
-                     <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
+                     <a href="userLogin.php" class="dropdown-item">User Login</a>
+                     <a href="adminLogin.php" class="dropdown-item">Admin Login</a>
                   </div>
                </div>
                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
                   data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
-                  <i class="fas fa-shopping-cart"></i>
-                  <!-- <span class="badge bg-danger"><?php echo $total_items; ?></span> -->
-               </a>
-               <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
+               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
+                     class="fas fa-shopping-cart"></i></a>
+                     <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userOrderHistory.php"
-                  class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
+               <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+                  Now</a>
             </div>
          </nav>
       </div>
    </div>
    <!-- Navbar end -->
-
 
    <!-- Modal Search Start -->
    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -193,73 +174,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
    </div>
    <!-- Modal Search End -->
 
-   <!-- Order Product Start -->
-   <div class="container my-5">
-      <div class="row justify-content-center">
-         <div class="col-md-8">
-            <div class="card shadow-sm border-0">
-               <div class="card-header bg-primary text-white text-center rounded-top">
-                  <h3 class="mb-0">Place Your Order</h3>
-               </div>
-               <div class="card-body p-4">
-                  <form method="post" action="orderProduct.php">
-                     <!-- Hidden Fields for Product ID and Quantity -->
-                     <input type="hidden" name="product_id" value="1"> <!-- Replace 1 with dynamic product ID -->
-                     <input type="hidden" name="quantity" value="1"> <!-- Set dynamically if needed -->
+   <!-- Hero Start -->
+   <div class="container-fluid bg-light py-6 my-6 mt-0">
+      <div class="container text-center animated bounceInDown">
+         <h1 class="display-1 mb-4">Your order</h1>
+         <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Pages</a></li>
+            <li class="breadcrumb-item text-dark" aria-current="page">Menu</li>
+         </ol>
+      </div>
+   </div>
+   <!-- Hero End -->
+<!-- Order start -->
+<div class="container-fluid order py-6 wow bounceInUp" data-wow-delay="0.1s">
+   <div class="container">
+      <div class="p-5 bg-light rounded order-form">
+         <div class="row g-4">
+            <div class="col-12">
+               <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Place an Order</small>
+               <h1 class="display-5 mb-0">Proceed Your Order</h1>
+            </div>
+            <div class="col-md-6 col-lg-7">
+               <p class="mb-4">Fill in the details below to place your order. We will process it shortly!</p>
+               <!-- Order Form -->
+               <form method="POST" action="orderProduct.php">
+    <!-- Address -->
+    <h3>Address</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" name="house_no" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="House No." required>
+        </div>
+        <div class="col-md-6">
+            <input type="text" name="street_name" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="Street Name" required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" name="city" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="City" required>
+        </div>
+        <div class="col-md-6">
+            <input type="text" name="district" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="District" required>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" name="state" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="State" required>
+        </div>
+        <div class="col-md-6">
+            <input type="text" name="pincode" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="Pincode" required>
+        </div>
+    </div>
 
-                     <!-- Delivery Address Section -->
-                     <h5 class="text-primary mb-3">Delivery Address</h5>
-                     <div class="mb-3">
-                        <label for="house_no" class="form-label fw-bold">House No. & Name</label>
-                        <input type="text" name="house_no" id="house_no" class="form-control border-primary" required>
-                     </div>
-                     <div class="mb-3">
-                        <label for="street_name" class="form-label fw-bold">Street Name</label>
-                        <input type="text" name="street_name" id="street_name" class="form-control border-primary"
-                           required>
-                     </div>
-                     <div class="mb-3">
-                        <label for="village" class="form-label fw-bold">Village</label>
-                        <input type="text" name="village" id="village" class="form-control border-primary" required>
-                     </div>
-                     <div class="mb-3">
-                        <label for="district" class="form-label fw-bold">District</label>
-                        <input type="text" name="district" id="district" class="form-control border-primary" required>
-                     </div>
-                     <div class="mb-3">
-                        <label for="state" class="form-label fw-bold">State</label>
-                        <input type="text" name="state" id="state" class="form-control border-primary" required>
-                     </div>
-                     <div class="mb-3">
-                        <label for="pin_code" class="form-label fw-bold">Pin Code</label>
-                        <input type="text" name="pin_code" id="pin_code" class="form-control border-primary" required>
-                     </div>
+    <!-- Payment Method -->
+    <h3>Payment Method</h3>
+    <select name="payment_method" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" required>
+        <option value="COD">Cash on Delivery</option>
+        <option value="Card">Credit/Debit Card</option>
+        <option value="UPI">UPI Payment</option>
+    </select>
 
-                     <!-- Payment Method Section -->
-                     <h5 class="text-primary mb-3">Payment Method</h5>
-                     <div class="mb-4">
-                        <select name="payment_method" id="payment_method" class="form-select border-primary" required>
-                           <option value="" disabled selected>-- Select Payment --</option>
-                           <option value="Credit Card">Credit Card</option>
-                           <option value="Debit Card">Debit Card</option>
-                           <option value="PayPal">PayPal</option>
-                           <option value="Cash on Delivery">Cash on Delivery</option>
-                        </select>
-                     </div>
+    <!-- Submit Button -->
+    <button type="submit" class="w-100 btn btn-primary form-control p-3 border-primary bg-primary rounded-pill">Place Order</button>
+</form>
 
-                     <!-- Submit Button -->
-                     <div class="text-center">
-                        <button type="submit" name="confirm_order" class="btn btn-primary">Confirm Order</button>
+            </div>
+            <div class="col-md-6 col-lg-5">
+               <div>
+                  <!-- Contact Information -->
+                  <div class="d-inline-flex w-100 border border-primary p-4 rounded mb-4">
+                     <i class="fas fa-map-marker-alt fa-2x text-primary me-4"></i>
+                     <div>
+                        <h4>Billing Address</h4>
+                        <p>Enter your billing address</p>
                      </div>
-                  </form>
+                  </div>
+                  <!-- Contact Us -->
+                  <div class="d-inline-flex w-100 border border-primary p-4 rounded mb-4">
+                     <i class="fas fa-phone-alt fa-2x text-primary me-4"></i>
+                     <div>
+                        <h4>Contact Us</h4>
+                        <p class="mb-2">info@yourshop.com</p>
+                        <p class="mb-0">(+123) 456-7890</p>
+                     </div>
+                  </div>
                </div>
             </div>
          </div>
       </div>
    </div>
-   <!-- Order Product End -->
+</div>
+<!-- Order end -->
 
-
+    
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
       <div class="container">
@@ -338,6 +345,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
       </div>
    </div>
    <!-- Footer End -->
-</body>
 
+   <!-- Back to Top -->
+   <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+   <!-- JavaScript Libraries -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+   <script src="lib/wow/wow.min.js"></script>
+   <script src="lib/easing/easing.min.js"></script>
+   <script src="lib/waypoints/waypoints.min.js"></script>
+   <script src="lib/counterup/counterup.min.js"></script>
+   <script src="lib/lightbox/js/lightbox.min.js"></script>
+   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- Template Javascript -->
+   <script src="js/main.js"></script>
+</body>
 </html>
