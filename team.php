@@ -3,7 +3,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>Craft Loving | Testimonial</title>
+        <title>Craft Loving | Team</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <meta content name="keywords">
         <meta content name="description">
@@ -42,13 +42,12 @@
             <div class="spinner-grow text-primary" role="status"></div>
         </div>
         <!-- Spinner End -->
-
         <!-- Navbar start -->
         <div class="container-fluid nav-bar">
             <div class="container">
                 <nav class="navbar navbar-light navbar-expand-lg py-5">
                     <img src="img/logo1.png" style="height: 10vh; ">
-                    <a href="index.html" class="navbar-brand">
+                    <a href="index.php" class="navbar-brand">
                         <h1 class="text-primary fw-bold mb-0">Craft<span
                                 class="text-dark"> Loving </span></h1>
                     </a>
@@ -61,7 +60,7 @@
                         <div class="navbar-nav mx-auto">
                             <a href="logout.php"
                                 class="nav-item nav-link">Home</a>
-                            <a href="service.html"
+                            <a href="service.php"
                                 class="nav-item nav-link">Services</a>
                             <a href="product.php"
                                 class="nav-item nav-link">Products</a>
@@ -69,11 +68,11 @@
                                 <a href="#" class="nav-link dropdown-toggle"
                                     data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu bg-light">
-                                    <a href="team.html"
+                                    <a href="team.php"
                                         class="dropdown-item">Our Team</a>
-                                    <a href="testimonial.html"
+                                    <a href="testimonial.php"
                                         class="dropdown-item">Testimonial</a>
-                                    <a href="about.html"
+                                    <a href="about.php"
                                         class="dropdown-item">About us</a>
                                     <a href="contact.php"
                                         class="dropdown-item">Contact</a>
@@ -141,241 +140,144 @@
             </div>
         </div>
         <!-- Modal Search End -->
-
         <!-- Hero Start -->
         <div class="container-fluid bg-light py-6 my-6 mt-0">
             <div class="container text-center animated bounceInDown">
-                <h1 class="display-1 mb-4">Testimonial</h1>
+                <h1 class="display-1 mb-4">Our Team</h1>
                 <ol
                     class="breadcrumb justify-content-center mb-0 animated bounceInDown">
                     <li class="breadcrumb-item"><a href="#">Home</a></li>
                     <li class="breadcrumb-item"><a href="#">Pages</a></li>
                     <li class="breadcrumb-item text-dark"
-                        aria-current="page">Testimonial</li>
+                        aria-current="page">Our Team</li>
                 </ol>
             </div>
         </div>
         <!-- Hero End -->
 
-        <!-- Testimonial Start -->
-        <div class="container-fluid py-6">
+        <!-- Team Start -->
+        <div class="container-fluid team py-6">
             <div class="container">
                 <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
                     <small
-                        class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Testimonial</small>
-                    <h1 class="display-5 mb-5">What Our Customers says!</h1>
+                        class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Our
+                        Team</small>
+                    <h1 class="display-5 mb-5">We have experienced chef
+                        Team</h1>
                 </div>
-                <div
-                    class="owl-carousel owl-theme testimonial-carousel testimonial-carousel-1 mb-4 wow bounceInUp"
-                    data-wow-delay="0.1s">
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonialM-1.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.1s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-1.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Mahesh</h4>
+                                <p class="text-white mb-0">CEO</p>
                             </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Aman</h4>
-                                <p class="m-0">Developer</p>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
                             </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"The paper craft creations are absolutely stunning! Every card and decoration is made with such attention to detail"</p>
                         </div>
                     </div>
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonialF-3.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.3s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-2.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Anika</h4>
+                                <p class="text-white mb-0">Order manager</p>
                             </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Sakshi</h4>
-                                <p class="m-0">Dietician</p>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
                             </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"Every piece of wood art I’ve bought from here has been crafted to perfection. The attention to detail is exceptional!"</p>
                         </div>
                     </div>
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonialF-5.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.5s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-3.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Vinay</h4>
+                                <p class="text-white mb-0">Report handler</p>
                             </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Pranjal</h4>
-                                <p class="m-0">Interior Designer</p>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
                             </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"I ordered a hand-painted mandala for my living room, and it has truly transformed the space. It radiates positivity and calmness."</p>
                         </div>
                     </div>
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonial-4.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.7s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-4.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Shalini</h4>
+                                <p class="text-white mb-0">Delivery partner</p>
                             </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Shubham</h4>
-                                <p class="m-0">S/W engineer</p>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
                             </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"From greeting cards to decorative pieces, every paper craft item is made with love. I’m delighted with my purchase!"</p>
-                        </div>
-                    </div>
-                </div>
-                <div
-                    class="owl-carousel testimonial-carousel testimonial-carousel-2 wow bounceInUp"
-                    data-wow-delay="0.3s">
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonialM-5.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
-                            </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Swapnil</h4>
-                                <p class="m-0">HR</p>
-                            </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"These miniatures are perfect! The craftsmanship is superb, and they make a unique addition to my collection."</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonialF-2.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
-                            </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Deepika</h4>
-                                <p class="m-0">Singer</p>
-                            </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"I’ve never seen resin art like this before. The colors pop, and each piece feels like it has its own soul."</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonialF-3.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
-                            </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Rashi</h4>
-                                <p class="m-0">Doctor</p>
-                            </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"I gave a handcrafted gift from this site to my friend, and she was absolutely thrilled. It was  unique, and special!"</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-item rounded bg-light">
-                        <div class="d-flex mb-3">
-                            <img src="img/testimonialF-2.jpg"
-                                class="img-fluid rounded-circle flex-shrink-0"
-                                alt>
-                            <div class="position-absolute"
-                                style="top: 15px; right: 20px;">
-                                <i class="fa fa-quote-right fa-2x"></i>
-                            </div>
-                            <div class="ps-3 my-auto">
-                                <h4 class="mb-0">Ankita</h4>
-                                <p class="m-0">Pharmacist</p>
-                            </div>
-                        </div>
-                        <div class="testimonial-content">
-                            <div class="d-flex">
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                                <i class="fas fa-star text-primary"></i>
-                            </div>
-                            <p class="fs-5 m-0 pt-3">"I’m so happy with my purchases. The products arrived on time and were better than I expected!"</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Testimonial End -->
+        <!-- Team End -->
 
         <!-- Footer Start -->
         <div

@@ -52,9 +52,14 @@ if (!isset($_SESSION['user_id'])) {
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
+<<<<<<< HEAD
          <nav class="navbar navbar-light navbar-expand-lg py-5">
          <img src="img/logo1.png" style="height: 10vh; ">
             <a href="index.html" class="navbar-brand">
+=======
+         <nav class="navbar navbar-light navbar-expand-lg py-4">
+            <a href="index.php" class="navbar-brand">
+>>>>>>> 64d96fc307483df7acddf57a829a976da83d5a18
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -64,14 +69,14 @@ if (!isset($_SESSION['user_id'])) {
             <div class="collapse navbar-collapse" id="navbarCollapse">
                <div class="navbar-nav mx-auto">
                   <a href="logout.php" class="nav-item nav-link">Home</a>
-                  <a href="service.html" class="nav-item nav-link">Services</a>
+                  <a href="service.php" class="nav-item nav-link">Services</a>
                   <a href="product.php" class="nav-item nav-link">Products</a>
                   <div class="nav-item dropdown">
                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                      <div class="dropdown-menu bg-light">
-                        <a href="team.html" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="about.html" class="dropdown-item">About us</a>
+                        <a href="team.php" class="dropdown-item">Our Team</a>
+                        <a href="testimonial.php" class="dropdown-item">Testimonial</a>
+                        <a href="about.php" class="dropdown-item">About us</a>
                         <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
@@ -137,7 +142,7 @@ if (!isset($_SESSION['user_id'])) {
                </h1>
                <a href="products.php" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 me-4 animated bounceInLeft">Order
                   Now</a>
-               <a href="about.html" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know
+               <a href="about.php" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know
                   More</a>
             </div>
             <div class="col-lg-5 col-md-12">
@@ -193,7 +198,7 @@ if (!isset($_SESSION['user_id'])) {
                                 Unique Crafts
                             </div>
                         </div>
-                        <a href="about.html"
+                        <a href="about.php"
                             class="btn btn-primary py-3 px-5 rounded-pill">About
                             Us<i class="fas fa-arrow-right ps-2"></i></a>
                     </div>

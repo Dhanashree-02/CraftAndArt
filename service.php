@@ -48,7 +48,7 @@
             <div class="container">
                 <nav class="navbar navbar-light navbar-expand-lg py-5">
                     <img src="img/logo1.png" style="height: 10vh; ">
-                    <a href="index.html" class="navbar-brand">
+                    <a href="index.php" class="navbar-brand">
                         <h1 class="text-primary fw-bold mb-0">Craft<span
                                 class="text-dark"> Loving </span></h1>
                     </a>
@@ -61,7 +61,7 @@
                         <div class="navbar-nav mx-auto">
                             <a href="logout.php"
                                 class="nav-item nav-link">Home</a>
-                            <a href="service.html"
+                            <a href="service.php"
                                 class="nav-item nav-link">Services</a>
                             <a href="product.php"
                                 class="nav-item nav-link">Products</a>
@@ -69,11 +69,11 @@
                                 <a href="#" class="nav-link dropdown-toggle"
                                     data-bs-toggle="dropdown">Pages</a>
                                 <div class="dropdown-menu bg-light">
-                                    <a href="team.html"
+                                    <a href="team.php"
                                         class="dropdown-item">Our Team</a>
-                                    <a href="testimonial.html"
+                                    <a href="testimonial.php"
                                         class="dropdown-item">Testimonial</a>
-                                    <a href="about.html"
+                                    <a href="about.php"
                                         class="dropdown-item">About us</a>
                                     <a href="contact.php"
                                         class="dropdown-item">Contact</a>

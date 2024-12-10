@@ -47,11 +47,16 @@ if (!isset($_SESSION['admin_id'])) {
       <!-- Vertical Navbar Start -->
       <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
       
+<<<<<<< HEAD
          <a href="index.html" class="navbar-brand mb-4">
+=======
+         <a href="index.php" class="navbar-brand mb-4">
+         <img src="img/logo1.png" style="height: 10vh; ">
+>>>>>>> 64d96fc307483df7acddf57a829a976da83d5a18
             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">
-            <a href="index.html" class="nav-item nav-link">Home</a>
+            <a href="index.php" class="nav-item nav-link">Home</a>
             <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
             <a href="#" class="nav-item nav-link">Product Sale</a>
@@ -67,8 +72,8 @@ if (!isset($_SESSION['admin_id'])) {
             <div class="nav-item dropdown">
                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Reports</a>
                <div class="dropdown-menu bg-light">
-                  <a href="team.html" class="dropdown-item">Product Sale</a>
-                  <a href="testimonial.html" class="dropdown-item">Count of Customer</a>
+                  <a href="team.php" class="dropdown-item">Product Sale</a>
+                  <a href="testimonial.php" class="dropdown-item">Count of Customer</a>
                </div>
             </div> -->
          </div>
@@ -122,7 +127,7 @@ if (!isset($_SESSION['admin_id'])) {
                                 Unique Crafts
                             </div>
                         </div>
-                        <a href="about.html"
+                        <a href="about.php"
                             class="btn btn-primary py-3 px-5 rounded-pill">About
                             Us<i class="fas fa-arrow-right ps-2"></i></a>
                     </div>
