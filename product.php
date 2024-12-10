@@ -1,9 +1,9 @@
 <?php
 // Database connection
 $servername = "localhost";
-$username = "root"; // Replace with your DB username
-$password = ""; // Replace with your DB password
-$dbname = "craft"; // Replace with your DB name
+$username = "root";
+$password = "";
+$dbname = "craft";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
@@ -11,7 +11,7 @@ if ($conn->connect_error) {
 }
 
 // Get the selected category from the query string
-$category = isset($_GET['category']) ? $_GET['category'] : '';
+$category = isset($_GET['category']) ? htmlspecialchars($_GET['category']) : '';
 
 // Prepare the SQL query
 if (!empty($category)) {
@@ -24,8 +24,13 @@ if (!empty($category)) {
 // Execute the query
 $stmt->execute();
 $result = $stmt->get_result();
-?>
 
+// Fetch product details
+$products = [];
+while ($row = $result->fetch_assoc()) {
+    $products[] = $row;
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -166,6 +171,7 @@ $result = $stmt->get_result();
          <h1 class="display-5 mb-5">Discover the World’s Most Loved Crafts</h1>
          <div class="tab-class text-center">
             <ul class="nav nav-pills d-inline-flex justify-content-center mb-5 wow bounceInUp" data-wow-delay="0.1s">
+            
                <li class="nav-item p-2">
                   <a class="d-flex py-2 mx-2 border border-primary bg-white rounded-pill active" data-bs-toggle="pill"
                      href="product.php?category=PaperCraft">
@@ -211,73 +217,94 @@ $result = $stmt->get_result();
                         class="nav-link rounded-pill px-4 py-2 <?php echo empty($category) ? 'active-category' : ''; ?>">
                         All Products</span>
                   </a>
-               </li>
+               </li> 
             </ul>
          </div>
 
-         <div class="row" id="product-list">
-            <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="col-lg-4 col-md-6 mb-4">
-               <div class="card border-0 shadow-lg h-100 rounded-3 hover-card">
-                  <div class="position-relative overflow-hidden">
-                     <img src="<?php echo $row['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
-                        alt="<?php echo $row['name']; ?>">
-                     <a href="wishlist.php?id=<?php echo $row['id']; ?>"
-                        class="btn btn-outline-danger position-absolute top-0 end-0 m-3 rounded-circle">
-                        <i class="fas fa-heart"></i>
-                     </a>
-                  </div>
-                  <div class="card-body text-center p-4">
-                     <p class="card-text text-muted mb-3">Product ID: <strong>#<?php echo $row['id']; ?></strong></p>
-                     <h5 class="card-title text-dark fw-bold mb-3"><?php echo $row['name']; ?></h5>
-                     <p class="card-text text-muted mb-3"><?php echo $row['description']; ?></p>
-                     <p class="fw-bold text-primary mb-4">Price: $<?php echo $row['price']; ?></p>
-                     <a href="addCart.php?id=<?php echo $row['id']; ?>" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Add to Cart</a>
-                     <form action="orderProduct.php" method="POST" class="d-inline">
-    <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
-    <input type="hidden" name="quantity" value="1"> <!-- Default quantity -->
-    <button type="submit" name="order_product" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order</button>
-</form>
+              <!-- Product Listing -->
+        <div class="row" id="product-list">
+            <?php if (!empty($products)): ?>
+                <?php foreach ($products as $product): ?>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card border-0 shadow-lg h-100 rounded-3 hover-card">
+                            <div class="position-relative overflow-hidden">
+                                <img src="<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top rounded-top product-image img-fluid" alt="<?php echo htmlspecialchars($product['name']); ?>">
+                                <a href="wishlist.php?id=<?php echo $product['id']; ?>" class="btn btn-outline-danger position-absolute top-0 end-0 m-3 rounded-circle">
+                                    <i class="fas fa-heart"></i>
+                                </a>
+                            </div>
+                            <div class="card-body text-center p-4">
+                                <h5 class="card-title text-dark fw-bold mb-3"><?php echo htmlspecialchars($product['name']); ?></h5>
+                                <p class="card-text text-muted mb-3"><?php echo htmlspecialchars($product['description']); ?></p>
+                                <p class="fw-bold text-primary mb-4">Price: $<?php echo htmlspecialchars($product['price']); ?></p>
+                                <form action="orderProduct.php" method="POST">
+                                    <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                                    <input type="hidden" name="product_name" value="<?php echo htmlspecialchars($product['name']); ?>">
+                                    <input type="hidden" name="product_price" value="<?php echo htmlspecialchars($product['price']); ?>">
+                                    <input type="hidden" name="product_image" value="<?php echo htmlspecialchars($product['image']); ?>">
+                                    <input type="hidden" name="product_category" value="<?php echo htmlspecialchars($product['category']); ?>">
+                                    <label for="quantity_<?php echo $product['id']; ?>">Quantity:</label>
+                                    <input type="number" id="quantity_<?php echo $product['id']; ?>" name="quantity" min="1" value="1" class="form-control mb-3">
+                                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order Now</button>
+                                </form>
 
-                     <!-- Share Button -->
-                     <div class="share-container mt-3">
-                        <button class="btn btn-outline-primary share-btn" style="transition: background-color 0.3s;">
-                           <i class="fas fa-share-alt"></i> Share
-                        </button>
-
-                        <!-- Hidden Share Options -->
-                        <div class="share-options mt-2" style="display: none;">
-                           <a href="https://wa.me/?text=<?php echo urlencode('Check out this amazing product: ' . $row['name'] . ' ' . $row['description'] . ' ' . 'https://yourwebsite.com/product.php?id=' . $row['id']); ?>"
-                              target="_blank" class="btn btn-success btn-sm mb-2">
-                              <i class="fab fa-whatsapp"></i> WhatsApp
-                           </a>
-                           <a href="https://www.instagram.com/share?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $row['id']); ?>"
-                              target="_blank" class="btn btn-info btn-sm mb-2">
-                              <i class="fab fa-instagram"></i> Instagram
-                           </a>
-                           <a href="https://www.pinterest.com/pin/create/button/?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $row['id']); ?>&media=<?php echo urlencode($row['image']); ?>&description=<?php echo urlencode($row['description']); ?>"
-                              target="_blank" class="btn btn-danger btn-sm mb-2">
-                              <i class="fab fa-pinterest"></i> Pinterest
-                           </a>
-                           <button class="btn btn-secondary btn-sm mb-2" id="copyLinkBtn">
-                              <i class="fas fa-link"></i> Copy Link
-                           </button>
+                                <!-- Share Button -->
+                                <div class="share-container mt-3">
+                                    <button class="btn btn-outline-primary share-btn">
+                                        <i class="fas fa-share-alt"></i> Share
+                                    </button>
+                                    <div class="share-options mt-2" style="display: none;">
+                                        <a href="https://wa.me/?text=<?php echo urlencode('Check out this product: ' . $product['name'] . ' ' . $product['description'] . ' ' . 'https://yourwebsite.com/product.php?id=' . $product['id']); ?>" target="_blank" class="btn btn-success btn-sm mb-2">
+                                            <i class="fab fa-whatsapp"></i> WhatsApp
+                                        </a>
+                                        <a href="https://www.instagram.com/share?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $product['id']); ?>" target="_blank" class="btn btn-info btn-sm mb-2">
+                                            <i class="fab fa-instagram"></i> Instagram
+                                        </a>
+                                        <a href="https://www.pinterest.com/pin/create/button/?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $product['id']); ?>&media=<?php echo urlencode($product['image']); ?>&description=<?php echo urlencode($product['description']); ?>" target="_blank" class="btn btn-danger btn-sm mb-2">
+                                            <i class="fab fa-pinterest"></i> Pinterest
+                                        </a>
+                                        <button class="btn btn-secondary btn-sm mb-2 copy-link-btn" data-url="https://yourwebsite.com/product.php?id=<?php echo $product['id']; ?>">
+                                            <i class="fas fa-link"></i> Copy Link
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                     </div>
-                     <!-- End Share Button -->
-                  </div>
-               </div>
-            </div>
-            <?php endwhile; ?>
+                    </div>
+                <?php endforeach; ?>
             <?php else: ?>
-            <p class="text-center text-muted">No products available for this category.</p>
+                <p class="text-center text-muted">No products available for this category.</p>
             <?php endif; ?>
-         </div>
-      </div>
-   </div>
+        </div>
+    </div>
+    <!-- Product End -->
 
-   <script>
+
+    <script>
+        document.querySelectorAll('.share-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const options = this.nextElementSibling;
+                options.style.display = options.style.display === 'none' || options.style.display === '' ? 'block' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.copy-link-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const url = this.getAttribute('data-url');
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('Link copied to clipboard!');
+                });
+            });
+        });
+   
+    document.querySelectorAll('input[name="quantity"]').forEach(input => {
+        input.addEventListener('change', (event) => {
+            const productId = event.target.id.split('_')[1];
+            const hiddenInput = document.getElementById(`quantity_input_${productId}`);
+            hiddenInput.value = event.target.value;
+        });
+    });
+    
    // Toggle share options visibility
    document.querySelectorAll('.share-btn').forEach(button => {
       button.addEventListener('click', function() {
@@ -338,7 +365,6 @@ $result = $stmt->get_result();
    });
    </script>
 
-   <!-- Product End -->
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">

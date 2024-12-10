@@ -10,19 +10,18 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Get order ID from query string
-$order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
+// Get order ID from query string and validate it
+$order_id = $_GET['order_id'];
 
-// Fetch order details
+
 $query = "SELECT orders.id AS order_id, products.name, products.price, orders.quantity, orders.created_at 
           FROM orders 
           JOIN products ON orders.product_id = products.id 
           WHERE orders.id = ?";
-          
+
 $stmt = $conn->prepare($query);
 
 if ($stmt === false) {
-    // Print the error message if prepare() fails
     die('Error preparing statement: ' . $conn->error);
 }
 
@@ -32,14 +31,14 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $order = $result->fetch_assoc();
-
 } else {
-    echo "<p>Order not found.</p>";
+    $order = null;
 }
 
 $stmt->close();
 $conn->close();
 ?>
+
 
 <html>
 
@@ -160,28 +159,30 @@ $conn->close();
                   <h3 class="mb-0">Order Confirmation</h3>
                </div>
                <div class="card-body p-4">
-                  <p class="text-center text-success fs-5"><i class="bi bi-check-circle-fill"></i> Thank you for your
-                     order!</p>
-                  <ul class="list-group list-group-flush">
-                     <li class="list-group-item">
-                        <strong>Order ID:</strong> <?php echo $order['order_id']; ?>
-                     </li>
-                     <li class="list-group-item">
-                        <strong>Product Name:</strong> <?php echo $order['name']; ?>
-                     </li>
-                     <li class="list-group-item">
-                        <strong>Quantity:</strong> <?php echo $order['quantity']; ?>
-                     </li>
-                     <li class="list-group-item">
-                        <strong>Total Price:</strong>
-                        $<?php echo number_format($order['price'] * $order['quantity'], 2); ?>
-                     </li>
-                     <li class="list-group-item">
-   <strong>Order Date:</strong>
-   <?php echo date('F j, Y, g:i A', strtotime($order['created_at'])); ?>
-</li>
-
-                  </ul>
+                  <?php if ($order): ?>
+                     <p class="text-center text-success fs-5"><i class="bi bi-check-circle-fill"></i> Thank you for your order!</p>
+                     <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                           <strong>Order ID:</strong> <?php echo $order['order_id']; ?>
+                        </li>
+                        <li class="list-group-item">
+                           <strong>Product Name:</strong> <?php echo $order['name']; ?>
+                        </li>
+                        <li class="list-group-item">
+                           <strong>Quantity:</strong> <?php echo $order['quantity']; ?>
+                        </li>
+                        <li class="list-group-item">
+                           <strong>Total Price:</strong>
+                           $<?php echo number_format($order['price'] * $order['quantity'], 2); ?>
+                        </li>
+                        <li class="list-group-item">
+                           <strong>Order Date:</strong>
+                           <?php echo date('F j, Y, g:i A', strtotime($order['created_at'])); ?>
+                        </li>
+                     </ul>
+                  <?php else: ?>
+                     <p class="text-center text-danger fs-5"><i class="bi bi-exclamation-circle-fill"></i> Order not found.</p>
+                  <?php endif; ?>
                </div>
                <div class="card-footer bg-light text-center">
                   <a href="product.php" class="btn btn-primary rounded-pill px-4 py-2">
@@ -193,6 +194,7 @@ $conn->close();
       </div>
    </div>
    <!-- Order Confirmation End -->
+
 
 
 
@@ -280,3 +282,5 @@ $conn->close();
 </body>
 
 </html>
+
+Invalid order ID

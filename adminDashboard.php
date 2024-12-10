@@ -48,7 +48,6 @@ if (!isset($_SESSION['admin_id'])) {
       <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
       
          <a href="index.html" class="navbar-brand mb-4">
-         <img src="img/logo1.png" style="height: 10vh; ">
             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">

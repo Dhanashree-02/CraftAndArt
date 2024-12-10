@@ -9,28 +9,28 @@ $dbname = "craft";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+   die("Connection failed: " . $conn->connect_error);
 }
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    die("Please log in to add items to your cart.");
+   die("Please log in to add items to your cart.");
 }
 
 $user_id = $_SESSION['user_id'];
 
 // Add product to cart
 if (isset($_GET['id'])) {
-    $product_id = intval($_GET['id']);
+   $product_id = intval($_GET['id']);
 
-    // Check if the product is already in the user's cart
-    $check_sql = "SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?";
-    $stmt = $conn->prepare($check_sql);
-    $stmt->bind_param("ii", $user_id, $product_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+   // Check if the product is already in the user's cart
+   $check_sql = "SELECT id, quantity FROM cart WHERE user_id = ? AND product_id = ?";
+   $stmt = $conn->prepare($check_sql);
+   $stmt->bind_param("ii", $user_id, $product_id);
+   $stmt->execute();
+   $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
+   if ($result->num_rows > 0) {
       // Update quantity if the product already exists in the cart
       $row = $result->fetch_assoc();
       $new_quantity = $row['quantity'] + 1;
@@ -38,43 +38,43 @@ if (isset($_GET['id'])) {
       $update_stmt = $conn->prepare($update_sql);
       $update_stmt->bind_param("ii", $new_quantity, $row['id']);
       $update_stmt->execute();
-  } else {
+   } else {
       // Add new product to the cart
       $insert_sql = "INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
       $insert_stmt = $conn->prepare($insert_sql);
       $quantity = 1; // Define $quantity before binding
       $insert_stmt->bind_param("iii", $user_id, $product_id, $quantity);
       $insert_stmt->execute();
-  }
-  
+   }
 
-    header("Location: addCart.php"); // Redirect to cart page
-    exit();
+
+   header("Location: addCart.php"); // Redirect to cart page
+   exit();
 }
 
 // Remove product from cart
 if (isset($_GET['remove_id'])) {
-    $product_id = intval($_GET['remove_id']);
-    $delete_sql = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
-    $stmt = $conn->prepare($delete_sql);
-    $stmt->bind_param("ii", $user_id, $product_id);
-    $stmt->execute();
-    header("Location: addCart.php");
-    exit();
+   $product_id = intval($_GET['remove_id']);
+   $delete_sql = "DELETE FROM cart WHERE user_id = ? AND product_id = ?";
+   $stmt = $conn->prepare($delete_sql);
+   $stmt->bind_param("ii", $user_id, $product_id);
+   $stmt->execute();
+   header("Location: addCart.php");
+   exit();
 }
 
 // Update cart quantities
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_cart'])) {
-    foreach ($_POST['quantities'] as $product_id => $quantity) {
-        $product_id = intval($product_id);
-        $quantity = max(1, intval($quantity)); // Ensure at least 1
-        $update_sql = "UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?";
-        $stmt = $conn->prepare($update_sql);
-        $stmt->bind_param("iii", $quantity, $user_id, $product_id);
-        $stmt->execute();
-    }
-    header("Location: addCart.php");
-    exit();
+   foreach ($_POST['quantities'] as $product_id => $quantity) {
+      $product_id = intval($product_id);
+      $quantity = max(1, intval($quantity)); // Ensure at least 1
+      $update_sql = "UPDATE cart SET quantity = ? WHERE user_id = ? AND product_id = ?";
+      $stmt = $conn->prepare($update_sql);
+      $stmt->bind_param("iii", $quantity, $user_id, $product_id);
+      $stmt->execute();
+   }
+   header("Location: addCart.php");
+   exit();
 }
 
 // Fetch cart items from the database
@@ -92,11 +92,11 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $products[] = $row;
-        $total_items += $row['quantity'];
-        $total_price += $row['price'] * $row['quantity'];
-    }
+   while ($row = $result->fetch_assoc()) {
+      $products[] = $row;
+      $total_items += $row['quantity'];
+      $total_price += $row['price'] * $row['quantity'];
+   }
 }
 
 $conn->close();
@@ -143,7 +143,7 @@ $conn->close();
    <div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
-         <img src="img/logo1.png" style="height: 10vh; ">
+            <img src="img/logo1.png" style="height: 10vh; ">
             <a href="index.html" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
@@ -221,59 +221,53 @@ $conn->close();
       <h1 class="text-center mb-4">Your Cart</h1>
 
       <?php if (!empty($products)): ?>
-      <form method="post">
-         <div class="row">
-            <?php foreach ($products as $product): ?>
-            <div class="col-lg-4 col-md-6 mb-4">
-               <div class="card">
-                  <img src="<?php echo $product['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
-                     alt="<?php echo $product['name']; ?>">
-                  <div class="card-body">
-                     <h5 class="card-title"><?php echo $product['name']; ?></h5>
-                     <p class="fw-bold text-primary">Price: $<?php echo $product['price']; ?></p>
-                     <div class="mb-3">
-                        <label for="quantity-<?php echo $product['id']; ?>">Quantity:</label>
-                        <input type="number" name="quantities[<?php echo $product['id']; ?>]"
-                           id="quantity-<?php echo $product['id']; ?>" value="<?php echo $product['quantity']; ?>"
-                           min="1" class="form-control w-50">
-                     </div>
-
-                     <!-- Remove and Order Button Section -->
-                     <div class="text-center mt-4">
-                        <!-- Remove Product from Cart -->
-                        <a href="addCart.php?remove_id=<?php echo $product['id']; ?>"
-                           class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Remove</a>
-
-                        <!-- Order Product Form -->
-                        <form method="POST" action="orderProduct.php" class="d-inline">
-                           <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                           <input type="hidden" name="product_name" value="<?php echo $product['name']; ?>">
-                           <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
-                           <input type="hidden" name="quantity" value="<?php echo $product['quantity']; ?>">
-                           <button type="submit" name="order_product"
-                              class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order</button>
-                        </form>
-
+         <form method="post">
+            <div class="row">
+               <?php foreach ($products as $product): ?>
+                  <div class="col-lg-4 col-md-6 mb-4">
+                     <div class="card">
+                        <img src="<?php echo $product['image']; ?>" class="card-img-top rounded-top product-image img-fluid"
+                           alt="<?php echo $product['name']; ?>">
+                        <div class="card-body">
+                           <h5 class="card-title"><?php echo $product['name']; ?></h5>
+                           <p class="fw-bold text-primary">Price: $<?php echo $product['price']; ?></p>
+                           <div class="mb-3">
+                              <label for="quantity-<?php echo $product['id']; ?>">Quantity:</label>
+                              <input type="number" name="quantities[<?php echo $product['id']; ?>]"
+                                 id="quantity-<?php echo $product['id']; ?>" value="<?php echo $product['quantity']; ?>"
+                                 min="1" class="form-control w-50">
+                           </div>
+                           <div class="text-center mt-4">
+                              <a href="addCart.php?remove_id=<?php echo $product['id']; ?>"
+                                 class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Remove</a>
+                              <form method="POST" action="orderProduct.php" class="d-inline">
+                                 <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                                 <input type="hidden" name="product_name" value="<?php echo $product['name']; ?>">
+                                 <input type="hidden" name="product_price" value="<?php echo $product['price']; ?>">
+                                 <input type="hidden" name="quantity" value="<?php echo $product['quantity']; ?>">
+                                 <button type="submit" name="order_product" 
+                                    class="btn btn-primary px-4 py-2 rounded-pill shadow-sm">Order</button>
+                              </form>
+                           </div>
+                        </div>
                      </div>
                   </div>
-               </div>
+               <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
-         </div>
 
-         <!-- Total Price Display -->
-         <div class="text-center mt-4">
-            <h4>Total Price: $<?php echo number_format($total_price, 2); ?></h4>
-         </div>
+            <!-- Total Price Display -->
+            <div class="text-center mt-4">
+               <h4>Total Price: $<?php echo number_format($total_price, 2); ?></h4>
+            </div>
 
-         <!-- Action Buttons -->
-         <div class="text-center mt-4">
-            <button type="submit" name="update_cart" class="btn btn-primary">Update Cart</button>
-            <a href="product.php" class="btn btn-secondary">Continue Shopping</a>
-         </div>
-      </form>
+            <!-- Action Buttons -->
+            <div class="text-center mt-4">
+               <button type="submit" name="update_cart" class="btn btn-primary">Update Cart</button>
+               <a href="product.php" class="btn btn-secondary">Continue Shopping</a>
+            </div>
+         </form>
       <?php else: ?>
-      <h3 class="text-center text-muted">Your cart is empty!</h3>
+         <h3 class="text-center text-muted">Your cart is empty!</h3>
       <?php endif; ?>
    </div>
    <!-- Add cart end -->

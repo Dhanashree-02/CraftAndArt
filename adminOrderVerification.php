@@ -12,6 +12,13 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Include PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// Autoload PHPMailer classes if using Composer
+require 'vendor/autoload.php';
+
 // Update order status if form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['order_status'])) {
     $order_id = intval($_POST['order_id']);
@@ -22,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['o
     $stmt->bind_param("si", $order_status, $order_id);
     
     if ($stmt->execute()) {
-        // Fetch user's email to notify them
-        $query = "SELECT users.email, products.name 
+        // Fetch user's email and product details to notify them
+        $query = "SELECT users.email, products.name AS product_name 
                   FROM orders 
                   JOIN users ON orders.user_id = users.id 
                   JOIN products ON orders.product_id = products.id 
@@ -35,27 +42,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['o
         
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
-            // $user_email = $user['email'];
-            // $product_name = $user['name'];
-            
-            // // Notify the user via email
-            // $subject = "Order Update - Craft Loving";
-            // $message = "
-            //     Hi there,
+            $user_email = $user['email'];
+            $product_name = $user['product_name'];
 
-            //     Your order for product '{$product_name}' has been updated to '{$order_status}'.
+            // Initialize PHPMailer
+            $mail = new PHPMailer(true);
+            try {
+                // SMTP Configuration
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com'; // Replace with your SMTP server
+                $mail->SMTPAuth = true;
+                $mail->Username = 'sankrutisoni809@gmail.com'; // Your email address
+                $mail->Password = 'txcabezlcvocsxvt'; // Your email password or app-specific password
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port = 587;
 
-            //     Thank you for shopping with us!
+                // Sender and Recipient
+                $mail->setFrom('noreply@craftloving.com', 'Craft Loving');
+                $mail->addAddress($user_email); // Recipient's email
 
-            //     Best Regards,
-            //     Craft Loving Team
-            // ";
-            // $headers = "From: noreply@craftloving.com";
+                // Email Content
+                $mail->isHTML(true);
+                $mail->Subject = 'Order Update - Craft Loving';
+                $mail->Body = "
+                    <p>Hi there,</p>
+                    <p>Your order for the product <strong>{$product_name}</strong> has been updated to <strong>{$order_status}</strong>.</p>
+                    <p>Thank you for shopping with us!</p>
+                    <p>Best Regards,<br>Craft Loving Team</p>
+                ";
 
-            // mail($user_email, $subject, $message, $headers);
+                // Send email
+                $mail->send();
+                echo "<script>alert('Order status updated successfully, and the user has been notified.');</script>";
+            } catch (Exception $e) {
+                echo "<script>alert('Order status updated, but email could not be sent. Error: " . $mail->ErrorInfo . "');</script>";
+            }
+        } else {
+            echo "<script>alert('Order status updated, but user details could not be retrieved.');</script>";
         }
-        
-        echo "<script>alert('Order status updated successfully!');</script>";
     } else {
         echo "<script>alert('Failed to update order status.');</script>";
     }
@@ -77,7 +101,7 @@ $result = $conn->query($query);
 
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Remove Product</title>
+   <title>Craft Loving | Product Verification</title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
    <link rel="icon" href="img/logo.jpg" type="image/x-icon">
 

@@ -5,9 +5,18 @@ session_start();
 if (!isset($_SESSION['user_id'])) {
     die("Please log in to place an order.");
 }
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
-    $product_id = intval($_POST['product_id']);
-    $quantity = intval($_POST['quantity']);
+    // Validate product_id and quantity
+    echo"$_POST";
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : null;
+    $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : null;
+   //  $name = isset($_POST['name']) ? intval($_POST['name']) : null;
+
+    if (!$product_id || !$quantity) {
+        die("Product ID or quantity is missing.");
+    }
+
     $user_id = $_SESSION['user_id'];
 
     // Combine address fields into a single string
@@ -17,35 +26,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
                $_POST['district'] . ', ' .
                $_POST['state'] . ' - ' .
                $_POST['pin_code'];
-    
+
     $payment_method = $_POST['payment_method'];
 
     // Database connection
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "craft";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = new mysqli("localhost", "root", "", "craft");
 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
+    // Validate product ID
+    $product_check_sql = "SELECT id FROM products WHERE id = ?";
+    $product_stmt = $conn->prepare($product_check_sql);
+    $product_stmt->bind_param("i", $product_id);
+    $product_stmt->execute();
+    $product_result = $product_stmt->get_result();
+
+    if ($product_result->num_rows === 0) {
+        $product_stmt->close();
+        $conn->close();
+        die("Invalid product ID.");
+    }
+    $product_stmt->close();
+
+    // Insert order
     $insert_order_sql = "INSERT INTO orders (user_id, product_id, quantity, address, payment_method) 
                          VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_order_sql);
 
     if (!$stmt) {
+        $conn->close();
         die("SQL error: " . $conn->error);
     }
 
     $stmt->bind_param("iiiss", $user_id, $product_id, $quantity, $address, $payment_method);
 
     if ($stmt->execute()) {
-        echo "Order placed successfully!";
-        header("Location: orderConfirmation.php");
-        exit();
+        // Retrieve the inserted order ID
+        $order_id = $conn->insert_id;
+
+        // Redirect to confirmation page after successful order placement
+        $stmt->close();
+        $conn->close();
+        header("Location: orderConfirmation.php?order_id=" . $order_id);
+        exit(); // Make sure to stop the script after redirection
     } else {
         echo "Error placing order: " . $stmt->error;
     }
@@ -54,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
     $conn->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -74,8 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
 
    <!-- Icon Font Stylesheet -->
    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
    <!-- Libraries Stylesheet -->
    <link href="lib/animate/animate.min.css" rel="stylesheet">
    <link href="lib/lightbox/css/lightbox.min.css" rel="stylesheet">
@@ -170,75 +194,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_order'])) {
    <!-- Modal Search End -->
 
    <!-- Order Product Start -->
-<div class="container my-5">
-   <div class="row justify-content-center">
-      <div class="col-md-8">
-         <div class="card shadow-sm border-0" style=" width: 600px;">
-            <div class="card-header bg-primary text-white text-center rounded-top">
-               <h3 class="mb-0">Place Your Order</h3>
-            </div>
-            <div class="card-body p-4">
-               <form method="post" action="orderProduct.php">
-                  <!-- Delivery Address Section -->
-                  <h5 class="text-primary mb-3">Delivery Address</h5>
-                  <div class="mb-3">
-                     <label for="house_no" class="form-label fw-bold">House No. & Name</label>
-                     <input type="text" name="house_no" id="house_no" class="form-control border-primary shadow-sm"
-                        placeholder="Enter your house number" required style="font-size: 14px;">
-                  </div>
-                  <div class="mb-3">
-                     <label for="street_name" class="form-label fw-bold">Street No. & Name</label>
-                     <input type="text" name="street_name" id="street_name" class="form-control border-primary shadow-sm"
-                        placeholder="Enter your street name" required style="font-size: 14px;">
-                  </div>
-                  <div class="mb-3">
-                     <label for="village" class="form-label fw-bold">Village</label>
-                     <input type="text" name="village" id="village" class="form-control border-primary shadow-sm"
-                        placeholder="Enter your village" required style="font-size: 14px;">
-                  </div>
-                  <div class="mb-3">
-                     <label for="district" class="form-label fw-bold">District</label>
-                     <input type="text" name="district" id="district" class="form-control border-primary shadow-sm"
-                        placeholder="Enter your district" required style="font-size: 14px;">
-                  </div>
-                  <div class="mb-3">
-                     <label for="state" class="form-label fw-bold">State</label>
-                     <input type="text" name="state" id="state" class="form-control border-primary shadow-sm"
-                        placeholder="Enter your state" required style="font-size: 14px;">
-                  </div>
-                  <div class="mb-3">
-                     <label for="pin_code" class="form-label fw-bold">Pin Code</label>
-                     <input type="text" name="pin_code" id="pin_code" class="form-control border-primary shadow-sm"
-                        placeholder="Enter your pin code" required style="font-size: 14px;">
-                  </div>
+   <div class="container my-5">
+      <div class="row justify-content-center">
+         <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+               <div class="card-header bg-primary text-white text-center rounded-top">
+                  <h3 class="mb-0">Place Your Order</h3>
+               </div>
+               <div class="card-body p-4">
+                  <form method="post" action="orderProduct.php">
+                     <!-- Hidden Fields for Product ID and Quantity -->
+                     <input type="hidden" name="product_id" value="1"> <!-- Replace 1 with dynamic product ID -->
+                     <input type="hidden" name="quantity" value="1"> <!-- Set dynamically if needed -->
 
-                  <!-- Payment Method Section -->
-                  <h5 class="text-primary mb-3">Payment Method</h5>
-                  <div class="mb-4">
-                     <label for="payment_method" class="form-label fw-bold">Select Payment Method</label>
-                     <select name="payment_method" id="payment_method" class="form-select border-primary shadow-sm"
-                        required style="font-size: 14px;">
-                        <option value="" disabled selected>-- Select Payment --</option>
-                        <option value="Credit Card">Credit Card</option>
-                        <option value="Debit Card">Debit Card</option>
-                        <option value="PayPal">PayPal</option>
-                        <option value="Cash on Delivery">Cash on Delivery</option>
-                     </select>
-                  </div>
+                     <!-- Delivery Address Section -->
+                     <h5 class="text-primary mb-3">Delivery Address</h5>
+                     <div class="mb-3">
+                        <label for="house_no" class="form-label fw-bold">House No. & Name</label>
+                        <input type="text" name="house_no" id="house_no" class="form-control border-primary" required>
+                     </div>
+                     <div class="mb-3">
+                        <label for="street_name" class="form-label fw-bold">Street Name</label>
+                        <input type="text" name="street_name" id="street_name" class="form-control border-primary"
+                           required>
+                     </div>
+                     <div class="mb-3">
+                        <label for="village" class="form-label fw-bold">Village</label>
+                        <input type="text" name="village" id="village" class="form-control border-primary" required>
+                     </div>
+                     <div class="mb-3">
+                        <label for="district" class="form-label fw-bold">District</label>
+                        <input type="text" name="district" id="district" class="form-control border-primary" required>
+                     </div>
+                     <div class="mb-3">
+                        <label for="state" class="form-label fw-bold">State</label>
+                        <input type="text" name="state" id="state" class="form-control border-primary" required>
+                     </div>
+                     <div class="mb-3">
+                        <label for="pin_code" class="form-label fw-bold">Pin Code</label>
+                        <input type="text" name="pin_code" id="pin_code" class="form-control border-primary" required>
+                     </div>
 
-                  <!-- Submit Button -->
-                  <div class="text-center">
-                     <button type="submit" name="confirm_order" class="btn btn-primary px-5 py-2 rounded-pill shadow-sm">
-                        <i class="bi bi-check-circle-fill"></i> Confirm Order
-                     </button>
-                  </div>
-               </form>
+                     <!-- Payment Method Section -->
+                     <h5 class="text-primary mb-3">Payment Method</h5>
+                     <div class="mb-4">
+                        <select name="payment_method" id="payment_method" class="form-select border-primary" required>
+                           <option value="" disabled selected>-- Select Payment --</option>
+                           <option value="Credit Card">Credit Card</option>
+                           <option value="Debit Card">Debit Card</option>
+                           <option value="PayPal">PayPal</option>
+                           <option value="Cash on Delivery">Cash on Delivery</option>
+                        </select>
+                     </div>
+
+                     <!-- Submit Button -->
+                     <div class="text-center">
+                        <button type="submit" name="confirm_order" class="btn btn-primary">Confirm Order</button>
+                     </div>
+                  </form>
+               </div>
             </div>
          </div>
       </div>
    </div>
-</div>
-<!-- Order Product End -->
+   <!-- Order Product End -->
 
 
    <!-- Footer Start -->

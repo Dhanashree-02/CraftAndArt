@@ -52,7 +52,8 @@ if (!isset($_SESSION['user_id'])) {
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
-         <nav class="navbar navbar-light navbar-expand-lg py-4">
+         <nav class="navbar navbar-light navbar-expand-lg py-5">
+         <img src="img/logo1.png" style="height: 10vh; ">
             <a href="index.html" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
@@ -93,7 +94,7 @@ if (!isset($_SESSION['user_id'])) {
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userPlaceOrder.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
+               <a href="userOrderHistory.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
                   Now</a>
             </div>
          </nav>
