@@ -1,42 +1,77 @@
 <?php
-// orderConfirmation.php - Order confirmation page
 session_start();
 
 // Database connection
 $servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "craft";
+$username = "root"; // Replace with your DB username
+$password = ""; // Replace with your DB password
+$dbname = "craft"; // Replace with your DB name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
    die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if 'order_id' is present in the URL
-if (isset($_GET['order_id'])) {
-   $orderId = $_GET['order_id'];
-
-   // Fetch order details from the database
-   $sql = "SELECT * FROM orders WHERE order_id = ?";
-   $stmt = $conn->prepare($sql);
-   $stmt->bind_param("i", $orderId);
-   $stmt->execute();
-   $result = $stmt->get_result();
-
-   // Check if the order exists
-   if ($result->num_rows > 0) {
-      $order = $result->fetch_assoc();
-   } else {
-      $order = null;
-   }
-
-   $stmt->close();
-} else {
-   $order = null;
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+   header('Location: userLogin.php');
+   exit();
 }
 
-$conn->close();
+// Fetch user ID
+$user_id = $_SESSION['user_id'];
+
+if (isset($_GET['order_id'])) {
+   $order_id = $_GET['order_id'];
+   // You can now use the $order_id to display a success message or fetch details
+} else {
+   // If no order_id is passed, redirect to the checkout page or show an error
+   header('Location: checkout.php');
+   exit();
+}
+
+// Fetch the order details from the database
+$orderQuery = "SELECT * FROM orders WHERE id = ? AND user_id = ?";
+$orderStmt = $conn->prepare($orderQuery);
+
+// Check if the prepare was successful
+if (!$orderStmt) {
+   die("Prepare failed: " . $conn->error); // Output error if prepare fails
+}
+
+$orderStmt->bind_param('ii', $order_id, $user_id);
+$orderStmt->execute();
+$orderResult = $orderStmt->get_result();
+
+if ($orderResult->num_rows === 0) {
+   // If the order doesn't exist, show an error page
+   echo "Order not found!";
+   exit();
+}
+
+$order = $orderResult->fetch_assoc();
+
+// Fetch the order items
+$itemQuery = "SELECT oi.*, p.name FROM order_items oi 
+              JOIN products p ON oi.product_id = p.id 
+              WHERE oi.order_id = ?";
+$itemStmt = $conn->prepare($itemQuery);
+
+// Check if the prepare was successful
+if (!$itemStmt) {
+   die("Prepare failed: " . $conn->error); // Output error if prepare fails
+}
+
+$itemStmt->bind_param('i', $order_id);
+$itemStmt->execute();
+$itemResult = $itemStmt->get_result();
+
+// Calculate the total price (in case you want to display the total again)
+$totalPrice = 0;
+while ($item = $itemResult->fetch_assoc()) {
+   $totalPrice += $item['total_price']; // Use the `total_price` column from order_items
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -44,7 +79,7 @@ $conn->close();
 
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Order products </title>
+   <title>Craft Loving | Menu </title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
    <meta content name="keywords">
    <meta content name="description">
@@ -79,6 +114,7 @@ $conn->close();
       <div class="spinner-grow text-primary" role="status"></div>
    </div>
    <!-- Spinner End -->
+
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
@@ -155,7 +191,7 @@ $conn->close();
    <!-- Hero Start -->
    <div class="container-fluid bg-light py-6 my-6 mt-0">
       <div class="container text-center animated bounceInDown">
-         <h1 class="display-1 mb-4">Order confirmation</h1>
+         <h1 class="display-1 mb-4">Add to cart</h1>
          <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item"><a href="#">Pages</a></li>
@@ -164,55 +200,52 @@ $conn->close();
       </div>
    </div>
    <!-- Hero End -->
-
-
-
-   <!-- Order Confirmation Start -->
-   <div class="container my-5">
+   <!-- Confirmation Start -->
+   <div class="container py-5">
       <div class="row justify-content-center">
-         <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-               <div class="card-header bg-primary text-white text-center rounded-top">
-                  <h3 class="mb-0">Order Confirmation</h3>
-               </div>
-               <div class="card-body p-4">
-                  <?php if ($order): ?>
-                     <p class="text-center text-success fs-5"><i class="bi bi-check-circle-fill"></i> Thank you for your
-                        order!</p>
-                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                           <strong>Order ID:</strong> <?php echo $order['order_id']; ?>
+         <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-light rounded-4">
+               <div class="card-body p-5">
+                  <!-- Success Message -->
+                  <div class="alert alert-success text-center mb-4">
+                  <h1 class="display-5 mb-5 text-dark">Your order has been placed successfully!</h1>
+                     <p class="lead">Thank you for shopping with us. Your order ID is
+                        <strong>#<?php echo $order['id']; ?></strong>.</p>
+                  </div>
+
+                  <!-- Order Summary -->
+                  <h4 class="fw-bold text-dark mb-4">Order Summary</h4>
+                  <div class="mb-3">
+                     <p><strong>Order ID:</strong> #<?php echo $order['id']; ?></p>
+                     <p><strong>Total Price:</strong> ₹<?php echo number_format($order['total_price'], 2); ?></p>
+                     <p><strong>Status:</strong> <?php echo ucfirst($order['status']); ?></p>
+                     <p><strong>Payment Method:</strong> <?php echo $order['payment_method']; ?></p>
+                     <p><strong>Shipping Address:</strong> <?php echo $order['address']; ?></p>
+                  </div>
+
+                  <h5 class="fw-bold text-dark mb-3">Items Purchased</h5>
+                  <ul class="list-group mb-4">
+                     <?php while ($item = $itemResult->fetch_assoc()): ?>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                           <?php echo $item['name']; ?> (x<?php echo $item['quantity']; ?>)
+                           <span
+                              class="badge bg-primary rounded-pill">₹<?php echo number_format($item['total_price'], 2); ?></span>
                         </li>
-                        <li class="list-group-item">
-                           <strong>Product Name:</strong> <?php echo $order['name']; ?>
-                        </li>
-                        <li class="list-group-item">
-                           <strong>Quantity:</strong> <?php echo $order['quantity']; ?>
-                        </li>
-                        <li class="list-group-item">
-                           <strong>Total Price:</strong>
-                           $<?php echo number_format($order['price'] * $order['quantity'], 2); ?>
-                        </li>
-                        <li class="list-group-item">
-                           <strong>Order Date:</strong>
-                           <?php echo date('F j, Y, g:i A', strtotime($order['created_at'])); ?>
-                        </li>
-                     </ul>
-                  <?php else: ?>
-                     <p class="text-center text-danger fs-5"><i class="bi bi-exclamation-circle-fill"></i> Order not found.
-                     </p>
-                  <?php endif; ?>
-               </div>
-               <div class="card-footer bg-light text-center">
-                  <a href="product.php" class="btn btn-primary rounded-pill px-4 py-2">
-                     <i class="bi bi-bag-fill"></i> Continue Shopping
-                  </a>
+                     <?php endwhile; ?>
+                  </ul>
+
+                  <!-- Back to shopping or order history -->
+                  <div class="d-flex justify-content-between">
+                     <a href="product.php" class="btn btn-primary btn-lg rounded-pill px-4">Back to Shopping</a>
+                     <a href="userOrderHistory.php" class="btn btn-secondary btn-lg rounded-pill px-4">View Order
+                        History</a>
+                  </div>
                </div>
             </div>
          </div>
       </div>
    </div>
-   <!-- Order Confirmation End -->
+   <!-- Confirmation End -->
 
 
    <!-- Footer Start -->
@@ -309,6 +342,7 @@ $conn->close();
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
    <!-- Template Javascript -->
    <script src="js/main.js"></script>
+
 </body>
 
 </html>

@@ -1,73 +1,107 @@
 <?php
-// Start session to access cart data
 session_start();
 
-// Check if cart is empty
-if (empty($_SESSION['cart'])) {
-    header("Location: product.php");
-    exit(); // Redirect to products page if cart is empty
+// Database connection
+$servername = "localhost";
+$username = "root"; // Replace with your DB username
+$password = ""; // Replace with your DB password
+$dbname = "craft"; // Replace with your DB name
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+if ($conn->connect_error) {
+   die("Connection failed: " . $conn->connect_error);
 }
 
-// Calculate total price
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+   header('Location: userLogin.php');
+   exit();
+}
+
+// Fetch user ID
+$user_id = $_SESSION['user_id'];
+
+// Initialize error message
+$error = "";
+
+// Calculate total price if cart is not empty
 $totalPrice = 0;
-foreach ($_SESSION['cart'] as $product) {
-    $totalPrice += $product['price'] * $product['quantity'];
+if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+   foreach ($_SESSION['cart'] as $item) {
+      $totalPrice += $item['price'] * $item['quantity'];
+   }
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Capture form data
-    $house_no = $_POST['house_no'];
-    $street_name = $_POST['street_name'];
-    $city = $_POST['city'];
-    $district = $_POST['district'];
-    $state = $_POST['state'];
-    $pincode = $_POST['pincode'];
-    $payment_method = $_POST['payment_method'];
-    $user_id = $_SESSION['user_id']; // Assuming the user is logged in, get their user_id
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+   // Get address components
+   $house_no = htmlspecialchars($_POST['house_no']);
+   $street_name = htmlspecialchars($_POST['street_name']);
+   $city = htmlspecialchars($_POST['city']);
+   $district = htmlspecialchars($_POST['district']);
+   $state = htmlspecialchars($_POST['state']);
+   $pincode = htmlspecialchars($_POST['pincode']);
+   $payment_method = htmlspecialchars($_POST['payment_method']);
 
-    // Combine all address fields into one
-    $address = $house_no . ', ' . $street_name . ', ' . $city . ', ' . $district . ', ' . $state . ' - ' . $pincode;
+   // Combine address components
+   $address = "$house_no, $street_name, $city, $district, $state, $pincode";
 
-    // Database connection
-    include('db_connection.php'); // Make sure you have your DB connection here
+   // Check if cart is not empty and calculate total price
+   if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 
-    // Insert the order into the 'orders' table
-    $stmt = $conn->prepare("INSERT INTO orders (user_id, total_price, status, address, payment_method) VALUES (?, ?, 'pending', ?, ?)");
-    if ($stmt === false) {
-        die('Error preparing statement: ' . $conn->error); // Handle error
-    }
-    $stmt->bind_param("idss", $user_id, $totalPrice, $address, $payment_method); // Bind parameters
-    if (!$stmt->execute()) {
-        die('Error executing statement: ' . $stmt->error); // Handle error
-    }
-    $order_id = $stmt->insert_id; // Get the last inserted order id
+      // Insert order details into the database
+      $orderQuery = "INSERT INTO orders (user_id, total_price, status, address, payment_method) 
+                       VALUES (?, ?, 'pending', ?, ?)";
+      $orderStmt = $conn->prepare($orderQuery);
 
-    // Insert each item in the 'order_items' table
-    foreach ($_SESSION['cart'] as $product) {
-        $stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)");
-        if ($stmt === false) {
-            die('Error preparing statement: ' . $conn->error); // Handle error
-        }
-        $stmt->bind_param("iiid", $order_id, $product['id'], $product['quantity'], $product['price']);
-        if (!$stmt->execute()) {
-            die('Error executing statement: ' . $stmt->error); // Handle error
-        }
-    }
+      if (!$orderStmt) {
+         die("Prepare failed: " . $conn->error); // Debugging: Output SQL error
+      }
 
-    // Clear the cart after order placement
-    unset($_SESSION['cart']);
+      $orderStmt->bind_param('idss', $user_id, $totalPrice, $address, $payment_method);
 
-    // Redirect to order confirmation page
-    header("Location: orderConfirmation.php");
-    exit(); // Ensure no further code is executed
+      if ($orderStmt->execute()) {
+         $order_id = $orderStmt->insert_id;
+
+         // Add items to order_items
+         foreach ($_SESSION['cart'] as $item) {
+            $itemTotalPrice = $item['price'] * $item['quantity']; // Calculate total price per item
+            $itemQuery = "INSERT INTO order_items (order_id, product_id, quantity, total_price) 
+                              VALUES (?, ?, ?, ?)";
+            $itemStmt = $conn->prepare($itemQuery);
+
+            if (!$itemStmt) {
+               die("Prepare failed: " . $conn->error); // Debugging: Output SQL error
+            }
+
+            $itemStmt->bind_param('iiid', $order_id, $item['product_id'], $item['quantity'], $itemTotalPrice);
+            $itemStmt->execute();
+         }
+
+         // Clear cart
+         unset($_SESSION['cart']);
+
+         // Redirect to success page
+         // Redirect to success page with the order_id as a URL parameter
+         header('Location: success.php?order_id=' . $order_id);
+         exit();
+
+      } else {
+         $error = "Failed to place order. Error: " . $conn->error; // Include SQL error in the message
+      }
+   } else {
+      $error = "Your cart is empty. Please add items to the cart before placing an order.";
+   }
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Order products </title>
+   <title>Craft Loving | Menu </title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
    <meta content name="keywords">
    <meta content name="description">
@@ -102,8 +136,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <div class="spinner-grow text-primary" role="status"></div>
    </div>
    <!-- Spinner End -->
-<!-- Navbar start -->
-<div class="container-fluid nav-bar">
+
+   <!-- Navbar start -->
+   <div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
             <a href="index.html" class="navbar-brand">
@@ -140,9 +175,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                </div>
                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
                   data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
+               <a href="addCart.php"
+                  class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                      class="fas fa-shopping-cart"></i></a>
-                     <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
+               <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
                <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
@@ -177,7 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    <!-- Hero Start -->
    <div class="container-fluid bg-light py-6 my-6 mt-0">
       <div class="container text-center animated bounceInDown">
-         <h1 class="display-1 mb-4">Your order</h1>
+         <h1 class="display-1 mb-4">Add to cart</h1>
          <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item"><a href="#">Pages</a></li>
@@ -186,87 +222,105 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       </div>
    </div>
    <!-- Hero End -->
-<!-- Order start -->
-<div class="container-fluid order py-6 wow bounceInUp" data-wow-delay="0.1s">
-   <div class="container">
-      <div class="p-5 bg-light rounded order-form">
-         <div class="row g-4">
-            <div class="col-12">
-               <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Place an Order</small>
-               <h1 class="display-5 mb-0">Proceed Your Order</h1>
-            </div>
-            <div class="col-md-6 col-lg-7">
-               <p class="mb-4">Fill in the details below to place your order. We will process it shortly!</p>
-               <!-- Order Form -->
-               <form method="POST" action="orderProduct.php">
-    <!-- Address -->
-    <h3>Address</h3>
-    <div class="row">
-        <div class="col-md-6">
-            <input type="text" name="house_no" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="House No." required>
-        </div>
-        <div class="col-md-6">
-            <input type="text" name="street_name" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="Street Name" required>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <input type="text" name="city" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="City" required>
-        </div>
-        <div class="col-md-6">
-            <input type="text" name="district" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="District" required>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <input type="text" name="state" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="State" required>
-        </div>
-        <div class="col-md-6">
-            <input type="text" name="pincode" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" placeholder="Pincode" required>
-        </div>
-    </div>
 
-    <!-- Payment Method -->
-    <h3>Payment Method</h3>
-    <select name="payment_method" class="w-100 form-control p-3 mb-4 border-primary bg-light rounded" required>
-        <option value="COD">Cash on Delivery</option>
-        <option value="Card">Credit/Debit Card</option>
-        <option value="UPI">UPI Payment</option>
-    </select>
+<!-- Checkout Start -->
+<div class="container py-5">
+   <h1 class="text-center mb-5 text-primary fw-bold">Checkout</h1>
 
-    <!-- Submit Button -->
-    <button type="submit" class="w-100 btn btn-primary form-control p-3 border-primary bg-primary rounded-pill">Place Order</button>
-</form>
+   <!-- Order Summary -->
+   <div class="mb-5">
+      <h4 class="fw-bold text-primary mb-4">Order Summary</h4>
+      <?php if (isset($_SESSION['cart']) && is_array($_SESSION['cart']) && !empty($_SESSION['cart'])): ?>
+         <div class="table-responsive">
+            <table class="table table-bordered">
+               <thead>
+                  <tr>
+                     <th>Product</th>
+                     <th>Quantity</th>
+                     <th>Price</th>
+                     <th>Total</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <?php foreach ($_SESSION['cart'] as $item): ?>
+                     <tr>
+                        <td><?php echo $item['name']; ?></td>
+                        <td><?php echo $item['quantity']; ?></td>
+                        <td>₹<?php echo number_format($item['price'], 2); ?></td>
+                        <td>₹<?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
+                     </tr>
+                  <?php endforeach; ?>
+               </tbody>
+            </table>
+         </div>
+         <h5 class="fw-bold text-end">Total Price: ₹<?php echo number_format($totalPrice, 2); ?></h5>
+      <?php else: ?>
+         <p class="text-center text-danger">Your cart is empty.</p>
+      <?php endif; ?>
+   </div>
 
-            </div>
-            <div class="col-md-6 col-lg-5">
-               <div>
-                  <!-- Contact Information -->
-                  <div class="d-inline-flex w-100 border border-primary p-4 rounded mb-4">
-                     <i class="fas fa-map-marker-alt fa-2x text-primary me-4"></i>
-                     <div>
-                        <h4>Billing Address</h4>
-                        <p>Enter your billing address</p>
-                     </div>
-                  </div>
-                  <!-- Contact Us -->
-                  <div class="d-inline-flex w-100 border border-primary p-4 rounded mb-4">
-                     <i class="fas fa-phone-alt fa-2x text-primary me-4"></i>
-                     <div>
-                        <h4>Contact Us</h4>
-                        <p class="mb-2">info@yourshop.com</p>
-                        <p class="mb-0">(+123) 456-7890</p>
-                     </div>
-                  </div>
-               </div>
-            </div>
+   <!-- Display Errors -->
+   <?php if (!empty($error)): ?>
+      <div class="alert alert-danger text-center"><?php echo $error; ?></div>
+   <?php endif; ?>
+
+   <!-- Checkout Form -->
+   <form action="checkout.php" method="POST" class="bg-light p-4 rounded shadow-sm">
+      <h4 class="text-primary mb-4">Shipping Address</h4>
+      
+      <!-- Address Fields -->
+      <div class="row mb-3">
+         <div class="col-md-6">
+            <label for="house_no" class="form-label">House No</label>
+            <input type="text" name="house_no" id="house_no" class="form-control" required>
+         </div>
+         <div class="col-md-6">
+            <label for="street_name" class="form-label">Street Name</label>
+            <input type="text" name="street_name" id="street_name" class="form-control" required>
          </div>
       </div>
-   </div>
-</div>
-<!-- Order end -->
+      <div class="row mb-3">
+         <div class="col-md-6">
+            <label for="city" class="form-label">City</label>
+            <input type="text" name="city" id="city" class="form-control" required>
+         </div>
+         <div class="col-md-6">
+            <label for="district" class="form-label">District</label>
+            <input type="text" name="district" id="district" class="form-control" required>
+         </div>
+      </div>
+      <div class="row mb-3">
+         <div class="col-md-6">
+            <label for="state" class="form-label">State</label>
+            <input type="text" name="state" id="state" class="form-control" required>
+         </div>
+         <div class="col-md-6">
+            <label for="pincode" class="form-label">Pincode</label>
+            <input type="text" name="pincode" id="pincode" class="form-control" required>
+         </div>
+      </div>
 
-    
+      <h4 class="text-primary mb-4">Payment Method</h4>
+      <div class="mb-3">
+         <label for="payment_method" class="form-label">Select Payment Method</label>
+         <select name="payment_method" id="payment_method" class="form-select" required>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="Net Banking">Net Banking</option>
+            <option value="Cash on Delivery">Cash on Delivery</option>
+         </select>
+      </div>
+
+      <!-- Place Order Button -->
+      <div class="text-center mt-4">
+         <button type="submit" class="btn btn-primary btn-lg px-5">Place Order</button>
+      </div>
+   </form>
+</div>
+<!-- Checkout End -->
+
+
+
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
       <div class="container">
@@ -362,4 +416,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
    <!-- Template Javascript -->
    <script src="js/main.js"></script>
 </body>
+
 </html>

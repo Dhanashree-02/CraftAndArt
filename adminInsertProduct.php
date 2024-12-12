@@ -124,7 +124,7 @@ $conn->close();
    <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
       <small
          class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-         Admin - Add Product
+         Add Product
       </small>
       <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
    </div>
