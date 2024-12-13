@@ -1,60 +1,70 @@
 <?php
-// Admin login check
-session_start();
-if (!isset($_SESSION['admin_id'])) {
-   header("Location: adminLogin.php");
-   exit();
-}
-
 // Database connection
-include('db_connection.php');
+$servername = "localhost";  // your MySQL server
+$username = "root";         // your MySQL username
+$password = "";             // your MySQL password
+$dbname = "craft";  // your database name
 
-if (!isset($_GET['order_id'])) {
-   echo "Order ID not provided.";
-   exit();
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-$order_id = $_GET['order_id'];
+// Function to calculate total revenue for completed orders
+function getRevenueForCompletedOrders($conn, $period) {
+    $dateCondition = "o.status = 'completed'";  // Filter for completed orders
+    
+    if ($period == "daily") {
+        // Today's completed orders
+        $dateCondition .= " AND DATE(o.created_at) = CURDATE()";
+    } elseif ($period == "weekly") {
+        // This week's completed orders
+        $dateCondition .= " AND YEARWEEK(o.created_at, 1) = YEARWEEK(CURDATE(), 1)";
+    } elseif ($period == "monthly") {
+        // This month's completed orders
+        $dateCondition .= " AND MONTH(o.created_at) = MONTH(CURDATE()) AND YEAR(o.created_at) = YEAR(CURDATE())";
+    }
+    
+    // SQL Query to calculate the total revenue for completed orders
+    $sql = "
+        SELECT SUM(o.total_price) AS total_revenue
+        FROM orders o
+        WHERE $dateCondition
+    ";
 
-// Fetch order details
-$stmt = $conn->prepare("
-    SELECT o.id, u.name AS user_name, o.total_price, o.status, o.created_at
-    FROM orders o
-    JOIN users u ON o.user_id = u.id
-    WHERE o.id = ?
-");
-$stmt->bind_param("i", $order_id);
-$stmt->execute();
-$order_result = $stmt->get_result();
-$order = $order_result->fetch_assoc();
+    $result = $conn->query($sql);
+    $revenue = 0;
 
-if (!$order) {
-   echo "Order not found.";
-   exit();
+    // Fetch the result
+    if ($row = $result->fetch_assoc()) {
+        $revenue = $row['total_revenue'];
+    }
+
+    // Return the revenue for completed orders
+    return $revenue;
 }
 
-// Fetch order items
-$stmt = $conn->prepare("
-    SELECT p.name AS product_name, oi.quantity, oi.price
-    FROM order_items oi
-    JOIN products p ON oi.product_id = p.id
-    WHERE oi.order_id = ?
-");
-$stmt->bind_param("i", $order_id);
-$stmt->execute();
-$items_result = $stmt->get_result();
+// Get the revenue for completed orders for daily, weekly, and monthly periods
+$dailyRevenue = getRevenueForCompletedOrders($conn, "daily");
+$weeklyRevenue = getRevenueForCompletedOrders($conn, "weekly");
+$monthlyRevenue = getRevenueForCompletedOrders($conn, "monthly");
+
+// Close the database connection
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Add Products</title>
+   <title>Craft Loving | Admin Revenue Generation</title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-   <meta content name="keywords">
-   <meta content name="description">
    <link rel="icon" href="img/logo1.png" type="image/x-icon">
+
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,82 +86,64 @@ $items_result = $stmt->get_result();
    <!-- Template Stylesheet -->
    <link href="css/style.css" rel="stylesheet">
 
-   <style>
-      /* Ensure the body takes full height and pushes footer down */
-      body {
-         display: flex;
-         flex-direction: column;
-         min-height: 100vh;
-      }
-
-      .container-fluid {
-         flex: 1;
-         display: flex;
-      }
-
-      .footer {
-         background-color: #f8f9fa;
-         padding: 30px;
-      }
-   </style>
 </head>
-
-<body>
 
    <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
-      <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
-         <a href="index.php" class="navbar-brand mb-4">
+      <nav class="navbar navbar-light bg-light flex-column align-items-center justify-content-center p-3 vh-100"
+         style="width: 250px;">
+         <a href="index.php" class="navbar-brand mb-4 text-center">
+            <img src="img/logo1.png" style="height: 10vh;">
             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">
             <a href="index.php" class="nav-item nav-link">Home</a>
             <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
-            <a href="#" class="nav-item nav-link">Product Sale</a>
-            <a href="#" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminRevenueReport.php" class="nav-item nav-link">Product Sale</a>
+            <a href="adminCustomerCount.php" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
          </div>
          <div class="mt-auto w-100">
             <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
          </div>
       </nav>
-      <!-- Vertical Navbar End -->
+<!-- Revenue start -->
+<div class="container mt-5 pt-5">
+    <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+        <small class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
+            Revenue Report
+        </small>
+        <h1 class="display-5 mb-5 text-dark">Revenues generated for Completed Orders</h1>
+    </div>
 
-      <!-- Admin order details start -->
-      <div class="container my-5 d-flex justify-content-center">
-         <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
-            <small
-               class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-               Admin view order details
-            </small>
-            <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
-            <div class="row justify-content-center">
-               <div class="col-md-10">
-                  <div class="card shadow-sm p-4 mb-4">
-                     <h4 class="card-title text-center">Order Information</h4>
-                     <p><strong>Order ID:</strong> <?php echo $order['id']; ?></p>
-                     <p><strong>User:</strong> <?php echo $order['user_name']; ?></p>
-                     <p><strong>Total Price:</strong> ₹<?php echo number_format($order['total_price'], 2); ?></p>
-                     <p><strong>Status:</strong>
-                        <span
-                           class="badge 
-                        <?php echo ($order['status'] == 'pending') ? 'bg-warning' : (($order['status'] == 'confirmed') ? 'bg-success' : 'bg-danger'); ?>">
-                           <?php echo ucfirst($order['status']); ?>
-                        </span>
-                     </p>
-                     <p><strong>Order Placed on:</strong>
-                        <?php echo date('d M Y, H:i', strtotime($order['created_at'])); ?></p>
-                  </div>
-               </div>
-            </div>
+    <!-- Daily Revenue for Completed Orders -->
+    <div class="report-section mb-5 p-4 border rounded shadow-sm" style="max-width: 700px; margin: 0 auto;">
+        <h2 class="text-center text-primary">Daily Revenue <span class="text-dark"> (Completed Orders)</span> </h2>
+        <p class="text-center text-dark">Total revenue for completed orders today:</p>
+        <p class="amount text-center display-4">₹<?php echo number_format($dailyRevenue, 2); ?></p>
+    </div>
 
-            <div class="text-center mt-4">
-               <a href="adminOrderVerification.php" class="btn btn-primary px-4 py-2 rounded-pill">Back to Orders</a>
-            </div>
-         </div>
-      </div>
-      <!-- Admin order details end -->
+    <!-- Weekly Revenue for Completed Orders -->
+    <div class="report-section mb-5 p-4 border rounded shadow-sm" style="max-width: 700px; margin: 0 auto;">
+        <h2 class="text-center text-primary">Weekly Revenue <span class="text-dark"> (Completed Orders)</span> </h2>
+        <p class="text-center text-dark">Total revenue for completed orders this week:</p>
+        <p class="amount text-center display-4">₹<?php echo number_format($weeklyRevenue, 2); ?></p>
+    </div>
+
+    <!-- Monthly Revenue for Completed Orders -->
+    <div class="report-section mb-5 p-4 border rounded shadow-sm" style="max-width: 700px; margin: 0 auto;">
+        <h2 class="text-center text-primary">Monthly Revenue <span class="text-dark"> (Completed Orders)</span> </h2>
+        <p class="text-center text-dark">Total revenue for completed orders this month:</p>
+        <p class="amount text-center display-4">₹<?php echo number_format($monthlyRevenue, 2); ?></p>
+    </div>
+</div>
+<!-- Revenue end -->
+
+
+
    </div>
+   <!-- Vertical Navbar End -->
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
@@ -233,22 +225,16 @@ $items_result = $stmt->get_result();
    <!-- Footer End -->
 
 
-   <!-- Back to Top -->
-   <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
-
    <!-- JavaScript Libraries -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
    <script src="lib/wow/wow.min.js"></script>
    <script src="lib/easing/easing.min.js"></script>
    <script src="lib/waypoints/waypoints.min.js"></script>
-   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
    <script src="lib/counterup/counterup.min.js"></script>
-
-   <!-- Contact Javascript File -->
+   <script src="lib/lightbox/js/lightbox.min.js"></script>
+   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+   <!-- Template Javascript -->
    <script src="js/main.js"></script>
-
-   <!-- Bootstrap Bundle with Popper -->
-   <script src="js/bootstrap.bundle.min.js"></script>
-
 </body>
-
 </html>

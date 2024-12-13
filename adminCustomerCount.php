@@ -1,24 +1,81 @@
 <?php
-// Start session
-session_start();
+// Database connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "craft"; // Replace with your database name
 
-// Check if admin is logged in
-if (!isset($_SESSION['admin_id'])) {
-    header("Location: adminLogin.php"); // Redirect to login page if not logged in
-    exit();
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+   die("Connection failed: " . $conn->connect_error);
 }
+
+// Function to get reports
+function getAdminReports($timePeriod, $conn)
+{
+   $dateCondition = "";
+
+   switch ($timePeriod) {
+      case 'daily':
+         $dateCondition = "DATE(created_at) = CURDATE()";
+         break;
+      case 'weekly':
+         $dateCondition = "YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)";
+         break;
+      case 'monthly':
+         $dateCondition = "MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())";
+         break;
+   }
+
+   $query = "
+    SELECT 
+        o.status AS order_status,
+        COUNT(DISTINCT o.user_id) AS total_customers,
+        GROUP_CONCAT(DISTINCT o.user_id) AS user_ids,
+        SUM(o.total_price) AS total_revenue
+    FROM 
+        orders o
+    WHERE 
+        $dateCondition
+    GROUP BY 
+        o.status
+    ORDER BY 
+        o.status DESC
+";
+
+
+   $result = $conn->query($query);
+   $data = [];
+   if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+         $data[] = $row;
+      }
+   }
+   return $data;
+}
+
+// Get the selected time period
+$timePeriod = $_GET['timePeriod'] ?? 'daily'; // 'daily', 'weekly', or 'monthly'
+$reportData = getAdminReports($timePeriod, $conn);
 ?>
+
+
+
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Admin Home</title>
+   <title>Craft Loving | ustomer Count Report</title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-   <meta content name="keywords">
-   <meta content name="description">
    <link rel="icon" href="img/logo1.png" type="image/x-icon">
+
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,100 +96,101 @@ if (!isset($_SESSION['admin_id'])) {
 
    <!-- Template Stylesheet -->
    <link href="css/style.css" rel="stylesheet">
+
 </head>
 
 <body>
-
-<div class="container-fluid d-flex">
+   <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
-      <nav class="navbar navbar-light bg-light flex-column align-items-center justify-content-center p-3 vh-100" style="width: 250px;">
-   <a href="index.php" class="navbar-brand mb-4 text-center">
-      <img src="img/logo1.png" style="height: 10vh;">
-      <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
-   </a>
+      <nav class="navbar navbar-light bg-light flex-column align-items-center justify-content-center p-3 vh-100"
+         style="width: 250px;">
+         <a href="index.php" class="navbar-brand mb-4 text-center">
+            <img src="img/logo1.png" style="height: 10vh;">
+            <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
+         </a>
          <div class="navbar-nav w-100">
             <a href="index.php" class="nav-item nav-link">Home</a>
             <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
             <a href="adminRevenueReport.php" class="nav-item nav-link">Product Sale</a>
-            <a href="adminCutomerCount.php" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminCustomerCount.php" class="nav-item nav-link">Count of Customer</a>
             <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
-            <!-- <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tasks</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="adminDeleteProduct.php" class="dropdown-item">Remove Product</a>
-                  <a href="adminInsertProduct.php" class="dropdown-item">Add Products</a>
-               </div>
-            </div>
-            <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Reports</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="team.php" class="dropdown-item">Product Sale</a>
-                  <a href="testimonial.php" class="dropdown-item">Count of Customer</a>
-               </div>
-            </div> -->
          </div>
          <div class="mt-auto w-100">
             <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
          </div>
       </nav>
 
-      <!-- About start -->
-      <div class="container-fluid py-6">
-            <div class="container">
-                <div class="row g-5 align-items-center">
-                    <div class="col-lg-4 wow bounceInUp" data-wow-delay="0.1s">
-                        <img src="img/image11.jpg" class="img-fluid rounded"
-                            alt>
-                    </div>
-                    <div class="col-lg-7 wow bounceInUp" data-wow-delay="0.3s">
-                        <small
-                            class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">About
-                            Us</small>
-                        <h1 class="display-5 mb-4">Trusted By 200 + satisfied
-                            clients</h1>
-                        <p class="mb-4">Discover a world of creativity and
-                            craftsmanship! From handmade treasures to unique
-                            artisanal creations, we bring you the finest
-                            collection of crafts made with passion and care.
-                            Explore our carefully curated selection to find the
-                            perfect addition to your home, a thoughtful gift, or
-                            an inspiring piece to cherish. Celebrate the
-                            artistry of craft makers and shop with confidence
-                            for something truly special.</p>
-                        <div class="row g-4 text-dark mb-5">
-                            <div class="col-sm-6">
-                                <i
-                                    class="fas fa-share text-primary me-2"></i>Home
-                                Delivery
-                            </div>
-                            <div class="col-sm-6">
-                                <i
-                                    class="fas fa-share text-primary me-2"></i>24/7
-                                Customer Support
-                            </div>
-                            <div class="col-sm-6">
-                                <i
-                                    class="fas fa-share text-primary me-2"></i>Easy
-                                Customization Options
-                            </div>
-                            <div class="col-sm-6">
-                                <i
-                                    class="fas fa-share text-primary me-2"></i>Shop
-                                Unique Crafts
-                            </div>
+      <!-- Customer count start -->
+      <div class="container mt-5">
+         <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+            <small
+               class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
+               Count Customer
+            </small>
+            <h1 class="display-5 mb-5 text-dark">Admin Customer Count Report</h1>
+         </div>
+         <form method="GET" class="d-flex justify-content-center mb-5">
+            <label for="timePeriod" class="form-label text-dark me-3 fs-5">Filter by:</label>
+            <select name="timePeriod" id="timePeriod" class="form-select me-3" style="width: 200px;">
+               <option value="daily" <?= $timePeriod === 'daily' ? 'selected' : '' ?>>Daily</option>
+               <option value="weekly" <?= $timePeriod === 'weekly' ? 'selected' : '' ?>>Weekly</option>
+               <option value="monthly" <?= $timePeriod === 'monthly' ? 'selected' : '' ?>>Monthly</option>
+            </select>
+            <button type="submit" class="btn btn-primary py-1 px-3 rounded-pill shadow-sm">Generate Report</button>
+         </form>
+
+         <div class="row g-6">
+            <?php if (!empty($reportData)): ?>
+               <?php foreach ($reportData as $row): ?>
+                  <div class="col-md-6 col-lg-4">
+                     <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                           <h5 class="card-title text-primary fs-4">
+                              <i class="fas fa-box-open me-2"></i><?= ucfirst($row['order_status']) ?> Orders
+                           </h5>
+                           <p class="card-text text-dark fs-5 mb-2"><strong>Total Customers:</strong>
+                              <?= $row['total_customers'] ?></p>
+                           <button class="btn btn-primary py-1 px-3 rounded-pill shadow-sm"
+                              onclick="showCustomerDetails('<?= $row['user_ids'] ?>', '<?= $row['order_status'] ?>')">
+                              View Customer Details
+                           </button>
                         </div>
-                        <a href="about.php"
-                            class="btn btn-primary py-3 px-5 rounded-pill">About
-                            Us<i class="fas fa-arrow-right ps-2"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
+                     </div>
+                  </div>
+               <?php endforeach; ?>
+            <?php else: ?>
+               <div class="col-12">
+                  <div class="alert alert-warning text-center" role="alert">
+                     <i class="fas fa-exclamation-circle me-2"></i>No records found.
+                  </div>
+               </div>
+            <?php endif; ?>
+         </div>
+      </div>
+      <script>
+         function showCustomerDetails(userIds, status) {
+            $.ajax({
+               url: 'fetchCustomerDetails.php', // Create this script
+               method: 'POST',
+               data: { user_ids: userIds, order_status: status },
+               success: function (response) {
+                  // Display the details in a modal or alert
+                  $('#customerDetailsModal .modal-body').html(response);
+                  $('#customerDetailsModal').modal('show');
+               },
+               error: function () {
+                  alert('Failed to fetch customer details.');
+               }
+            });
+         }
+      </script>
+
+      <!-- Customer count end -->
+
+
    </div>
-   <!-- About  End -->
-
-
+   <!-- Vertical Navbar End -->
 
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
@@ -213,8 +271,21 @@ if (!isset($_SESSION['admin_id'])) {
    </div>
    <!-- Footer End -->
 
-   <!-- Back to Top -->
-   <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
+   <!-- Customer Details Modal -->
+   <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="customerDetailsModalLabel">Customer Details</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <!-- Dynamic customer details will be loaded here -->
+            </div>
+         </div>
+      </div>
+   </div>
 
    <!-- JavaScript Libraries -->
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -225,7 +296,6 @@ if (!isset($_SESSION['admin_id'])) {
    <script src="lib/counterup/counterup.min.js"></script>
    <script src="lib/lightbox/js/lightbox.min.js"></script>
    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-
    <!-- Template Javascript -->
    <script src="js/main.js"></script>
 </body>

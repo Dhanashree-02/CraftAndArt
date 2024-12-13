@@ -7,46 +7,46 @@ $dbname = "craft";  // Replace with your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+   die("Connection failed: " . $conn->connect_error);
 }
 
 // Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
-    $description = $_POST['description'];
-    $price = $_POST['price'];
-    $category = $_POST['category']; // New Category field
+   $name = $_POST['name'];
+   $description = $_POST['description'];
+   $price = $_POST['price'];
+   $category = $_POST['category']; // New Category field
 
-    // Handle file upload
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-        $imageTmp = $_FILES['image']['tmp_name'];
-        $imageName = $_FILES['image']['name'];
-        $imagePath = 'img/' . basename($imageName);  // Define where to store the image
+   // Handle file upload
+   if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+      $imageTmp = $_FILES['image']['tmp_name'];
+      $imageName = $_FILES['image']['name'];
+      $imagePath = 'img/' . basename($imageName);  // Define where to store the image
 
-        // Move uploaded file to the "uploads" folder
-        if (move_uploaded_file($imageTmp, $imagePath)) {
-            // Insert product data into the database
-            $sql = "INSERT INTO products (name, description, price, category, image) 
+      // Move uploaded file to the "uploads" folder
+      if (move_uploaded_file($imageTmp, $imagePath)) {
+         // Insert product data into the database
+         $sql = "INSERT INTO products (name, description, price, category, image) 
                     VALUES ('$name', '$description', '$price', '$category', '$imagePath')";
-            
-            if ($conn->query($sql) === TRUE) {
-                echo "<div class='alert alert-success'>New product added successfully!</div>";
 
-                // JavaScript to reset the form fields
-                echo "<script>document.getElementById('name').value = '';</script>";
-                echo "<script>document.getElementById('description').value = '';</script>";
-                echo "<script>document.getElementById('price').value = '';</script>";
-                echo "<script>document.getElementById('category').value = '';</script>";
-                echo "<script>document.getElementById('image').value = '';</script>";
-            } else {
-                echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
-            }
-        } else {
-            echo "<div class='alert alert-danger'>Error uploading image.</div>";
-        }
-    } else {
-        echo "<div class='alert alert-warning'>No image file uploaded or there was an upload error.</div>";
-    }
+         if ($conn->query($sql) === TRUE) {
+            echo "<div class='alert alert-success'>New product added successfully!</div>";
+
+            // JavaScript to reset the form fields
+            echo "<script>document.getElementById('name').value = '';</script>";
+            echo "<script>document.getElementById('description').value = '';</script>";
+            echo "<script>document.getElementById('price').value = '';</script>";
+            echo "<script>document.getElementById('category').value = '';</script>";
+            echo "<script>document.getElementById('image').value = '';</script>";
+         } else {
+            echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
+         }
+      } else {
+         echo "<div class='alert alert-danger'>Error uploading image.</div>";
+      }
+   } else {
+      echo "<div class='alert alert-warning'>No image file uploaded or there was an upload error.</div>";
+   }
 }
 
 $conn->close();
@@ -89,93 +89,86 @@ $conn->close();
 
    <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
-      <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
-         <a href="index.php" class="navbar-brand mb-4">
+      <nav class="navbar navbar-light bg-light flex-column align-items-center justify-content-center p-3 vh-100"
+         style="width: 250px;">
+         <a href="index.php" class="navbar-brand mb-4 text-center">
+            <img src="img/logo1.png" style="height: 10vh;">
             <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">
             <a href="index.php" class="nav-item nav-link">Home</a>
             <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
-            <a href="#" class="nav-item nav-link">Product Sale</a>
-            <a href="#" class="nav-item nav-link">Count of Customer</a>
-            <!-- <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tasks</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="adminDeleteProduct.php" class="dropdown-item">Remove Product</a>
-                  <a href="adminInsertProduct.php" class="dropdown-item">Add Products</a>
-               </div>
-            </div>
-            <div class="nav-item dropdown">
-               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Reports</a>
-               <div class="dropdown-menu bg-light">
-                  <a href="team.php" class="dropdown-item">Product Sale</a>
-                  <a href="testimonial.php" class="dropdown-item">Count of Customer</a>
-               </div>
-            </div> -->
+            <a href="adminRevenueReport.php" class="nav-item nav-link">Product Sale</a>
+            <a href="adminCustomerCount.php" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
          </div>
          <div class="mt-auto w-100">
             <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
          </div>
       </nav>
 
+
       <!-- Admin insertion start -->
       <div class="container py-5">
-   <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
-      <small
-         class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-         Add Product
-      </small>
-      <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
-   </div>
-   <div class="card shadow-lg rounded-3 mx-auto" style="max-width: 700px;">
-      <div class="card-body p-5">
-         <form action="adminInsertProduct.php" method="POST" enctype="multipart/form-data">
-            <!-- Product Name -->
-            <div class="mb-4">
-               <label for="name" class="form-label text-dark fs-5">Product Name:</label>
-               <input type="text" class="form-control form-control-lg" id="name" name="name" required>
-            </div>
+         <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+            <small
+               class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
+               Add Product
+            </small>
+            <h1 class="display-5 mb-5 text-dark">Enter the Details of the New Product You Wish to Add</h1>
+         </div>
+         <div class="card shadow-lg rounded-3 mx-auto" style="max-width: 700px;">
+            <div class="card-body p-5">
+               <form action="adminInsertProduct.php" method="POST" enctype="multipart/form-data">
+                  <!-- Product Name -->
+                  <div class="mb-4">
+                     <label for="name" class="form-label text-dark fs-5">Product Name:</label>
+                     <input type="text" class="form-control form-control-lg" id="name" name="name" required>
+                  </div>
 
-            <!-- Product Description -->
-            <div class="mb-4">
-               <label for="description" class="form-label text-dark fs-5">Product Description:</label>
-               <textarea id="description" name="description" class="form-control form-control-lg" rows="4" required></textarea>
-            </div>
+                  <!-- Product Description -->
+                  <div class="mb-4">
+                     <label for="description" class="form-label text-dark fs-5">Product Description:</label>
+                     <textarea id="description" name="description" class="form-control form-control-lg" rows="4"
+                        required></textarea>
+                  </div>
 
-            <!-- Price -->
-            <div class="mb-4">
-               <label for="price" class="form-label text-dark fs-5">Price ($):</label>
-               <input type="number" class="form-control form-control-lg" id="price" name="price" required>
-            </div>
+                  <!-- Price -->
+                  <div class="mb-4">
+                     <label for="price" class="form-label text-dark fs-5">Price ($):</label>
+                     <input type="number" class="form-control form-control-lg" id="price" name="price" required>
+                  </div>
 
-            <!-- Category Dropdown -->
-            <div class="mb-4">
-               <label for="category" class="form-label text-dark fs-5">Category:</label>
-               <select class="form-select form-select-lg" id="category" name="category" required>
-                  <option value="" disabled selected>Select a Category</option>
-                  <option value="WoodCraft">WoodCraft</option>
-                  <option value="Mandala">Mandala</option>
-                  <option value="ResinArt">ResinArt</option>
-                  <option value="PaperCraft">PaperCraft</option>
-                  <option value="Miniature">Miniature</option>
-               </select>
-            </div>
+                  <!-- Category Dropdown -->
+                  <div class="mb-4">
+                     <label for="category" class="form-label text-dark fs-5">Category:</label>
+                     <select class="form-select form-select-lg" id="category" name="category" required>
+                        <option value="" disabled selected>Select a Category</option>
+                        <option value="WoodCraft">WoodCraft</option>
+                        <option value="Mandala">Mandala</option>
+                        <option value="ResinArt">ResinArt</option>
+                        <option value="PaperCraft">PaperCraft</option>
+                        <option value="Miniature">Miniature</option>
+                     </select>
+                  </div>
 
-            <!-- Product Image -->
-            <div class="mb-4">
-               <label for="image" class="form-label text-dark fs-5">Product Image:</label>
-               <input type="file" class="form-control form-control-lg" id="image" name="image" accept="image/*" required>
-            </div>
+                  <!-- Product Image -->
+                  <div class="mb-4">
+                     <label for="image" class="form-label text-dark fs-5">Product Image:</label>
+                     <input type="file" class="form-control form-control-lg" id="image" name="image" accept="image/*"
+                        required>
+                  </div>
 
-            <!-- Submit Button -->
-            <div class="text-center mt-4">
-               <button type="submit" class="btn btn-primary btn-lg py-2 px-4 rounded-pill shadow-sm">Add Product</button>
+                  <!-- Submit Button -->
+                  <div class="text-center mt-4">
+                     <button type="submit" class="btn btn-primary btn-lg py-2 px-4 rounded-pill shadow-sm">Add
+                        Product</button>
+                  </div>
+               </form>
             </div>
-         </form>
+         </div>
       </div>
-   </div>
-</div>
 
       <!-- Admin insertion end -->
    </div>

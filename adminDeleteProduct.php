@@ -7,36 +7,36 @@ $dbname = "craft"; // Replace with your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+   die("Connection failed: " . $conn->connect_error);
 }
 
 // Check if a product ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $productID = intval($_POST['productID']); // Secure input with intval to prevent SQL injection risks
+   $productID = intval($_POST['productID']); // Secure input with intval to prevent SQL injection risks
 
-    // Check if the product exists in the database
-    $checkQuery = "SELECT * FROM products WHERE id = ?";
-    $stmt = $conn->prepare($checkQuery);
-    $stmt->bind_param("i", $productID);
-    $stmt->execute();
-    $result = $stmt->get_result();
+   // Check if the product exists in the database
+   $checkQuery = "SELECT * FROM products WHERE id = ?";
+   $stmt = $conn->prepare($checkQuery);
+   $stmt->bind_param("i", $productID);
+   $stmt->execute();
+   $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        // Delete the product record from the database
-        $deleteQuery = "DELETE FROM products WHERE id = ?";
-        $stmt = $conn->prepare($deleteQuery);
-        $stmt->bind_param("i", $productID);
+   if ($result->num_rows > 0) {
+      // Delete the product record from the database
+      $deleteQuery = "DELETE FROM products WHERE id = ?";
+      $stmt = $conn->prepare($deleteQuery);
+      $stmt->bind_param("i", $productID);
 
-        if ($stmt->execute()) {
-            echo "<div class='alert alert-success'>Product deleted successfully!</div>";
-        } else {
-            echo "<div class='alert alert-danger'>Error deleting product: " . $conn->error . "</div>";
-        }
-    } else {
-        echo "<div class='alert alert-warning'>Product not found.</div>";
-    }
+      if ($stmt->execute()) {
+         echo "<div class='alert alert-success'>Product deleted successfully!</div>";
+      } else {
+         echo "<div class='alert alert-danger'>Error deleting product: " . $conn->error . "</div>";
+      }
+   } else {
+      echo "<div class='alert alert-warning'>Product not found.</div>";
+   }
 
-    $stmt->close();
+   $stmt->close();
 }
 
 $conn->close();
@@ -76,21 +76,25 @@ $conn->close();
 <body>
    <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
-      <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
-         <a href="index.php" class="navbar-brand mb-4">
-            <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark">Loving</span></h1>
+      <nav class="navbar navbar-light bg-light flex-column align-items-center justify-content-center p-3 vh-100"
+         style="width: 250px;">
+         <a href="index.php" class="navbar-brand mb-4 text-center">
+            <img src="img/logo1.png" style="height: 10vh;">
+            <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
          </a>
          <div class="navbar-nav w-100">
             <a href="index.php" class="nav-item nav-link">Home</a>
-            <a href="adminDeleteProduct.php" class="nav-item nav-link active">Remove Products</a>
+            <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
             <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
-            <a href="#" class="nav-item nav-link">Product Sale</a>
-            <a href="#" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminRevenueReport.php" class="nav-item nav-link">Product Sale</a>
+            <a href="adminCustomerCount.php" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
          </div>
          <div class="mt-auto w-100">
             <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
          </div>
       </nav>
+
 
       <!-- Remove product start -->
       <div class="container py-5">

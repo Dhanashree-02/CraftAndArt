@@ -4,7 +4,7 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirect to login page if not logged in
+    header("Location: userLogin.php"); // Redirect to login page if not logged in
     exit();
 }
 
@@ -22,6 +22,9 @@ $user_id = $_SESSION['user_id'];
 // Fetch user details from the database
 $sql = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
+if (!$stmt) {
+    die("Error preparing statement: " . $conn->error);
+}
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -32,6 +35,7 @@ if ($result->num_rows > 0) {
     echo "No user details found.";
     exit();
 }
+
 
 $stmt->close();
 $conn->close();
@@ -44,7 +48,7 @@ $conn->close();
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>Craft Loving | Wishlist</title>
+   <title>Craft Loving | User Details</title>
    <link href="css/bootstrap.min.css" rel="stylesheet">
    <link rel="icon" href="img/logo1.png" type="image/x-icon">
 
@@ -72,12 +76,11 @@ $conn->close();
 
 <body>
 
-
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
-         <img src="img/logo1.png" style="height: 10vh; ">
+            <img src="img/logo1.png" style="height: 10vh; ">
             <a href="index.php" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
@@ -118,13 +121,14 @@ $conn->close();
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userPlaceOrder.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
-                  Now</a>
+               <a href="userOrderHistory.php"
+                  class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
             </div>
          </nav>
       </div>
    </div>
    <!-- Navbar end -->
+
 
    <!-- Modal Search Start -->
    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -146,40 +150,33 @@ $conn->close();
       </div>
    </div>
    <!-- Modal Search End -->
-
-   <!-- User details start -->
-   <div class="container mt-5">
-      <h1 class="mb-5 text-center">Your Account</h1>
-      <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 550px;">
-         <div class="card-header bg-primary text-white text-center rounded-top">
-            <h3>Welcome, <?php echo htmlspecialchars($user['name']); ?>!</h3>
-         </div>
-         <div class="card-body text-center p-5 d-flex flex-column justify-content-center align-items-center">
-            <div class="mb-4">
-               <!-- User Initials Circle -->
-               <div class="d-flex justify-content-center align-items-center"
-                  style="width: 100px; height: 100px; border-radius: 50%; background-color: #d4a762; color: white; font-size: 36px; font-weight: bold;">
-                  <?php 
-                  $name = $user['name'];
-                  $initial = strtoupper(substr($name, 0, 1)); // Get the first letter of the name
-                  echo $initial;
-               ?>
-               </div>
+<!-- User details start -->
+<div class="container mt-5">
+        <h1 class="mb-5 text-center">Your Account</h1>
+        <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 550px;">
+            <div class="card-header bg-primary text-white text-center rounded-top">
+                <h3>Welcome, <?php echo htmlspecialchars($user['name']); ?>!</h3>
             </div>
-            <!-- User Name and Email -->
-            <h4 class="text-dark mb-1"><?php echo htmlspecialchars($user['name']); ?></h4>
-            <p class="text-muted mb-0">Email: <?php echo htmlspecialchars($user['email']); ?></p>
-            <!-- Edit Button -->
-            <div class="mt-4">
-               <a href="logout.php" class="btn btn-outline-primary px-4 py-2 rounded-pill shadow">Edit Details</a>
+            <div class="card-body text-center p-5 d-flex flex-column justify-content-center align-items-center">
+                <div class="mb-4">
+                    <div class="d-flex justify-content-center align-items-center"
+                        style="width: 100px; height: 100px; border-radius: 50%; background-color: #d4a762; color: white; font-size: 36px; font-weight: bold;">
+                        <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
+                    </div>
+                </div>
+                <h4 class="text-dark mb-1"><?php echo htmlspecialchars($user['name']); ?></h4>
+                <p class="text-muted mb-0">Email: <?php echo htmlspecialchars($user['email']); ?></p>
+                <div class="mt-4">
+                    <a href="userEditDetails.php" class="btn btn-outline-primary px-4 py-2 rounded-pill shadow">Edit
+                        Details</a>
+                </div>
             </div>
-         </div>
-         <div class="card-footer text-muted text-center rounded-bottom">
-            Last Updated: <?php echo date("F j, Y"); ?>
-         </div>
-      </div>
-   </div>
-   <!-- User details end -->
+            <div class="card-footer text-muted text-center rounded-bottom">
+                Last Updated: <?php echo date("F j, Y"); ?>
+            </div>
+        </div>
+    </div>
+    <!-- User details end -->
 
 
 

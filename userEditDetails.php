@@ -1,31 +1,117 @@
 <?php
-// Database connection
-$servername = "localhost";
-$username = "root"; // Replace with your DB username
-$password = ""; // Replace with your DB password
-$dbname = "craft"; // Replace with your DB name
+// Start session
+session_start();
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
+   header("Location: login.php"); // Redirect to login page if not logged in
+   exit();
+}
+
+// Database connection
+$conn = new mysqli("localhost", "root", "", "craft");
+
+// Check connection
 if ($conn->connect_error) {
    die("Connection failed: " . $conn->connect_error);
 }
 
-// Fetch products from database
-$sql = "SELECT id, name, image, description, price FROM products";
-$result = $conn->query($sql);
+// Get user ID from session
+$user_id = $_SESSION['user_id'];
+
+// Fetch user details from the database
+$sql = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+   $user = $result->fetch_assoc();
+} else {
+   echo "No user details found.";
+   exit();
+}
+
+// Update user details
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_details'])) {
+   $name = trim($_POST['name']);
+   $email = trim($_POST['email']);
+
+   if (!empty($name) && !empty($email)) {
+      $update_sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
+      $update_stmt = $conn->prepare($update_sql);
+      $update_stmt->bind_param("ssi", $name, $email, $user_id);
+
+      if ($update_stmt->execute()) {
+         echo "<script>alert('Details updated successfully!'); window.location.href = 'userEditDetails.php';</script>";
+      } else {
+         echo "<script>alert('Error updating details. Please try again.');</script>";
+      }
+
+      $update_stmt->close();
+   } else {
+      echo "<script>alert('Please fill in all fields.');</script>";
+   }
+}
+// Update password
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
+   $current_password = trim($_POST['current_password']);
+   $new_password = trim($_POST['new_password']);
+   $confirm_password = trim($_POST['confirm_password']);
+
+   if (!empty($current_password) && !empty($new_password) && !empty($confirm_password)) {
+      // Fetch current password from the database
+      $password_sql = "SELECT password FROM users WHERE id = ?";
+      $password_stmt = $conn->prepare($password_sql);
+      $password_stmt->bind_param("i", $user_id);
+      $password_stmt->execute();
+      $password_result = $password_stmt->get_result();
+      $password_data = $password_result->fetch_assoc();
+
+      // Verify current password
+      if (password_verify($current_password, $password_data['password'])) {
+         if ($new_password === $confirm_password) {
+            // Hash the new password
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+
+            // Update the password in the database
+            $update_password_sql = "UPDATE users SET password = ? WHERE id = ?";
+            $update_password_stmt = $conn->prepare($update_password_sql);
+            $update_password_stmt->bind_param("si", $hashed_password, $user_id);
+
+            if ($update_password_stmt->execute()) {
+               echo "<script>alert('Password updated successfully!'); window.location.href = 'userEditDetails.php';</script>";
+            } else {
+               echo "<script>alert('Error updating password. Please try again.');</script>";
+            }
+            $update_password_stmt->close();
+         } else {
+            echo "<script>alert('New password and confirm password do not match.');</script>";
+         }
+      } else {
+         echo "<script>alert('Current password is incorrect.');</script>";
+      }
+      $password_stmt->close();
+   } else {
+      echo "<script>alert('Please fill in all fields.');</script>";
+   }
+}
+
+
+$stmt->close();
+$conn->close();
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-   <meta charset="utf-8">
-   <title>Craft Loving | Products </title>
-   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-   <meta content name="keywords">
-   <meta content name="description">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Craft Loving | Edit User Details</title>
+   <link href="css/bootstrap.min.css" rel="stylesheet">
    <link rel="icon" href="img/logo1.png" type="image/x-icon">
+
    <!-- Google Web Fonts -->
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -50,12 +136,6 @@ $result = $conn->query($sql);
 
 <body>
 
-   <!-- Spinner Start -->
-   <div id="spinner"
-      class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
-      <div class="spinner-grow text-primary" role="status"></div>
-   </div>
-   <!-- Spinner End -->
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
@@ -131,138 +211,52 @@ $result = $conn->query($sql);
    </div>
    <!-- Modal Search End -->
 
-   <!-- Hero Start -->
-   <div class="container-fluid bg-light py-6 my-6 mt-0">
-      <div class="container text-center animated bounceInDown">
-         <h1 class="display-1 mb-4">Products</h1>
-         <ol class="breadcrumb justify-content-center mb-0 animated bounceInDown">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Pages</a></li>
-            <li class="breadcrumb-item text-dark" aria-current="page">Menu</li>
-         </ol>
-      </div>
-   </div>
-   <!-- Hero End -->
-
-
-   <!-- Product Start -->
-   <div class="container py-5">
-      <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
-         <small
-            class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-            Our Products
-         </small>
-         <h1 class="display-5 mb-5">Discover the World’s Most Loved Crafts</h1>
-      </div>
-      <div class="row">
-         <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-               <div class="col-lg-4 col-md-6 mb-4">
-                  <div class="card border-0 shadow-lg h-100 rounded-3 hover-card">
-                     <div class="position-relative overflow-hidden">
-                        <img src="<?php echo $row['image']; ?>" class="card-img-top rounded-top product-image"
-                           alt="<?php echo $row['name']; ?>" style="transition: transform 0.3s;">
-                        <a href="wishlist.php?id=<?php echo $row['id']; ?>"
-                           class="btn <?php echo $is_in_wishlist ? 'btn-danger' : 'btn-outline-danger'; ?> position-absolute top-0 end-0 m-3 rounded-circle wishlist-btn">
-                           <i class="fas fa-heart" style="transition: transform 0.3s;"></i>
-                        </a>
-                     </div>
-                     <div class="card-body text-center p-4">
-                        <h5 class="card-title text-dark fw-bold mb-3" style="font-size: 1.2rem;"><?php echo $row['name']; ?>
-                        </h5>
-                        <p class="card-text text-muted mb-3" style="font-size: 0.9rem; line-height: 1.4;">
-                           <?php echo $row['description']; ?>
-                        </p>
-                        <p class="fw-bold text-primary mb-4" style="font-size: 1.1rem;">Price: $<?php echo $row['price']; ?>
-                        </p>
-                        <a href="addCart.php?id=<?php echo $row['id']; ?>"
-                           class="btn btn-primary px-4 py-2 rounded-pill shadow-sm add-cart-btn"
-                           style="transition: transform 0.3s;">
-                           Add to Cart
-                        </a>
-
-                        <!-- Share Button -->
-                        <div class="share-container mt-3">
-                           <button class="btn btn-outline-primary share-btn" style="transition: background-color 0.3s;">
-                              <i class="fas fa-share-alt"></i> Share
-                           </button>
-
-                           <!-- Hidden Share Options -->
-                           <div class="share-options mt-2" style="display: none;">
-                              <a href="https://wa.me/?text=<?php echo urlencode('Check out this amazing product: ' . $row['name'] . ' ' . $row['description'] . ' ' . 'https://yourwebsite.com/product.php?id=' . $row['id']); ?>"
-                                 target="_blank" class="btn btn-success btn-sm mb-2">
-                                 <i class="fab fa-whatsapp"></i> WhatsApp
-                              </a>
-                              <a href="https://www.instagram.com/share?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $row['id']); ?>"
-                                 target="_blank" class="btn btn-info btn-sm mb-2">
-                                 <i class="fab fa-instagram"></i> Instagram
-                              </a>
-                              <a href="https://www.pinterest.com/pin/create/button/?url=<?php echo urlencode('https://yourwebsite.com/product.php?id=' . $row['id']); ?>&media=<?php echo urlencode($row['image']); ?>&description=<?php echo urlencode($row['description']); ?>"
-                                 target="_blank" class="btn btn-danger btn-sm mb-2">
-                                 <i class="fab fa-pinterest"></i> Pinterest
-                              </a>
-                              <button class="btn btn-secondary btn-sm mb-2 copyLinkBtn">
-                                 <i class="fas fa-link"></i> Copy Link
-                              </button>
-
-                           </div>
-                        </div>
-                        <!-- End Share Button -->
-                     </div>
-                  </div>
+   <!-- Edit user details start -->
+   <div class="container mt-5">
+      <h1 class="mb-4 text-center">Edit Your Details</h1>
+      <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 550px;">
+         <div class="card-body p-5">
+            <!-- Existing Details Update Form -->
+            <form method="POST" action="">
+               <div class="mb-3">
+                  <label for="name" class="form-label">Name</label>
+                  <input type="text" class="form-control" id="name" name="name"
+                     value="<?php echo htmlspecialchars($user['name']); ?>" required>
                </div>
-            <?php endwhile; ?>
-         <?php else: ?>
-            <p class="text-center text-muted">No products available.</p>
-         <?php endif; ?>
+               <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" name="email"
+                     value="<?php echo htmlspecialchars($user['email']); ?>" required>
+               </div>
+               <button type="submit" name="update_details" class="btn btn-primary">Update Details</button>
+            </form>
+
+            <hr class="my-4">
+
+            <!-- New Change Password Form -->
+            <h3 class="mb-3 text-center">Change Password</h3>
+            <form method="POST" action="">
+               <div class="mb-3">
+                  <label for="current_password" class="form-label">Current Password</label>
+                  <input type="password" class="form-control" id="current_password" name="current_password" required>
+               </div>
+               <div class="mb-3">
+                  <label for="new_password" class="form-label">New Password</label>
+                  <input type="password" class="form-control" id="new_password" name="new_password" required>
+               </div>
+               <div class="mb-3">
+                  <label for="confirm_password" class="form-label">Confirm New Password</label>
+                  <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+               </div>
+               <button type="submit" name="change_password" class="btn btn-primary">Change Password</button>
+            </form>
+         </div>
       </div>
    </div>
-   <!-- Product End -->
 
-   <script>
-      // Toggle share options visibility
-      document.querySelectorAll('.share-btn').forEach(button => {
-         button.addEventListener('click', function () {
-            const options = this.nextElementSibling;
-            options.style.display = options.style.display === 'none' || options.style.display === '' ? 'block' : 'none';
-         });
-      });
+   <!-- Edit user details end -->
 
-      // Copy link functionality for each product
-      document.querySelectorAll('.copyLinkBtn').forEach(button => {
-         button.addEventListener('click', function () {
-            const productCard = this.closest('.card');
-            const productUrl = productCard.querySelector('.card-img-top').src;
-            navigator.clipboard.writeText(productUrl).then(() => {
-               alert('Product link copied to clipboard!');
-            }).catch(err => {
-               alert('Failed to copy the link: ' + err);
-            });
-         });
-      });
 
-      // Hover Effect for Product Image
-      const productImages = document.querySelectorAll('.product-image');
-      productImages.forEach(image => {
-         image.addEventListener('mouseenter', () => {
-            image.style.transform = 'scale(1.05)';
-         });
-         image.addEventListener('mouseleave', () => {
-            image.style.transform = 'scale(1)';
-         });
-      });
-
-      // Hover Effect for Wishlist Icon
-      const wishlistIcons = document.querySelectorAll('.wishlist-btn i');
-      wishlistIcons.forEach(icon => {
-         icon.addEventListener('mouseenter', () => {
-            icon.style.transform = 'scale(1.2)';
-         });
-         icon.addEventListener('mouseleave', () => {
-            icon.style.transform = 'scale(1)';
-         });
-      });
-   </script>
 
 
    <!-- Footer Start -->
@@ -344,21 +338,8 @@ $result = $conn->query($sql);
    </div>
    <!-- Footer End -->
 
-   <!-- Back to Top -->
-   <a href="#" class="btn btn-md-square btn-primary rounded-circle back-to-top"><i class="fa fa-arrow-up"></i></a>
 
-   <!-- JavaScript Libraries -->
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-   <script src="lib/wow/wow.min.js"></script>
-   <script src="lib/easing/easing.min.js"></script>
-   <script src="lib/waypoints/waypoints.min.js"></script>
-   <script src="lib/counterup/counterup.min.js"></script>
-   <script src="lib/lightbox/js/lightbox.min.js"></script>
-   <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-   <!-- Template Javascript -->
-   <script src="js/main.js"></script>
 </body>
 
 </html>
