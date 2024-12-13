@@ -100,21 +100,26 @@ $items_result = $stmt->get_result();
 
    <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
-      <nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" style="width: 250px;">
-         <a href="index.php" class="navbar-brand mb-4">
-            <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
-         </a>
-         <div class="navbar-nav w-100">
-            <a href="index.php" class="nav-item nav-link">Home</a>
-            <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
-            <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
-            <a href="#" class="nav-item nav-link">Product Sale</a>
-            <a href="#" class="nav-item nav-link">Count of Customer</a>
-         </div>
-         <div class="mt-auto w-100">
-            <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
-         </div>
-      </nav>
+    <!-- Vertical Navbar Start -->
+<nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" 
+     style="width: 250px; position: sticky; top: 0; z-index: 1000;">
+   <a href="index.php" class="navbar-brand mb-4">
+      <img src="img/logo1.png" style="height: 10vh;">
+      <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
+   </a>
+   <div class="navbar-nav w-100">
+      <a href="index.php" class="nav-item nav-link">Home</a>
+      <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
+      <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
+      <a href="#" class="nav-item nav-link">Product Sale</a>
+      <a href="#" class="nav-item nav-link">Count of Customer</a>
+      <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
+   </div>
+   <div class="mt-auto w-100">
+      <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
+   </div>
+</nav>
+
       <!-- Vertical Navbar End -->
 
       <!-- Admin order details start -->
