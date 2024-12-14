@@ -94,8 +94,7 @@ if (!isset($_SESSION['user_id'])) {
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userOrderHistory.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
-                  Now</a>
+               <a href="userOrderHistory.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
             </div>
          </nav>
       </div>
@@ -135,7 +134,7 @@ if (!isset($_SESSION['user_id'])) {
                   <span class="text-primary">Custom Creations</span>
                   for Your Perfect Event
                </h1>
-               <a href="products.php" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 me-4 animated bounceInLeft">Order
+               <a href="product.php" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 me-4 animated bounceInLeft">Order
                   Now</a>
                <a href="about.php" class="btn btn-primary border-0 rounded-pill py-3 px-4 px-md-5 animated bounceInLeft">Know
                   More</a>
@@ -266,99 +265,130 @@ if (!isset($_SESSION['user_id'])) {
    </div>
    <!-- Fact End -->
 
-   <!-- Team Start -->
-   <div class="container-fluid team py-6">
-      <div class="container">
-         <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
-            <small
-               class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Our
-               Team</small>
-            <h1 class="display-5 mb-5">We have experienced chef
-               Team</h1>
-         </div>
-         <div class="row g-4">
-            <div class="col-lg-3 col-md-6 wow bounceInUp" data-wow-delay="0.1s">
-               <div class="team-item rounded">
-                  <img class="img-fluid rounded-top " src="img/team-1.jpg" alt>
-                  <div class="team-content text-center py-3 bg-dark rounded-bottom">
-                     <h4 class="text-primary">Henry</h4>
-                     <p class="text-white mb-0">Decoration Chef</p>
-                  </div>
-                  <div class="team-icon d-flex flex-column justify-content-center m-4">
-                     <a class="share btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fas fa-share-alt"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-facebook-f"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-twitter"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-instagram"></i></a>
-                  </div>
-               </div>
+        <!-- Team Start -->
+        <div class="container-fluid team py-6">
+            <div class="container">
+                <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
+                    <small
+                        class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">Our
+                        Team</small>
+                    <h1 class="display-5 mb-5">We have creative artists team</h1>
+                </div>
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.1s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-1.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Mahesh</h4>
+                                <p class="text-white mb-0">CEO</p>
+                            </div>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.3s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-2.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Anika</h4>
+                                <p class="text-white mb-0">Order manager</p>
+                            </div>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.5s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-3.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Vinay</h4>
+                                <p class="text-white mb-0">Report handler</p>
+                            </div>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 wow bounceInUp"
+                        data-wow-delay="0.7s">
+                        <div class="team-item rounded">
+                            <img class="img-fluid rounded-top "
+                                src="img/team-4.jpg" alt>
+                            <div
+                                class="team-content text-center py-3 bg-dark rounded-bottom">
+                                <h4 class="text-primary">Shalini</h4>
+                                <p class="text-white mb-0">Delivery partner</p>
+                            </div>
+                            <div
+                                class="team-icon d-flex flex-column justify-content-center m-4">
+                                <a
+                                    class="share btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fas fa-share-alt"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-facebook-f"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-twitter"></i></a>
+                                <a
+                                    class="share-link btn btn-primary btn-md-square rounded-circle mb-2"
+                                    href><i class="fab fa-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-3 col-md-6 wow bounceInUp" data-wow-delay="0.3s">
-               <div class="team-item rounded">
-                  <img class="img-fluid rounded-top " src="img/team-2.jpg" alt>
-                  <div class="team-content text-center py-3 bg-dark rounded-bottom">
-                     <h4 class="text-primary">Jemes Born</h4>
-                     <p class="text-white mb-0">Executive Chef</p>
-                  </div>
-                  <div class="team-icon d-flex flex-column justify-content-center m-4">
-                     <a class="share btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fas fa-share-alt"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-facebook-f"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-twitter"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-instagram"></i></a>
-                  </div>
-               </div>
-            </div>
-            <div class="col-lg-3 col-md-6 wow bounceInUp" data-wow-delay="0.5s">
-               <div class="team-item rounded">
-                  <img class="img-fluid rounded-top " src="img/team-3.jpg" alt>
-                  <div class="team-content text-center py-3 bg-dark rounded-bottom">
-                     <h4 class="text-primary">Martin Hill</h4>
-                     <p class="text-white mb-0">Kitchen Porter</p>
-                  </div>
-                  <div class="team-icon d-flex flex-column justify-content-center m-4">
-                     <a class="share btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fas fa-share-alt"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-facebook-f"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-twitter"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-instagram"></i></a>
-                  </div>
-               </div>
-            </div>
-            <div class="col-lg-3 col-md-6 wow bounceInUp" data-wow-delay="0.7s">
-               <div class="team-item rounded">
-                  <img class="img-fluid rounded-top " src="img/team-4.jpg" alt>
-                  <div class="team-content text-center py-3 bg-dark rounded-bottom">
-                     <h4 class="text-primary">Adam Smith</h4>
-                     <p class="text-white mb-0">Head Chef</p>
-                  </div>
-                  <div class="team-icon d-flex flex-column justify-content-center m-4">
-                     <a class="share btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fas fa-share-alt"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-facebook-f"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-twitter"></i></a>
-                     <a class="share-link btn btn-primary btn-md-square rounded-circle mb-2" href><i
-                           class="fab fa-instagram"></i></a>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
-   <!-- Team End -->
+        </div>
+        <!-- Team End -->
 
-
+        
    <!-- Footer Start -->
    <div class="container-fluid footer py-6 my-6 mb-0 bg-light wow bounceInUp" data-wow-delay="0.1s">
       <div class="container">

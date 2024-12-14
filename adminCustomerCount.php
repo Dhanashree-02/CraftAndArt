@@ -6,47 +6,73 @@ $password = "";
 $dbname = "craft"; // Replace with your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
 if ($conn->connect_error) {
    die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if a product ID is provided
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   $productID = intval($_POST['productID']); // Secure input with intval to prevent SQL injection risks
+// Function to get reports
+function getAdminReports($timePeriod, $conn)
+{
+   $dateCondition = "";
 
-   // Check if the product exists in the database
-   $checkQuery = "SELECT * FROM products WHERE id = ?";
-   $stmt = $conn->prepare($checkQuery);
-   $stmt->bind_param("i", $productID);
-   $stmt->execute();
-   $result = $stmt->get_result();
-
-   if ($result->num_rows > 0) {
-      // Delete the product record from the database
-      $deleteQuery = "DELETE FROM products WHERE id = ?";
-      $stmt = $conn->prepare($deleteQuery);
-      $stmt->bind_param("i", $productID);
-
-      if ($stmt->execute()) {
-         echo "<div class='alert alert-success'>Product deleted successfully!</div>";
-      } else {
-         echo "<div class='alert alert-danger'>Error deleting product: " . $conn->error . "</div>";
-      }
-   } else {
-      echo "<div class='alert alert-warning'>Product not found.</div>";
+   switch ($timePeriod) {
+      case 'daily':
+         $dateCondition = "DATE(created_at) = CURDATE()";
+         break;
+      case 'weekly':
+         $dateCondition = "YEARWEEK(created_at, 1) = YEARWEEK(CURDATE(), 1)";
+         break;
+      case 'monthly':
+         $dateCondition = "MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())";
+         break;
    }
 
-   $stmt->close();
+   $query = "
+    SELECT 
+        o.status AS order_status,
+        COUNT(DISTINCT o.user_id) AS total_customers,
+        GROUP_CONCAT(DISTINCT o.user_id) AS user_ids,
+        SUM(o.total_price) AS total_revenue
+    FROM 
+        orders o
+    WHERE 
+        $dateCondition
+    GROUP BY 
+        o.status
+    ORDER BY 
+        o.status DESC
+";
+
+
+   $result = $conn->query($query);
+   $data = [];
+   if ($result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+         $data[] = $row;
+      }
+   }
+   return $data;
 }
 
-$conn->close();
+// Get the selected time period
+$timePeriod = $_GET['timePeriod'] ?? 'daily'; // 'daily', 'weekly', or 'monthly'
+$reportData = getAdminReports($timePeriod, $conn);
 ?>
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Remove Product</title>
+   <title>Craft Loving | ustomer Count Report</title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
    <link rel="icon" href="img/logo1.png" type="image/x-icon">
 
@@ -95,32 +121,74 @@ $conn->close();
          </div>
       </nav>
 
-
-      <!-- Remove product start -->
-      <div class="container py-5">
+      <!-- Customer count start -->
+      <div class="container mt-5">
          <div class="text-center wow bounceInUp" data-wow-delay="0.1s">
             <small
                class="d-inline-block fw-bold text-dark text-uppercase bg-light border border-primary rounded-pill px-4 py-1 mb-3">
-               Remove Product
+               Count Customer
             </small>
-            <h1 class="display-5 mb-5 text-dark">Enter Product Details to Remove</h1>
+            <h1 class="display-5 mb-5 text-dark">Admin Customer Count Report</h1>
          </div>
-         <div class="card shadow-lg rounded-3 mx-auto" style="max-width: 500px;">
-            <div class="card-body p-5">
-               <form action="adminDeleteProduct.php" method="POST">
-                  <div class="mb-4">
-                     <label for="productID" class="form-label text-dark fs-5">Product ID:</label>
-                     <input type="number" class="form-control form-control-lg" id="productID" name="productID" required>
+         <form method="GET" class="d-flex justify-content-center mb-5">
+            <label for="timePeriod" class="form-label text-dark me-3 fs-5">Filter by:</label>
+            <select name="timePeriod" id="timePeriod" class="form-select me-3" style="width: 200px;">
+               <option value="daily" <?= $timePeriod === 'daily' ? 'selected' : '' ?>>Daily</option>
+               <option value="weekly" <?= $timePeriod === 'weekly' ? 'selected' : '' ?>>Weekly</option>
+               <option value="monthly" <?= $timePeriod === 'monthly' ? 'selected' : '' ?>>Monthly</option>
+            </select>
+            <button type="submit" class="btn btn-primary py-1 px-3 rounded-pill shadow-sm">Generate Report</button>
+         </form>
+
+         <div class="row g-6">
+            <?php if (!empty($reportData)): ?>
+               <?php foreach ($reportData as $row): ?>
+                  <div class="col-md-6 col-lg-4">
+                     <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                           <h5 class="card-title text-primary fs-4">
+                              <i class="fas fa-box-open me-2"></i><?= ucfirst($row['order_status']) ?> Orders
+                           </h5>
+                           <p class="card-text text-dark fs-5 mb-2"><strong>Total Customers:</strong>
+                              <?= $row['total_customers'] ?></p>
+                           <button class="btn btn-primary py-1 px-3 rounded-pill shadow-sm"
+                              onclick="showCustomerDetails('<?= $row['user_ids'] ?>', '<?= $row['order_status'] ?>')">
+                              View Customer Details
+                           </button>
+                        </div>
+                     </div>
                   </div>
-                  <div class="text-center mt-4">
-                     <button type="submit" class="btn btn-primary btn-lg py-2 px-5 rounded-pill shadow-sm">Delete
-                        Product</button>
+               <?php endforeach; ?>
+            <?php else: ?>
+               <div class="col-12">
+                  <div class="alert alert-warning text-center" role="alert">
+                     <i class="fas fa-exclamation-circle me-2"></i>No records found.
                   </div>
-               </form>
-            </div>
+               </div>
+            <?php endif; ?>
          </div>
       </div>
-      <!-- Remove product end -->
+      <script>
+         function showCustomerDetails(userIds, status) {
+            $.ajax({
+               url: 'fetchCustomerDetails.php', // Create this script
+               method: 'POST',
+               data: { user_ids: userIds, order_status: status },
+               success: function (response) {
+                  // Display the details in a modal or alert
+                  $('#customerDetailsModal .modal-body').html(response);
+                  $('#customerDetailsModal').modal('show');
+               },
+               error: function () {
+                  alert('Failed to fetch customer details.');
+               }
+            });
+         }
+      </script>
+
+      <!-- Customer count end -->
+
+
    </div>
    <!-- Vertical Navbar End -->
 
@@ -203,6 +271,21 @@ $conn->close();
    </div>
    <!-- Footer End -->
 
+   <!-- Customer Details Modal -->
+   <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+         <div class="modal-content">
+            <div class="modal-header">
+               <h5 class="modal-title" id="customerDetailsModalLabel">Customer Details</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+               <!-- Dynamic customer details will be loaded here -->
+            </div>
+         </div>
+      </div>
+   </div>
 
    <!-- JavaScript Libraries -->
    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

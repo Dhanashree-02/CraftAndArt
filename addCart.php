@@ -10,7 +10,7 @@ $dbname = "craft"; // Replace with your DB name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+   die("Connection failed: " . $conn->connect_error);
 }
 
 // Fetch user ID from session
@@ -18,57 +18,57 @@ $user_id = $_SESSION['user_id']; // Make sure the user is logged in before acces
 
 // Add product to the cart
 if (isset($_GET['id'])) {
-    $productId = intval($_GET['id']);
-    $quantity = isset($_GET['quantity']) ? intval($_GET['quantity']) : 1;
+   $productId = intval($_GET['id']);
+   $quantity = isset($_GET['quantity']) ? intval($_GET['quantity']) : 1;
 
-    // Check if the product already exists in the cart
-    $checkQuery = "SELECT * FROM cart WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
-    $checkResult = $conn->query($checkQuery);
+   // Check if the product already exists in the cart
+   $checkQuery = "SELECT * FROM cart WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+   $checkResult = $conn->query($checkQuery);
 
-    if ($checkResult->num_rows > 0) {
-        // Update quantity in the cart
-        $updateQuery = "UPDATE cart SET quantity = quantity + $quantity WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
-        $conn->query($updateQuery);
-    } else {
-        // Insert new cart entry
-        $insertQuery = "INSERT INTO cart (user_id, product_id, quantity, added_on, status) 
+   if ($checkResult->num_rows > 0) {
+      // Update quantity in the cart
+      $updateQuery = "UPDATE cart SET quantity = quantity + $quantity WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+      $conn->query($updateQuery);
+   } else {
+      // Insert new cart entry
+      $insertQuery = "INSERT INTO cart (user_id, product_id, quantity, added_on, status) 
                         VALUES ($user_id, $productId, $quantity, NOW(), 'active')";
-        $conn->query($insertQuery);
-    }
+      $conn->query($insertQuery);
+   }
 
-    // Redirect to refresh the cart
-    header('Location: addCart.php');
-    exit();
+   // Redirect to refresh the cart
+   header('Location: addCart.php');
+   exit();
 }
 
 // Decrease product quantity in the cart or remove it
 if (isset($_GET['decrease'])) {
-    $productId = intval($_GET['decrease']);
+   $productId = intval($_GET['decrease']);
 
-    // Decrease quantity
-    $updateQuery = "UPDATE cart SET quantity = quantity - 1 WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
-    $conn->query($updateQuery);
+   // Decrease quantity
+   $updateQuery = "UPDATE cart SET quantity = quantity - 1 WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+   $conn->query($updateQuery);
 
-    // Remove the product if quantity becomes zero
-    $deleteQuery = "DELETE FROM cart WHERE quantity <= 0 AND user_id = $user_id AND product_id = $productId AND status = 'active'";
-    $conn->query($deleteQuery);
+   // Remove the product if quantity becomes zero
+   $deleteQuery = "DELETE FROM cart WHERE quantity <= 0 AND user_id = $user_id AND product_id = $productId AND status = 'active'";
+   $conn->query($deleteQuery);
 
-    // Redirect to refresh the cart
-    header('Location: addCart.php');
-    exit();
+   // Redirect to refresh the cart
+   header('Location: addCart.php');
+   exit();
 }
 
 // Remove product completely from the cart
 if (isset($_GET['remove'])) {
-    $productId = intval($_GET['remove']);
+   $productId = intval($_GET['remove']);
 
-    // Remove the product from the cart
-    $deleteQuery = "DELETE FROM cart WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
-    $conn->query($deleteQuery);
+   // Remove the product from the cart
+   $deleteQuery = "DELETE FROM cart WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+   $conn->query($deleteQuery);
 
-    // Redirect to refresh the cart
-    header('Location: addCart.php');
-    exit();
+   // Redirect to refresh the cart
+   header('Location: addCart.php');
+   exit();
 }
 
 // Load cart items from the database into the session
@@ -79,24 +79,24 @@ $cartQuery = "SELECT c.product_id, p.name, p.price, c.quantity, p.image
 $cartResult = $conn->query($cartQuery);
 
 if ($cartResult === false) {
-    die("Error executing query: " . $conn->error);
+   die("Error executing query: " . $conn->error);
 }
 
 $_SESSION['cart'] = [];
 while ($row = $cartResult->fetch_assoc()) {
-    $_SESSION['cart'][$row['product_id']] = [
-        'id' => $row['product_id'],
-        'name' => $row['name'],
-        'price' => $row['price'],
-        'quantity' => $row['quantity'],
-        'image' => $row['image'],
-    ];
+   $_SESSION['cart'][$row['product_id']] = [
+      'id' => $row['product_id'],
+      'name' => $row['name'],
+      'price' => $row['price'],
+      'quantity' => $row['quantity'],
+      'image' => $row['image'],
+   ];
 }
 
 // Calculate total price
 $totalPrice = 0;
 foreach ($_SESSION['cart'] as $product) {
-    $totalPrice += $product['price'] * $product['quantity'];
+   $totalPrice += $product['price'] * $product['quantity'];
 }
 
 // Close database connection
@@ -110,7 +110,7 @@ $conn->close();
 
 <head>
    <meta charset="utf-8">
-   <title>Craft Loving | Menu </title>
+   <title>Craft Loving | Add Cart </title>
    <meta content="width=device-width, initial-scale=1.0" name="viewport">
    <meta content name="keywords">
    <meta content name="description">
@@ -150,7 +150,8 @@ $conn->close();
    <div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
-            <a href="index.html" class="navbar-brand">
+            <img src="img/logo1.png" style="height: 10vh; ">
+            <a href="index.php" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -159,15 +160,15 @@ $conn->close();
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                <div class="navbar-nav mx-auto">
-                  <a href="index.php" class="nav-item nav-link">Home</a>
+                  <a href="logout.php" class="nav-item nav-link">Home</a>
                   <a href="service.php" class="nav-item nav-link">Services</a>
-                  <a href="product.phpl" class="nav-item nav-link">Products</a>
+                  <a href="product.php" class="nav-item nav-link">Products</a>
                   <div class="nav-item dropdown">
                      <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                      <div class="dropdown-menu bg-light">
-                        <a href="team..php" class="dropdown-item">Our Team</a>
-                        <a href="testimonial..php" class="dropdown-item">Testimonial</a>
-                        <a href="about..php" class="dropdown-item">About us</a>
+                        <a href="team.php" class="dropdown-item">Our Team</a>
+                        <a href="testimonial.php" class="dropdown-item">Testimonial</a>
+                        <a href="about.php" class="dropdown-item">About us</a>
                         <a href="contact.php" class="dropdown-item">Contact</a>
                      </div>
                   </div>
@@ -178,8 +179,8 @@ $conn->close();
                      <i class="fas fa-user"></i>
                   </a>
                   <div class="dropdown-menu bg-light dropdown-menu-end">
-                     <a href="userLogin.php" class="dropdown-item">User Login</a>
-                     <a href="adminLogin.php" class="dropdown-item">Admin Login</a>
+                     <a href="userDetails.php" class="dropdown-item">Your Account</a>
+                     <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                   </div>
                </div>
                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
@@ -190,13 +191,14 @@ $conn->close();
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
-                  Now</a>
+               <a href="userOrderHistory.php"
+                  class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
             </div>
          </nav>
       </div>
    </div>
    <!-- Navbar end -->
+
 
    <!-- Modal Search Start -->
    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -384,4 +386,3 @@ $conn->close();
 </body>
 
 </html>
-

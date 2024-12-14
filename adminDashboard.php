@@ -45,27 +45,37 @@ if (!isset($_SESSION['admin_id'])) {
 
 <div class="container-fluid d-flex">
       <!-- Vertical Navbar Start -->
-     
-      <!-- Vertical Navbar Start -->
-<nav class="navbar navbar-light bg-light flex-column align-items-start p-3 vh-100" 
-     style="width: 250px; position: sticky; top: 0; z-index: 1000;">
-   <a href="index.php" class="navbar-brand mb-4">
+      <nav class="navbar navbar-light bg-light flex-column align-items-center justify-content-center p-3 vh-100" style="width: 250px;">
+   <a href="index.php" class="navbar-brand mb-4 text-center">
       <img src="img/logo1.png" style="height: 10vh;">
       <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving</span></h1>
    </a>
-   <div class="navbar-nav w-100">
-      <a href="index.php" class="nav-item nav-link">Home</a>
-      <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
-      <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
-      <a href="#" class="nav-item nav-link">Product Sale</a>
-      <a href="#" class="nav-item nav-link">Count of Customer</a>
-      <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
-   </div>
-   <div class="mt-auto w-100">
-      <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
-   </div>
-</nav>
-
+         <div class="navbar-nav w-100">
+            <a href="index.php" class="nav-item nav-link">Home</a>
+            <a href="adminDeleteProduct.php" class="nav-item nav-link">Remove Products</a>
+            <a href="adminInsertProduct.php" class="nav-item nav-link">Add Products</a>
+            <a href="adminRevenueReport.php" class="nav-item nav-link">Product Sale</a>
+            <a href="adminCutomerCount.php" class="nav-item nav-link">Count of Customer</a>
+            <a href="adminOrderVerification.php" class="nav-item nav-link">Order Verification</a>
+            <!-- <div class="nav-item dropdown">
+               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tasks</a>
+               <div class="dropdown-menu bg-light">
+                  <a href="adminDeleteProduct.php" class="dropdown-item">Remove Product</a>
+                  <a href="adminInsertProduct.php" class="dropdown-item">Add Products</a>
+               </div>
+            </div>
+            <div class="nav-item dropdown">
+               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Reports</a>
+               <div class="dropdown-menu bg-light">
+                  <a href="team.php" class="dropdown-item">Product Sale</a>
+                  <a href="testimonial.php" class="dropdown-item">Count of Customer</a>
+               </div>
+            </div> -->
+         </div>
+         <div class="mt-auto w-100">
+            <a href="logout.php" class="btn btn-primary py-2 px-5 rounded-pill">Logout</a>
+         </div>
+      </nav>
 
       <!-- About start -->
       <div class="container-fluid py-6">

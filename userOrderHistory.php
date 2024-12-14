@@ -46,7 +46,7 @@ if ($orderResult->num_rows === 0) {
 
 <head>
     <meta charset="utf-8">
-    <title>Craft Loving | Menu </title>
+    <title>Craft Loving | User Order History </title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content name="keywords">
     <meta content name="description">
@@ -81,12 +81,12 @@ if ($orderResult->num_rows === 0) {
         <div class="spinner-grow text-primary" role="status"></div>
     </div>
     <!-- Spinner End -->
-
     <!-- Navbar start -->
     <div class="container-fluid nav-bar">
         <div class="container">
             <nav class="navbar navbar-light navbar-expand-lg py-5">
-                <a href="index.html" class="navbar-brand">
+                <img src="img/logo1.png" style="height: 10vh; ">
+                <a href="index.php" class="navbar-brand">
                     <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
                 </a>
                 <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse"
@@ -95,15 +95,15 @@ if ($orderResult->num_rows === 0) {
                 </button>
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav mx-auto">
-                        <a href="index.php" class="nav-item nav-link">Home</a>
+                        <a href="logout.php" class="nav-item nav-link">Home</a>
                         <a href="service.php" class="nav-item nav-link">Services</a>
-                        <a href="product.phpl" class="nav-item nav-link">Products</a>
+                        <a href="product.php" class="nav-item nav-link">Products</a>
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                             <div class="dropdown-menu bg-light">
-                                <a href="team..php" class="dropdown-item">Our Team</a>
-                                <a href="testimonial..php" class="dropdown-item">Testimonial</a>
-                                <a href="about..php" class="dropdown-item">About us</a>
+                                <a href="team.php" class="dropdown-item">Our Team</a>
+                                <a href="testimonial.php" class="dropdown-item">Testimonial</a>
+                                <a href="about.php" class="dropdown-item">About us</a>
                                 <a href="contact.php" class="dropdown-item">Contact</a>
                             </div>
                         </div>
@@ -114,8 +114,8 @@ if ($orderResult->num_rows === 0) {
                             <i class="fas fa-user"></i>
                         </a>
                         <div class="dropdown-menu bg-light dropdown-menu-end">
-                            <a href="userLogin.php" class="dropdown-item">User Login</a>
-                            <a href="adminLogin.php" class="dropdown-item">Admin Login</a>
+                            <a href="userDetails.php" class="dropdown-item">Your Account</a>
+                            <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                         </div>
                     </div>
                     <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
@@ -127,13 +127,14 @@ if ($orderResult->num_rows === 0) {
                         class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                         <i class="fas fa-heart"></i>
                     </a>
-                    <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
-                        Now</a>
+                    <a href="userOrderHistory.php"
+                        class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
                 </div>
             </nav>
         </div>
     </div>
     <!-- Navbar end -->
+
 
     <!-- Modal Search Start -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
