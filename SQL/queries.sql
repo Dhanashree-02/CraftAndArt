@@ -1,4 +1,4 @@
-- Users Table:-
+- Users :-
 
   CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -8,7 +8,7 @@
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-- Admin Table :- 
+- Admin :- 
   CREATE TABLE admin (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -52,7 +52,7 @@
     $conn->close();
     ?>
 
-- Product Table :-
+- Product :-
   CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -62,7 +62,7 @@
     category VARCHAR(50) NOT NULL
 );
 
-- Cart Table :-
+- Cart :-
 CREATE TABLE cart (
     cart_id INT AUTO_INCREMENT PRIMARY KEY,            
     user_id INT NOT NULL,                               
@@ -75,17 +75,21 @@ CREATE TABLE cart (
 
 
 
-- Order Table :-
-  CREATE TABLE orders (
+- Order :-
+ CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(50) NOT NULL,
+    status ENUM('pending', 'completed', 'cancelled', 'shipped', 'processing') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     address TEXT NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)  -- Assuming there's a 'users' table with an 'id' column
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Index on `user_id` for better query performance
+CREATE INDEX idx_user_id ON orders(user_id);
 
 
 - order_status :- 
@@ -95,12 +99,19 @@ CREATE TABLE order_items (
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
+    total_price DECIMAL(10, 2) NOT NULL,  -- Stores the calculated price for the item
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+-- Index on `order_id` and `product_id` for better query performance
+CREATE INDEX idx_order_id ON order_items(order_id);
+CREATE INDEX idx_product_id ON order_items(product_id);
 
-- Contact Table :-
+
+
+- Contact :-
   CREATE TABLE contact (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

@@ -10,53 +10,98 @@ $dbname = "craft"; // Replace with your DB name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
-   die("Connection failed: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
+
+// Fetch user ID from session
+$user_id = $_SESSION['user_id']; // Make sure the user is logged in before accessing this value
 
 // Add product to the cart
 if (isset($_GET['id'])) {
-   $productId = $_GET['id'];
+    $productId = intval($_GET['id']);
+    $quantity = isset($_GET['quantity']) ? intval($_GET['quantity']) : 1;
 
-   // Check if the cart is already initialized in session
-   if (!isset($_SESSION['cart'])) {
-      $_SESSION['cart'] = [];
-   }
+    // Check if the product already exists in the cart
+    $checkQuery = "SELECT * FROM cart WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+    $checkResult = $conn->query($checkQuery);
 
-   // Get product details from the database
-   $sql = "SELECT * FROM products WHERE id = $productId";
-   $result = mysqli_query($conn, $sql);
-   $product = mysqli_fetch_assoc($result);
+    if ($checkResult->num_rows > 0) {
+        // Update quantity in the cart
+        $updateQuery = "UPDATE cart SET quantity = quantity + $quantity WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+        $conn->query($updateQuery);
+    } else {
+        // Insert new cart entry
+        $insertQuery = "INSERT INTO cart (user_id, product_id, quantity, added_on, status) 
+                        VALUES ($user_id, $productId, $quantity, NOW(), 'active')";
+        $conn->query($insertQuery);
+    }
 
-   // Add product to the cart
-   $_SESSION['cart'][$productId] = [
-      'id' => $product['id'],
-      'name' => $product['name'],
-      'price' => $product['price'],
-      'quantity' => 1,
-      'image' => $product['image'],  // Save image filename
-   ];
-
-   // Redirect to the same page to refresh the cart
-   header('Location: addCart.php');
-   exit(); // Ensure that no further code is executed after the redirect
+    // Redirect to refresh the cart
+    header('Location: addCart.php');
+    exit();
 }
 
-// Remove product from cart
+// Decrease product quantity in the cart or remove it
+if (isset($_GET['decrease'])) {
+    $productId = intval($_GET['decrease']);
+
+    // Decrease quantity
+    $updateQuery = "UPDATE cart SET quantity = quantity - 1 WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+    $conn->query($updateQuery);
+
+    // Remove the product if quantity becomes zero
+    $deleteQuery = "DELETE FROM cart WHERE quantity <= 0 AND user_id = $user_id AND product_id = $productId AND status = 'active'";
+    $conn->query($deleteQuery);
+
+    // Redirect to refresh the cart
+    header('Location: addCart.php');
+    exit();
+}
+
+// Remove product completely from the cart
 if (isset($_GET['remove'])) {
-   $productId = $_GET['remove'];
-   unset($_SESSION['cart'][$productId]);
+    $productId = intval($_GET['remove']);
+
+    // Remove the product from the cart
+    $deleteQuery = "DELETE FROM cart WHERE user_id = $user_id AND product_id = $productId AND status = 'active'";
+    $conn->query($deleteQuery);
+
+    // Redirect to refresh the cart
+    header('Location: addCart.php');
+    exit();
+}
+
+// Load cart items from the database into the session
+$cartQuery = "SELECT c.product_id, p.name, p.price, c.quantity, p.image 
+              FROM cart c 
+              JOIN products p ON c.product_id = p.id 
+              WHERE c.user_id = $user_id AND c.status = 'active'";
+$cartResult = $conn->query($cartQuery);
+
+if ($cartResult === false) {
+    die("Error executing query: " . $conn->error);
+}
+
+$_SESSION['cart'] = [];
+while ($row = $cartResult->fetch_assoc()) {
+    $_SESSION['cart'][$row['product_id']] = [
+        'id' => $row['product_id'],
+        'name' => $row['name'],
+        'price' => $row['price'],
+        'quantity' => $row['quantity'],
+        'image' => $row['image'],
+    ];
 }
 
 // Calculate total price
 $totalPrice = 0;
 foreach ($_SESSION['cart'] as $product) {
-   $totalPrice += $product['price'] * $product['quantity'];
+    $totalPrice += $product['price'] * $product['quantity'];
 }
 
 // Close database connection
 $conn->close();
 ?>
-
 
 
 <!DOCTYPE html>
@@ -104,7 +149,7 @@ $conn->close();
    <!-- Navbar start -->
    <div class="container-fluid nav-bar">
       <div class="container">
-         <nav class="navbar navbar-light navbar-expand-lg py-4">
+         <nav class="navbar navbar-light navbar-expand-lg py-5">
             <a href="index.html" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
@@ -139,9 +184,10 @@ $conn->close();
                </div>
                <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
                   data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
-               <a href="addCart.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
+               <a href="addCart.php"
+                  class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                      class="fas fa-shopping-cart"></i></a>
-                     <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
+               <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
                <a href class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order
@@ -186,66 +232,58 @@ $conn->close();
    </div>
    <!-- Hero End -->
 
+
    <!-- Cart Start -->
-   <div class="container py-5">
-      <h1 class="display-5 text-center mb-5">Your Shopping Cart</h1>
+  <!-- Cart Start -->
+<div class="container py-5">
+    <h1 class="display-5 text-center mb-5">Your Shopping Cart</h1>
 
-      <?php if (!empty($_SESSION['cart'])): ?>
-         <div class="row">
-            <?php foreach ($_SESSION['cart'] as $productId => $product): ?>
-               <div class="col-lg-4 col-md-6 mb-4">
-                  <div class="card border-0 shadow-lg h-100 rounded-3">
-                     <div class="position-relative overflow-hidden">
-                        <!-- Check if image exists or use a placeholder -->
-                        <?php
-                      $imagePath = !empty($product['image']) ? 'img/' . $product['image'] : 'img/image.jpg'; // Default placeholder if no image
+    <?php if (!empty($_SESSION['cart'])): ?>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($_SESSION['cart'] as $product): ?>
+                        <tr>
+                            <td><img src="<?php echo htmlspecialchars($product['image']); ?>" alt="Product Image" width="50"></td>
+                            <td><?php echo htmlspecialchars($product['name']); ?></td>
+                            <td>$<?php echo number_format($product['price'], 2); ?></td>
+                            <td><?php echo $product['quantity']; ?></td>
+                            <td>$<?php echo number_format($product['price'] * $product['quantity'], 2); ?></td>
+                            <td>
+                                <a href="addCart.php?id=<?php echo $product['id']; ?>" class="btn btn-success btn-sm">+</a>
+                                <a href="addCart.php?decrease=<?php echo $product['id']; ?>" class="btn btn-warning btn-sm">-</a>
+                                <a href="addCart.php?remove=<?php echo $product['id']; ?>" class="btn btn-danger btn-sm">Remove</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                        <td colspan="2">$<?php echo number_format($totalPrice, 2); ?></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="text-center">
+            <a href="checkout.php" class="btn btn-primary btn-lg">Proceed to Checkout</a>
+        </div>
+    <?php else: ?>
+        <p class="text-center">Your cart is empty. <a href="product.php">Continue Shopping</a></p>
+    <?php endif; ?>
+</div>
+<!-- Cart End -->
 
-
-                        ?>
-                        <img src="<?php echo $imagePath; ?>" class="card-img-top rounded-top product-image"
-                        alt="<?php echo $product['name']; ?>" style="transition: transform 0.3s;">
-                     </div>
-                     <div class="card-body text-center p-4">
-                        <h5 class="card-title text-dark fw-bold mb-3"><?php echo $product['name']; ?></h5>
-                        <p class="fw-bold text-primary mb-4">Price: ₹<?php echo number_format($product['price'], 2); ?></p>
-                        <p class="mb-3">Quantity: <?php echo $product['quantity']; ?></p>
-                        <a href="addCart.php?remove=<?php echo $productId; ?>"
-                           class="btn btn-primary px-4 py-2 rounded-pill shadow-sm add-cart-btn"
-                           style="transition: transform 0.3s;">Remove</a>
-                        <a href="orderProduct.php"
-                           class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Order Now</a>
-                     </div>
-                  </div>
-               </div>
-            <?php endforeach; ?>
-
-         </div>
-
-         <div class="row mt-4">
-            <div class="col-12 text-center">
-               <h4 class="fw-bold">Total Price: ₹<?php echo number_format($totalPrice, 2); ?></h4>
-               <a href="product.php" class="btn btn-primary mt-4">Continue Shopping</a>
-            </div>
-         </div>
-
-      <?php else: ?>
-         <p class="text-center text-muted">Your cart is empty.</p>
-         <a href="product.php" class="btn btn-primary mt-4">Continue Shopping</a>
-      <?php endif; ?>
-   </div>
-
-   <script>
-      // Hover Effect for Product Image
-      const productImages = document.querySelectorAll('.product-image');
-      productImages.forEach(image => {
-         image.addEventListener('mouseenter', () => {
-            image.style.transform = 'scale(1.05)';
-         });
-         image.addEventListener('mouseleave', () => {
-            image.style.transform = 'scale(1)';
-         });
-      });
-   </script>
    <!-- Cart End -->
 
 
@@ -346,3 +384,4 @@ $conn->close();
 </body>
 
 </html>
+

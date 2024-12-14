@@ -541,3 +541,23 @@ h4, h5, h6, .h4, .h5, .h6 {
     .product-image:hover {
        transform: scale(1.1);
     }
+
+.cart-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+ }
+ 
+ .cart-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+ }
+ 
+ /* Add transitions to the image */
+ .cart-image {
+    transition: transform 0.3s ease, filter 0.3s ease;
+ }
+ 
+ .cart-image:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+ }
+ 
