@@ -239,6 +239,8 @@ while ($item = $itemResult->fetch_assoc()) {
                   <!-- Back to shopping or order history -->
                   <div class="d-flex justify-content-between">
                      <a href="product.php" class="btn btn-primary btn-lg rounded-pill px-4">Back to Shopping</a>
+                     <a href="pay.php" class="btn btn-primary btn-lg rounded-pill px-4">Pay Now</a>
+
                      <a href="userOrderHistory.php" class="btn btn-secondary btn-lg rounded-pill px-4">View Order
                         History</a>
                   </div>
