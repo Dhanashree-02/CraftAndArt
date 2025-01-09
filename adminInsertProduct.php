@@ -136,7 +136,7 @@ $conn->close();
 
                   <!-- Price -->
                   <div class="mb-4">
-                     <label for="price" class="form-label text-dark fs-5">Price ($):</label>
+                     <label for="price" class="form-label text-dark fs-5">Price (Rs.):</label>
                      <input type="number" class="form-control form-control-lg" id="price" name="price" required>
                   </div>
 

@@ -38,7 +38,6 @@
         <div class="spinner-grow text-primary" role="status"></div>
     </div>
     <!-- Spinner End -->
-
     <!-- Navbar start -->
     <div class="container-fluid nav-bar">
         <div class="container">
@@ -76,8 +75,8 @@
                             <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                         </div>
                     </div>
-                    <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                        data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+                    <!-- <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button> -->
                     <a href="addCart.php"
                         class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                             class="fas fa-shopping-cart"></i></a>
@@ -94,24 +93,24 @@
     <!-- Navbar end -->
 
     <!-- Modal Search Start -->
-    <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content rounded-0">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Search by
-                        keyword</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex align-items-center">
-                    <div class="input-group w-75 mx-auto d-flex">
-                        <input type="search" class="form-control bg-transparent p-3" placeholder="keywords"
-                            aria-describedby="search-icon-1">
-                        <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
-                    </div>
-                </div>
+    <!-- <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen">
+         <div class="modal-content rounded-0">
+            <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Search by
+                  keyword</h5>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
+            <div class="modal-body d-flex align-items-center">
+               <div class="input-group w-75 mx-auto d-flex">
+                  <input type="search" class="form-control bg-transparent p-3" placeholder="keywords"
+                     aria-describedby="search-icon-1">
+                  <span id="search-icon-1" class="input-group-text p-3"><i class="fa fa-search"></i></span>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div> -->
     <!-- Modal Search End -->
 
     <!-- Hero Start -->

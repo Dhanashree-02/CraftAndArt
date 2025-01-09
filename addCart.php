@@ -183,8 +183,8 @@ $conn->close();
                      <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                   </div>
                </div>
-               <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+               <!-- <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button> -->
                <a href="addCart.php"
                   class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                      class="fas fa-shopping-cart"></i></a>
@@ -199,9 +199,8 @@ $conn->close();
    </div>
    <!-- Navbar end -->
 
-
    <!-- Modal Search Start -->
-   <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <!-- <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
          <div class="modal-content rounded-0">
             <div class="modal-header">
@@ -218,7 +217,7 @@ $conn->close();
             </div>
          </div>
       </div>
-   </div>
+   </div> -->
    <!-- Modal Search End -->
 
    <!-- Hero Start -->
@@ -236,55 +235,55 @@ $conn->close();
 
 
    <!-- Cart Start -->
-  <!-- Cart Start -->
-<div class="container py-5">
-    <h1 class="display-5 text-center mb-5">Your Shopping Cart</h1>
+   <!-- Cart Start -->
+   <div class="container py-5">
+      <h1 class="display-5 text-center mb-5">Your Shopping Cart</h1>
 
-    <?php if (!empty($_SESSION['cart'])): ?>
-        <div class="table-responsive">
+      <?php if (!empty($_SESSION['cart'])): ?>
+         <div class="table-responsive">
             <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Product Name</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Subtotal</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($_SESSION['cart'] as $product): ?>
-                        <tr>
-                            <td><img src="<?php echo htmlspecialchars($product['image']); ?>" alt="Product Image" width="50"></td>
-                            <td><?php echo htmlspecialchars($product['name']); ?></td>
-                            <td>$<?php echo number_format($product['price'], 2); ?></td>
-                            <td><?php echo $product['quantity']; ?></td>
-                            <td>$<?php echo number_format($product['price'] * $product['quantity'], 2); ?></td>
-                            <td>
-                                <a href="addCart.php?id=<?php echo $product['id']; ?>" class="btn btn-success btn-sm">+</a>
-                                <a href="addCart.php?decrease=<?php echo $product['id']; ?>" class="btn btn-warning btn-sm">-</a>
-                                <a href="addCart.php?remove=<?php echo $product['id']; ?>" class="btn btn-danger btn-sm">Remove</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4" class="text-end"><strong>Total:</strong></td>
-                        <td colspan="2">$<?php echo number_format($totalPrice, 2); ?></td>
-                    </tr>
-                </tfoot>
+               <thead>
+                  <tr>
+                     <th>Image</th>
+                     <th>Product Name</th>
+                     <th>Price</th>
+                     <th>Quantity</th>
+                     <th>Subtotal</th>
+                     <th>Actions</th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <?php foreach ($_SESSION['cart'] as $product): ?>
+                     <tr>
+                        <td><img src="<?php echo htmlspecialchars($product['image']); ?>" alt="Product Image" width="50"></td>
+                        <td><?php echo htmlspecialchars($product['name']); ?></td>
+                        <td>Rs.<?php echo number_format($product['price'], 2); ?></td>
+                        <td><?php echo $product['quantity']; ?></td>
+                        <td>Rs.<?php echo number_format($product['price'] * $product['quantity'], 2); ?></td>
+                        <td>
+                           <a href="addCart.php?id=<?php echo $product['id']; ?>" class="btn btn-success btn-sm">+</a>
+                           <a href="addCart.php?decrease=<?php echo $product['id']; ?>" class="btn btn-warning btn-sm">-</a>
+                           <a href="addCart.php?remove=<?php echo $product['id']; ?>" class="btn btn-danger btn-sm">Remove</a>
+                        </td>
+                     </tr>
+                  <?php endforeach; ?>
+               </tbody>
+               <tfoot>
+                  <tr>
+                     <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                     <td colspan="2">Rs<?php echo number_format($totalPrice, 2); ?></td>
+                  </tr>
+               </tfoot>
             </table>
-        </div>
-        <div class="text-center">
+         </div>
+         <div class="text-center">
             <a href="checkout.php" class="btn btn-primary btn-lg">Proceed to Checkout</a>
-        </div>
-    <?php else: ?>
-        <p class="text-center">Your cart is empty. <a href="product.php">Continue Shopping</a></p>
-    <?php endif; ?>
-</div>
-<!-- Cart End -->
+         </div>
+      <?php else: ?>
+         <p class="text-center">Your cart is empty. <a href="product.php">Continue Shopping</a></p>
+      <?php endif; ?>
+   </div>
+   <!-- Cart End -->
 
    <!-- Cart End -->
 

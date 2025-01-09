@@ -56,11 +56,11 @@ $result = $conn->query($sql);
       <div class="spinner-grow text-primary" role="status"></div>
    </div>
    <!-- Spinner End -->
-   <!-- Navbar start -->
-   <div class="container-fluid nav-bar">
+  <!-- Navbar start -->
+  <div class="container-fluid nav-bar">
       <div class="container">
          <nav class="navbar navbar-light navbar-expand-lg py-5">
-            <img src="img/logo1.png" style="height: 10vh; ">
+         <img src="img/logo1.png" style="height: 10vh; ">
             <a href="index.php" class="navbar-brand">
                <h1 class="text-primary fw-bold mb-0">Craft<span class="text-dark"> Loving </span></h1>
             </a>
@@ -93,25 +93,23 @@ $result = $conn->query($sql);
                      <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                   </div>
                </div>
-               <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+               <!-- <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button> -->
                <a href="addCart.php"
                   class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                      class="fas fa-shopping-cart"></i></a>
                <a href="wishlist.php" class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex">
                   <i class="fas fa-heart"></i>
                </a>
-               <a href="userOrderHistory.php"
-                  class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
+               <a href="userOrderHistory.php" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block rounded-pill">Orders</a>
             </div>
          </nav>
       </div>
    </div>
    <!-- Navbar end -->
 
-
    <!-- Modal Search Start -->
-   <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <!-- <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
          <div class="modal-content rounded-0">
             <div class="modal-header">
@@ -128,7 +126,7 @@ $result = $conn->query($sql);
             </div>
          </div>
       </div>
-   </div>
+   </div> -->
    <!-- Modal Search End -->
 
    <!-- Hero Start -->
@@ -173,7 +171,7 @@ $result = $conn->query($sql);
                         <p class="card-text text-muted mb-3" style="font-size: 0.9rem; line-height: 1.4;">
                            <?php echo $row['description']; ?>
                         </p>
-                        <p class="fw-bold text-primary mb-4" style="font-size: 1.1rem;">Price: $<?php echo $row['price']; ?>
+                        <p class="fw-bold text-primary mb-4" style="font-size: 1.1rem;">Price: Rs.<?php echo $row['price']; ?>
                         </p>
                         <a href="addCart.php?id=<?php echo $row['id']; ?>"
                            class="btn btn-primary px-4 py-2 rounded-pill shadow-sm add-cart-btn"

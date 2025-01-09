@@ -77,8 +77,8 @@
                             <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                         </div>
                     </div>
-                    <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                        data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+                    <!-- <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                        data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button> -->
                     <a href="addCart.php"
                         class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                             class="fas fa-shopping-cart"></i></a>

@@ -4,13 +4,13 @@
         "key": "rzp_test_DPGCJ7kqrAuEsf", // Enter the Key ID generated from the Dashboard
         "amount": "50000", // Amount is in currency subunits (10.00 INR)
         "currency": "INR",
-        "name": "Craft and Art",
-        "description": "Art and Craft Purchase",
+        "name": "Craft Loving",
+        "description": "Craft Loving Purchase",
         "handler": function (response){
             alert("Payment ID: " + response.razorpay_payment_id);
         },
         "prefill": {
-            "name": "DHANASHREE LAXMAN SONUNE",
+            "name": "Craft Loving",
             "email": "dhanashree.sonune02@gmail.com",
             "contact": "9552003201"
         }

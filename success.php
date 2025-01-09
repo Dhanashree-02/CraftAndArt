@@ -152,8 +152,8 @@ while ($item = $itemResult->fetch_assoc()) {
                      <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                   </div>
                </div>
-               <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+               <!-- <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button> -->
                <a href="addCart.php"
                   class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                      class="fas fa-shopping-cart"></i></a>
@@ -169,7 +169,7 @@ while ($item = $itemResult->fetch_assoc()) {
    <!-- Navbar end -->
 
    <!-- Modal Search Start -->
-   <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <!-- <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
          <div class="modal-content rounded-0">
             <div class="modal-header">
@@ -186,7 +186,7 @@ while ($item = $itemResult->fetch_assoc()) {
             </div>
          </div>
       </div>
-   </div>
+   </div> -->
    <!-- Modal Search End -->
 
    <!-- Hero Start -->

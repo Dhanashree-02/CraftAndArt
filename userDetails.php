@@ -4,8 +4,8 @@ session_start();
 
 // Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header("Location: userLogin.php"); // Redirect to login page if not logged in
-    exit();
+   header("Location: userLogin.php"); // Redirect to login page if not logged in
+   exit();
 }
 
 // Database connection
@@ -13,7 +13,7 @@ $conn = new mysqli("localhost", "root", "", "craft"); // Adjust database credent
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+   die("Connection failed: " . $conn->connect_error);
 }
 
 // Get user ID from session
@@ -23,17 +23,17 @@ $user_id = $_SESSION['user_id'];
 $sql = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
-    die("Error preparing statement: " . $conn->error);
+   die("Error preparing statement: " . $conn->error);
 }
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
+   $user = $result->fetch_assoc();
 } else {
-    echo "No user details found.";
-    exit();
+   echo "No user details found.";
+   exit();
 }
 
 
@@ -113,8 +113,8 @@ $conn->close();
                      <a href="logout.php" class="dropdown-item btn btn-danger">Logout</a>
                   </div>
                </div>
-               <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
-                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button>
+               <!-- <button class="btn-search btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"
+                  data-bs-toggle="modal" data-bs-target="#searchModal"><i class="fas fa-search"></i></button> -->
                <a href="addCart.php"
                   class="btn btn-primary btn-md-square me-4 rounded-circle d-none d-lg-inline-flex"><i
                      class="fas fa-shopping-cart"></i></a>
@@ -129,9 +129,8 @@ $conn->close();
    </div>
    <!-- Navbar end -->
 
-
    <!-- Modal Search Start -->
-   <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <!-- <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-fullscreen">
          <div class="modal-content rounded-0">
             <div class="modal-header">
@@ -148,35 +147,37 @@ $conn->close();
             </div>
          </div>
       </div>
-   </div>
+   </div> -->
    <!-- Modal Search End -->
-<!-- User details start -->
-<div class="container mt-5">
-        <h1 class="mb-5 text-center">Your Account</h1>
-        <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 550px;">
-            <div class="card-header bg-primary text-white text-center rounded-top">
-                <h3>Welcome, <?php echo htmlspecialchars($user['name']); ?>!</h3>
+
+
+   <!-- User details start -->
+   <div class="container mt-5">
+      <h1 class="mb-5 text-center">Your Account</h1>
+      <div class="card shadow-lg border-0 rounded-3 mx-auto" style="max-width: 550px;">
+         <div class="card-header bg-primary text-white text-center rounded-top">
+            <h3>Welcome, <?php echo htmlspecialchars($user['name']); ?>!</h3>
+         </div>
+         <div class="card-body text-center p-5 d-flex flex-column justify-content-center align-items-center">
+            <div class="mb-4">
+               <div class="d-flex justify-content-center align-items-center"
+                  style="width: 100px; height: 100px; border-radius: 50%; background-color: #d4a762; color: white; font-size: 36px; font-weight: bold;">
+                  <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
+               </div>
             </div>
-            <div class="card-body text-center p-5 d-flex flex-column justify-content-center align-items-center">
-                <div class="mb-4">
-                    <div class="d-flex justify-content-center align-items-center"
-                        style="width: 100px; height: 100px; border-radius: 50%; background-color: #d4a762; color: white; font-size: 36px; font-weight: bold;">
-                        <?php echo strtoupper(substr($user['name'], 0, 1)); ?>
-                    </div>
-                </div>
-                <h4 class="text-dark mb-1"><?php echo htmlspecialchars($user['name']); ?></h4>
-                <p class="text-muted mb-0">Email: <?php echo htmlspecialchars($user['email']); ?></p>
-                <div class="mt-4">
-                    <a href="userEditDetails.php" class="btn btn-outline-primary px-4 py-2 rounded-pill shadow">Edit
-                        Details</a>
-                </div>
+            <h4 class="text-dark mb-1"><?php echo htmlspecialchars($user['name']); ?></h4>
+            <p class="text-muted mb-0">Email: <?php echo htmlspecialchars($user['email']); ?></p>
+            <div class="mt-4">
+               <a href="userEditDetails.php" class="btn btn-outline-primary px-4 py-2 rounded-pill shadow">Edit
+                  Details</a>
             </div>
-            <div class="card-footer text-muted text-center rounded-bottom">
-                Last Updated: <?php echo date("F j, Y"); ?>
-            </div>
-        </div>
-    </div>
-    <!-- User details end -->
+         </div>
+         <div class="card-footer text-muted text-center rounded-bottom">
+            Last Updated: <?php echo date("F j, Y"); ?>
+         </div>
+      </div>
+   </div>
+   <!-- User details end -->
 
 
 
