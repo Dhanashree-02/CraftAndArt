@@ -63,13 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
                 $mail->isSMTP();
                 $mail->Host = 'smtp.gmail.com'; // Use your SMTP server
                 $mail->SMTPAuth = true;
-                $mail->Username = 'sankrutisoni809@gmail.com'; // Your email
-                $mail->Password = 'vovchasxmxunwfsy'; // Your email password
+                $mail->Username = ''; // Your email
+                $mail->Password = ''; // Your email password
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
                 // Recipients
-                $mail->setFrom('sankrutisoni809@gmail.com', 'CraftLoving');
+                $mail->setFrom('Senders_emailAddress', 'CraftLoving');
                 $mail->addAddress($user_email); // Add user's email
 
                 // Content
