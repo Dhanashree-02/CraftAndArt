@@ -2,15 +2,7 @@
 session_start();
 
 // Database connection
-$servername = "localhost";
-$username = "root"; // Replace with your DB username
-$password = ""; // Replace with your DB password
-$dbname = "craft"; // Replace with your DB name
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'db_connection.php';
 
 require 'vendor/autoload.php';
 
@@ -61,15 +53,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
             try {
                 // Server settings
                 $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com'; // Use your SMTP server
+                $mail->Host = $_ENV['MAIL_HOST'];
                 $mail->SMTPAuth = true;
-                $mail->Username = ''; // Your email
-                $mail->Password = ''; // Your email password
+                $mail->Username = $_ENV['MAIL_USERNAME'];
+                $mail->Password = $_ENV['MAIL_PASSWORD'];
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587;
+                $mail->Port = $_ENV['MAIL_PORT'];
 
-                // Recipients
-                $mail->setFrom('Senders_emailAddress', 'CraftLoving');
+                $mail->setFrom($_ENV['MAIL_FROM_ADDRESS'], $_ENV['MAIL_FROM_NAME']);
                 $mail->addAddress($user_email); // Add user's email
 
                 // Content

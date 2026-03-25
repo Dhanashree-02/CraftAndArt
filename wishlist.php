@@ -2,15 +2,7 @@
 session_start();
 
 // Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "craft";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-   die("Connection failed: " . $conn->connect_error);
-}
+include 'db_connection.php';  
 
 // Handle adding items to the wishlist
 if (isset($_GET['id'])) {

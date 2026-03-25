@@ -1,6 +1,5 @@
 <?php
-// Include your database connection
-include 'db_connection.php';  // Assuming db_connection.php contains the connection code
+include 'db_connection.php';  
 
 // Fetch the POST data
 $user_ids = $_POST['user_ids'] ?? '';

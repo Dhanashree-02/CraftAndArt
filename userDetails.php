@@ -9,12 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Database connection
-$conn = new mysqli("localhost", "root", "", "craft"); // Adjust database credentials
-
-// Check connection
-if ($conn->connect_error) {
-   die("Connection failed: " . $conn->connect_error);
-}
+include 'db_connection.php';  
 
 // Get user ID from session
 $user_id = $_SESSION['user_id'];

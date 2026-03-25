@@ -1,17 +1,6 @@
 <?php
 // Database connection
-$servername = "localhost";  // your MySQL server
-$username = "root";         // your MySQL username
-$password = "";             // your MySQL password
-$dbname = "craft";  // your database name
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'db_connection.php';  
 
 // Function to calculate total revenue for completed orders
 function getRevenueForCompletedOrders($conn, $period) {
